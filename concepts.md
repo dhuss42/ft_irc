@@ -16,6 +16,7 @@
 	-
 - IRC client as reference
 	-
+- operators in IRC
 
 # new external functions
 
@@ -67,7 +68,7 @@
 	-
 - fstat
 	-
-- fcntl
+- fcntl only as follows: fcntl(fd, F_SETFL, O_NONBLOCK);
 	-
 - poll (or equivalent) (select, kqueue, epoll)
 	-
