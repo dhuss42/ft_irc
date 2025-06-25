@@ -1,0 +1,73 @@
+# new concepts
+
+- Internet Relay Chat (IRC)
+	-  text-based communication protocol on the Internet
+	- real-time messaging (private and public)
+	- user can exchange direct messages and join group channels
+- IRC server
+	- IRC servers are connected togther to form a network
+- IRC client
+	- connect to IRC servers in order to join channels
+- solid standard protocols
+	-
+
+
+- I/O operations must be non-blocking
+	-
+- IRC client as reference
+	-
+
+# new external functions
+
+- socket
+	-
+- close
+	-
+- setsockopt
+	-
+- getsockname
+	-
+- getprotobyname
+	-
+- gethostbyname
+	-
+- getaddrinfo
+	-
+- freeaddrinfo
+	-
+- bind
+	-
+- connect
+	-
+- listen
+	-
+- accept
+	-
+- htons
+	-
+- htonl
+	-
+- ntohs
+	-
+- ntohl
+	-
+- inet_addr
+	-
+- inet_to_a
+	-
+- send
+	-
+- recv
+	-
+- signal
+	-
+- sigaction
+	-
+- lseek
+	-
+- fstat
+	-
+- fcntl
+	-
+- poll (or equivalent) (select, kqueue, epoll)
+	-
