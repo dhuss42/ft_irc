@@ -65,7 +65,37 @@ int	main()
 	}
 	else
 		std::cout << GREEN "created accepted Socket" WHITE << std::endl;
+	
+	bool loop = true;
+	while (loop)
+	{
 
+		char buffer[200];
+		size_t received;
+		received = recv(acceptfd, buffer, sizeof(buffer), 0);
+		if (received <= 0)
+		{
+			perror( RED "recv" RESET);
+			break ;
+		}
+		else
+		{
+			std::cout << "number of chars" << received << std::endl;
+			buffer[received] = '\0';
+			if (strcmp(buffer, "EXIT") == 0)
+				break ;
+			else
+				std::cout << "Received: " << buffer << std::endl;
+	
+			const char* reply = "Message Received";
+			if (send(acceptfd, reply, strlen(reply), 0) <= 0)
+			{
+				perror( RED "send" RESET);
+				break ;
+			}
+		}
+	}
+	std::cout << GREEN "Exiting..." RESET << std::endl;
 	if (close(sockfd) == -1)
 		std::cerr << RED "Error: close sockfd" WHITE << std::endl;
 	if (close(acceptfd) == -1)
