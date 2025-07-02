@@ -79,6 +79,35 @@
 	- 75 seconds respond time
 	- if successfull returns 0
 	- if error returns error
+
+send and recv both block execution until data has been sent and received respectively
+- need to be set up in differing order for client and server
+- server end start with receive function
+
+- send
+	- sends data on a connected socket
+	- bidrectional between client and server
+	- int send (int acceptedSocket, const char* buf, int len, int flags)
+		- acceptedSocket: the connected socket
+		- buf: data that we want to send
+		- len: the length of the array
+		- flags: optional set of flags
+	- returns
+		- -1 on error
+		- number of bytes which were sent are returned
+			- we want a non zero value to be successfull
+	- cin.getline(buffer, len)
+		- to not separate message by whitespaces
+
+- recv
+	- size_t recv(int socket, void *buffer, size_t length, int flags);
+		- same as send
+	- returns
+		- -1 on error
+		- number of bytes which were sent are returned
+			- we want a non zero value to be successfull
+
+
 - close
 	- closes the file descriptors
 
@@ -97,6 +126,7 @@
 	- returns 
 		- -1 on error
 		- 0 on success
+
 - getsockname
 	-
 - getprotobyname
@@ -122,10 +152,7 @@
 	
 - inet_to_a
 	-
-- send
-	-
-- recv
-	-
+
 - signal
 	-
 - sigaction
@@ -196,6 +223,7 @@ Ascend all 7 Layers
 		- which will specify the details of the server (IP adress and portnumber)
 - two different types of sockets
 	- streaming socket utilises TCP (transmission control protocol)
+		- needs a connection
 		- more secure connection between server and client
 		- reliability
 	- Datagram socket UDP (user datagram protocol)
