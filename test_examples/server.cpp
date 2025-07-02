@@ -19,7 +19,7 @@ int	main()
 		std::cout << GREEN "created socket" WHITE << std::endl;
 
 	int opt = 1;
-	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) 
+	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
 	{
 		perror("setsockopt");
 		exit(EXIT_FAILURE);
@@ -65,13 +65,23 @@ int	main()
 	}
 	else
 		std::cout << GREEN "created accepted Socket" WHITE << std::endl;
-	
+
+	// currently makes a problem
+	if (fcntl(acceptfd, F_SETFL, O_NONBLOCK) == -1)
+	{
+		perror(RED "Error: listen" WHITE);
+		close(sockfd);
+		close(acceptfd);
+		exit(EXIT_FAILURE);
+	}
+
 	bool loop = true;
 	while (loop)
 	{
 
 		char buffer[200];
-		size_t received;
+		std::memset(buffer, 0 , sizeof(buffer));
+		size_t received = 0;
 		received = recv(acceptfd, buffer, sizeof(buffer), 0);
 		if (received <= 0)
 		{
@@ -80,13 +90,13 @@ int	main()
 		}
 		else
 		{
-			std::cout << "number of chars" << received << std::endl;
+			std::cout << "number of chars " << received << std::endl;
 			buffer[received] = '\0';
 			if (strcmp(buffer, "EXIT") == 0)
 				break ;
 			else
 				std::cout << "Received: " << buffer << std::endl;
-	
+
 			const char* reply = "Message Received";
 			if (send(acceptfd, reply, strlen(reply), 0) <= 0)
 			{

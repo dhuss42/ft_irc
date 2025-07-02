@@ -1,3 +1,36 @@
+# IRC structure
+
+## Server, networking, client connection management
+1. main
+- validate command-line args
+- instantiate server object
+- run server
+2. Server
+- listening on socket, accept connections
+- store connected cliebt objects
+- maintain list of active channel objects
+- poll() Loop
+3. Client
+- connected IRC client
+- track registration state, nickname, username, etc
+
+## Parsing and command handling
+4. Channel
+- users in a channel
+- track channel modes, operations, topic, etc
+5. Command Parser
+- aggregate partial data into full IRC lines
+- split lines into command and parameters
+6. Command Handlers
+- Registration commands> PASS, NICK, USER
+- Channel management: JOIN, PART, KICK, INVITE, TOPIC, MODE
+- Messaging> PRIVMSG, NOTICE
+- send appropriate server replies
+7. utils
+- string manipulation
+- error handling
+- conversions
+
 # new concepts
 
 - Internet Relay Chat (IRC)
@@ -6,21 +39,48 @@
 	- user can exchange direct messages and join group channels
 - IRC server
 	- IRC servers are connected togther to form a network
+	- handles clients connected to it
+	- relay messages between users and servers
+	- maintain:
+		- user sessions
+		- channel memberships
+		- permissions and modes
 - IRC client
 	- connect to IRC servers in order to join channels
 - solid standard protocols
-	-
+	- IRC communication follows standardized protocols
+		- RFC 1459 (original IRC specification).
+		- RFC 2810–2813 (updated IRC protocol specifications).
+	- defines
+		- message formats
+		- commands
+		- numeric replies
+		- error handling
 
 
 - I/O operations must be non-blocking
-	-
+	- blocking functions wait on certain conditions until they execute fully
+	- non-blocking returns immediately
+		- allows programm to coninue doing other work
+		- important for servers
+			- don't want to freez waiting for one of them to send data
+			- possible to monitor many sockets at once
+			- React when any of them becomes ready for reading or writing
+		- poll(), epoll()
 - IRC client as reference
-	-
+	- HexChat
+	- Irssi
+	- WeeChat
 - operators in IRC
+	- IRC operators are privileged users with special permissions.
+	- Server authenticates operators, usually via password.
+	- Operators are essential for moderating and maintaining IRC networks.
+
+
 
 # new external functions
 
-## Server Functions
+## Server and client Functions
 - socket()
 	- creates a socket
 	- <sys/socket.h>
@@ -75,7 +135,8 @@
 - connect
 	- initiate a connection on a socket
 	- int connect(int sockfd, const struct sockaddr *addr,
-                   socklen_t addrlen);
+		     socklen_t addrlen);
+	- client connects to the server by assigning the servers IP address and port to a sockaddr structure and passing this along with the client socket to the connect function
 	- 75 seconds respond time
 	- if successfull returns 0
 	- if error returns error
@@ -107,66 +168,218 @@ send and recv both block execution until data has been sent and received respect
 		- number of bytes which were sent are returned
 			- we want a non zero value to be successfull
 
-
 - close
 	- closes the file descriptors
 
 - setsockopt
 	- #include <sys/socket.h>
 	- int setsockopt(int sockfd, int level, int option_name,
-               const void *option_value, socklen_t option_len);
+		 const void *option_value, socklen_t option_len);
 		- the socket file descriptor you created with socket()
 		- the protocol level the option applies to
-		- the specific option you want to set 
+		- the specific option you want to set
 		- pointer to the value you want to set
 		- size of the value you are passing
 	- lets you configure options for a socket
 		- Allowing address reuse (SO_REUSEADDR)
 		- ...
-	- returns 
+	- returns
 		- -1 on error
 		- 0 on success
 
 - getsockname
-	-
+	- int getsocknam(int sockfd, struct sockaddr *restrict addr, socklen_t *restrict addrlen)
+	- returns the current address to which the socket sockfd is bound, in the buffer pointed to by addr.
+		addrlen indicates the amount of space pointed to bz addr. On return it contains the actual size of the socket address.
+	- returns
+		- -1 on error
+		- 0 on success
+
 - getprotobyname
-	-
+	-  #include <netdb.h>
+	- struct protoent *getprotobyname(const char *name);
+	-  The getprotobyname() function shall search the database from the
+	beginning and find the first entry for which the protocol name
+	specified by name matches the p_name member, opening and closing a
+	connection to the database as necessary.
+	- returns a pointer to a protoent structure if the
+       requested entry was found, and a null pointer if the end of the
+       database was reached or the requested entry was not found.
+       Otherwise, a null pointer is returned.
+
 - gethostbyname
-	-
+	- The gethostbyname() function returns a structure of type hostent
+       for the given host name.  Here name is either a hostname or an
+       IPv4 address in standard dot notation (as for inet_addr(3)).  If
+       name is an IPv4 address, no lookup is performed and
+       gethostbyname() simply copies name into the h_name field and its
+       struct in_addr equivalent into the h_addr_list[0] field of the
+       returned hostent structure.  If name doesn't end in a dot and the
+       environment variable HOSTALIASES is set, the alias file pointed to
+       by HOSTALIASES will first be searched for name (see hostname(7)
+       for the file format).  The current domain and its parents are
+       searched unless name ends in a dot.
+	- return the hostent structure or a null pointer if an error occurs.
+
 - getaddrinfo
-	-
+	- #include <sys/types.h>
+	- int getaddrinfo(const char *node, const char *service, const struct addrinfo *hints, struct addrinfo **res);
+	- getaddrinfo() returns one or more addrinfo structures, each of which contains an Internet address
+
+	The addrinfo structure used by getaddrinfo() contains the following fields:
+
+	struct addrinfo {
+		int              ai_flags;
+		int              ai_family;
+		int              ai_socktype;
+		int              ai_protocol;
+		socklen_t        ai_addrlen;
+		struct sockaddr *ai_addr;
+		char            *ai_canonname;
+		struct addrinfo *ai_next;
+	};
+
+
 - freeaddrinfo
-	-
+	- void freeaddrinfo(struct addrinfo *res);
+	- The freeaddrinfo() function frees the memory that was allocated for the dynamically allocated linked list res.
+
+## conversion
+see [Endianness](## Endianness)
 - htons
+	- Host To Network Short” → converts a 16-bit (short) number (like the port) to network byte order (big endian).
+	- #include <arpa/inet.h>
+	- converts the unsigned short integer hostshort from host byte order to network byte order.
 	- pass portnumber and returns value in TCP/IP network byte order -> for the network to understand
 	- have to pass port number to this function and store the retuns value in sockaddr_in struct .sin_port
-	- Host To Network Short” → converts a 16-bit (short) number (like the port) to network byte order (big endian).
 - htonl
 	- “Host To Network Long” → converts a 32-bit (long) number (like an IPv4 address) to network byte order.
+	-  converts the unsigned integer hostlong from host byte order to network byte order.
 - ntohs
-	-
+	- converts the unsigned short integer netshort from network byte order to host byte order.
 - ntohl
-	-
+	- converts the unsigned integer netlong from network byte order to host byte order.
 - inet_addr
 	- Converts the IPv4 address string "127.0.0.1" directly into the required 32-bit network byte order integer.
-	
-- inet_to_a
-	-
+	- converts the Internet host address cp from IPv4 numbers-and-dots notation into binary data in network byte order.
+	- If the input is invalid, INADDR_NONE (usually -1) is returned. Use of this function is problematic because -1 is a valid address (255.255.255.255). Avoid its use in favor of getaddrinfo(3) which provide a cleaner way to indicate error return.
+- inet_ntoa
+	- converts the Internet host address in, given in network byte order, to a string in IPv4 dotted-decimal notation.
+	- The string is returned in a statically allocated buffer, which subsequent calls will overwrite.
 
+## signals
 - signal
-	-
+	- <signal.h>
+	- void (*signal( int sig, void (*handler) (int))) (int);
+	- sig	-	the signal to set the signal handler to. It can be an implementation-defined value or one of the following values:
+		- SIGABRT
+		- SIGFPE
+		- SIGILL
+		- SIGINT
+		- SIGSEGV
+		- SIGTERM
+	- handler - the signal handler
+		- SIG_DFL - set to default signal handler
+		- SIG_IGN - the signal is ignored
+		- pointer to a function - void fun(int sig);
+	- returns
+		- Previous signal handler on success or
+		- SIG_ERR on failure
+
 - sigaction
-	-
+	- used to change the action taken by a process on receipt of a specific signal.
+
+## file descriptor handling
 - lseek
-	-
+	- move to different location inside a file (good when file is fixed in size)
+	- off_t lseek(int fd, off_t offset, int whence);
+		- offset
+			- the amount we want to offset from the starting location
+		- whence
+			- where we are offseting from
+				- SEEK_SET: start at offset defined bytes
+				- SEEK_CUR: offset from current location
+				- SEEK_END: ofsset from end
+	- returns
+		- on success amount of offset that occured
+		- on error -1
 - fstat
-	-
+	- #include <sys/types.h>
+	- int fstat(int fd, struct stat *buf);
+	- returns information about a file. No permissions are required on the file itself
+	- stats the file pointed to by path and fills in buf.
+	- the file to be stat-ed is specified by the file descriptor fd.
+	- struct stat {
+		dev_t     st_dev;     /* ID of device containing file */
+		ino_t     st_ino;     /* inode number */
+		mode_t    st_mode;    /* protection */
+		nlink_t   st_nlink;   /* number of hard links */
+		uid_t     st_uid;     /* user ID of owner */
+		gid_t     st_gid;     /* group ID of owner */
+		dev_t     st_rdev;    /* device ID (if special file) */
+		off_t     st_size;    /* total size, in bytes */
+		blksize_t st_blksize; /* blocksize for file system I/O */
+		blkcnt_t  st_blocks;  /* number of 512B blocks allocated */
+		time_t    st_atime;   /* time of last access */
+		time_t    st_mtime;   /* time of last modification */
+		time_t    st_ctime;   /* time of last status change */
+		};
+	- returns
+		- 0 on success
+		- -1 on error
+
 - fcntl only as follows: fcntl(fd, F_SETFL, O_NONBLOCK);
-	-
+	- #include <fcntl.h>
+	-  manipulate file descriptor
+	-  F_SETFD (int)
+		- Set the file descriptor flags to the value specified by arg.
+	- O_NONBLOCK set it to onon blocking
+		- for example accept() will not block the whole server if no client is connecting
+	- returns
+		- other than -1 on success
+		- -1 on error
+
 - poll (or equivalent) (select, kqueue, epoll)
-	-
+	- wait on multiple file descriptors to be ready for input and output with one single call
+	- handle them dynamically while the come in
+	- poll()
+	- #include <poll.h>
+	- int poll(struct pollfd *fds, nfds_t nfds, int timeout);
+		- fds is an array of structures of the following form
+			struct pollfd {
+               int   fd;         /* file descriptor */
+               short events;     /* requested events */
+               short revents;    /* returned events */
+           };
+			- fd: contains a file descriptor for an open file
+			- events: input paramater, a bit mask specifying the events the application is interested in for the fd
+			- revents: output parameter, filled by the kernel with the events that actually occured
+		- nfds is the number of items inside the fds array
+		- timeout: miliseconds that poll should block waiting for a file desriptor to become ready
+			- negative value means an infinie timeout
+			- 0 causes poll() to returns immediately
+	- returns
+		- a non negative value which is the number of elements in fds whose revents fields have been set to a nonzero value
+		- system timeout before any filedescriptors became ready
+		- -1 on error
+
 
 # relevant concepts
+
+## Endianness
+- sequence in which bytes are arranged to represent dara
+- Two common orders:
+	- Big-endian: Most significant byte stored first (at lowest address)
+	- Little-endian: Least significant byte stored first
+- Host byte order
+	- order used internally by computer's cpu architecture
+	- can be big or little endian depending on computer
+	- the same 32-bit int might be stored as bytes in a different order than on another computer
+- Network byte order
+	- standardized format used in networking to make sure all machines udnerstand the data consistantly
+	- defined as big-endian
+	- when computers send data across the network they musst convert their native host byte order to network byte order
+
 
 ## OSI Model (Open Systems into connectin)
 - 7 Layers between highlevel software level (application layer) down to the physical level the hardware
@@ -233,7 +446,7 @@ Ascend all 7 Layers
 1. Create a Socket
 - server creates a new socket
 	- it need to be bound to an IP or port number
-	- Status is unbound 
+	- Status is unbound
 2. Binding A Socket
 - Bind the server to a valid IP address and portnumber
 - Statis is bound
@@ -252,16 +465,16 @@ Ascend all 7 Layers
 	- but at the same time the original socket is maintaied that will contine to listen for other connections on that port
 
 ## Server Functions
-	
+
 2. Create a socket - socket()
 	-
 3. Bind the socket - bind()
 	-
 4. Listen on the socket - listen()
 	-
-5. Accept a connection - accept(), connect()
+5. Accept a connection - accept()
 	-
-6. Send and receive data - recv(), send(), !!!NOT ALLOWED!!! recvfrom(), sendto()
+6. Send and receive data - recv(), send()
 - send
 	-
 - recv
@@ -271,10 +484,8 @@ Ascend all 7 Layers
 ## Client Functions
 
 2. Create a socket - socket()
-	- 
 3. connected to the server - connect()
-	- client connects to the server by assigning the servers IP address and port to a sockaddr structure and passing this along with the client socket to the connect function
-4. Send and receive data - recv(), send(), !!!NOT ALLOWED!!! recvfrom(), sendto()
+4. Send and receive data - recv(), send()
 - send
 	-
 - recv
