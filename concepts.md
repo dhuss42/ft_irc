@@ -33,10 +33,14 @@
 
 # new concepts
 
+## IRC
 - Internet Relay Chat (IRC)
-	-  text-based communication protocol on the Internet
+	- text-based communication protocol on the Internet
 	- real-time messaging (private and public)
 	- user can exchange direct messages and join group channels
+	- A typical setup involves a single process (the server) forming a central point for clients (or other servers) to connect to performing the required message delivery/multiplexing and other functions.
+
+### IRC server
 - IRC server
 	- IRC servers are connected togther to form a network
 	- handles clients connected to it
@@ -45,8 +49,96 @@
 		- user sessions
 		- channel memberships
 		- permissions and modes
+	- only component of the protocol which is able to link all the other components together
+- Reference
+	https://www.rfc-editor.org/rfc/rfc2813#section-10
+
+- IRC Protocol Services (Servers)
+	- Client Locator
+		- for messag exchange clients musst be able to locate each other
+		- clients register using a label
+			- is used by servers and client to know where that client is
+		- servers keep track of all the labels
+	- Message Relaying
+	- Channel Hosting and Management
+		- named group of users that receive all messages in that channel
+		- Servers host channels and provide message multiplexing
+		- Servers keep track of channel members
+
+- Global database
+	- every server maintains a global state database about the whole IRC network
+	- Servers
+		- identified by their name max len 63 chars
+	- Clients
+		- for ever client servers musst have:
+			- a netwide unique identifier
+			- the server to which the client is connected
+	- User
+		- distinguished from other users by nickname (max len 9 chars)
+		- server must have info about all users:
+			- nickname
+			- name of the host that the user is running on
+			- the username of that user on that host
+			- server to which the client is connected
+	- Services
+		- distinguished from other services by a service name (a nickname and server name)
+			- nickname has max len 9 chars
+		- servers musst know the service type
+		- services have different acces to server than users
+			- 2.2.2
+	- Channels
+		- are not known to all servers
+		- when channel existance is known to a server, it musst keep track of the members and channel modes
+
+- Server Specification
+	- Character codes
+		- the characters {}|^ are lower case equivalents of the characters []\~
+	- Messages
+		- Most communication between servers do not generate any reply, as servers mostly perform routing tasks for the clients.
+
+- Messages
+	- the server parses the complete message and returns errors if there are any
+		- if it encounters a fatal error while parsing a message
+			- error must be sent to client and parsing terminated
+		- fatal errors
+			- incorrect command
+			- unknown destination to the server
+			-  not enough parameters
+			- incorrect privileges
+		- if full set of parameters
+			- each must be checked and appropriate responses sent to the client
+
+
+### IRC client
 - IRC client
 	- connect to IRC servers in order to join channels
+	- A client is anything connecting to a server that is not another server
+	- User Clients
+		-  programs providing a text based interface that is used to communicate interactively via IRC
+	- Service Clients
+		- not used manually or for talking
+		- limited access to chat functions of the protocol
+		- more access to private data from server
+		- provide some kind of service to users like collecting statistics about the origin of users conencted on the IRC network
+
+- Architecture
+	- IRC network is a group of severs connected to each other
+	- A Single server is the simplest IRC network
+	- IRC protocol allows only for communication via the server not for client to client direct communication
+
+
+- IRC concepts
+	- 1 to 1 communication
+		- is directly between the clients and the intermediate server, no other entity can see the message
+	- 1 to many
+		- to a channel
+		- to A host/server mask
+		- to a list of destinations
+	- 1 to all
+		- client to server
+		- server to server
+
+
 - solid standard protocols
 	- IRC communication follows standardized protocols
 		- RFC 1459 (original IRC specification).
@@ -76,7 +168,8 @@
 	- Server authenticates operators, usually via password.
 	- Operators are essential for moderating and maintaining IRC networks.
 
-
+- multiplexing
+	- at the moment I think it refers to a single message from one user being spread to all users in the same channel
 
 # new external functions
 
@@ -107,8 +200,8 @@
 		- sockaddr_in as we are using IP
 			- #include <netinet/in.h>
 			struct sockaddr_in {
-				sa_family_t    sin_family; /* address family: AF_INET */
-				in_port_t      sin_port;   /* port in network byte order */
+				sa_family_t	sin_family; /* address family: AF_INET */
+				in_port_t	  sin_port;   /* port in network byte order */
 				struct in_addr sin_addr;   /* internet address */
 				};
 		- addrelen:
@@ -135,7 +228,7 @@
 - connect
 	- initiate a connection on a socket
 	- int connect(int sockfd, const struct sockaddr *addr,
-		     socklen_t addrlen);
+			 socklen_t addrlen);
 	- client connects to the server by assigning the servers IP address and port to a sockaddr structure and passing this along with the client socket to the connect function
 	- 75 seconds respond time
 	- if successfull returns 0
@@ -203,22 +296,22 @@ send and recv both block execution until data has been sent and received respect
 	specified by name matches the p_name member, opening and closing a
 	connection to the database as necessary.
 	- returns a pointer to a protoent structure if the
-       requested entry was found, and a null pointer if the end of the
-       database was reached or the requested entry was not found.
-       Otherwise, a null pointer is returned.
+	   requested entry was found, and a null pointer if the end of the
+	   database was reached or the requested entry was not found.
+	   Otherwise, a null pointer is returned.
 
 - gethostbyname
 	- The gethostbyname() function returns a structure of type hostent
-       for the given host name.  Here name is either a hostname or an
-       IPv4 address in standard dot notation (as for inet_addr(3)).  If
-       name is an IPv4 address, no lookup is performed and
-       gethostbyname() simply copies name into the h_name field and its
-       struct in_addr equivalent into the h_addr_list[0] field of the
-       returned hostent structure.  If name doesn't end in a dot and the
-       environment variable HOSTALIASES is set, the alias file pointed to
-       by HOSTALIASES will first be searched for name (see hostname(7)
-       for the file format).  The current domain and its parents are
-       searched unless name ends in a dot.
+	   for the given host name.  Here name is either a hostname or an
+	   IPv4 address in standard dot notation (as for inet_addr(3)).  If
+	   name is an IPv4 address, no lookup is performed and
+	   gethostbyname() simply copies name into the h_name field and its
+	   struct in_addr equivalent into the h_addr_list[0] field of the
+	   returned hostent structure.  If name doesn't end in a dot and the
+	   environment variable HOSTALIASES is set, the alias file pointed to
+	   by HOSTALIASES will first be searched for name (see hostname(7)
+	   for the file format).  The current domain and its parents are
+	   searched unless name ends in a dot.
 	- return the hostent structure or a null pointer if an error occurs.
 
 - getaddrinfo
@@ -229,13 +322,13 @@ send and recv both block execution until data has been sent and received respect
 	The addrinfo structure used by getaddrinfo() contains the following fields:
 
 	struct addrinfo {
-		int              ai_flags;
-		int              ai_family;
-		int              ai_socktype;
-		int              ai_protocol;
-		socklen_t        ai_addrlen;
+		int			  ai_flags;
+		int			  ai_family;
+		int			  ai_socktype;
+		int			  ai_protocol;
+		socklen_t		ai_addrlen;
 		struct sockaddr *ai_addr;
-		char            *ai_canonname;
+		char			*ai_canonname;
 		struct addrinfo *ai_next;
 	};
 
@@ -269,6 +362,8 @@ see [Endianness](## Endianness)
 
 ## signals
 - signal
+	- linux manual page says to avoid the use of signal and use sication instead
+		- it's behaviour varies accross UNIX versions and has also varied historically across different versions of Linuxs
 	- <signal.h>
 	- void (*signal( int sig, void (*handler) (int))) (int);
 	- sig	-	the signal to set the signal handler to. It can be an implementation-defined value or one of the following values:
@@ -288,6 +383,24 @@ see [Endianness](## Endianness)
 
 - sigaction
 	- used to change the action taken by a process on receipt of a specific signal.
+	- int sigaction(int signum, const struct sigaction *_Nullable restrict act, struct sigaction *_Nullable restrict oldact);
+		- signum
+			- signum specifies the signal and can be any valid signal except SIGKILL and SIGSTOP.
+		- act
+			- If act is non-NULL, the new action for signal signum is installed from act
+		- oldact
+			- If oldact is non-NULL, the previous action is saved in oldact
+	- struct sigaction {
+               void     (*sa_handler)(int);
+               void     (*sa_sigaction)(int, siginfo_t *, void *);
+               sigset_t   sa_mask;
+               int        sa_flags;
+               void     (*sa_restorer)(void);
+           };
+		- sa_handler - the signal handler
+			- SIG_DFL - set to default signal handler
+			- SIG_IGN - the signal is ignored
+			- pointer to a signal handling function void fun(int sig);
 
 ## file descriptor handling
 - lseek
@@ -310,19 +423,19 @@ see [Endianness](## Endianness)
 	- stats the file pointed to by path and fills in buf.
 	- the file to be stat-ed is specified by the file descriptor fd.
 	- struct stat {
-		dev_t     st_dev;     /* ID of device containing file */
-		ino_t     st_ino;     /* inode number */
-		mode_t    st_mode;    /* protection */
+		dev_t	 st_dev;	 /* ID of device containing file */
+		ino_t	 st_ino;	 /* inode number */
+		mode_t	st_mode;	/* protection */
 		nlink_t   st_nlink;   /* number of hard links */
-		uid_t     st_uid;     /* user ID of owner */
-		gid_t     st_gid;     /* group ID of owner */
-		dev_t     st_rdev;    /* device ID (if special file) */
-		off_t     st_size;    /* total size, in bytes */
+		uid_t	 st_uid;	 /* user ID of owner */
+		gid_t	 st_gid;	 /* group ID of owner */
+		dev_t	 st_rdev;	/* device ID (if special file) */
+		off_t	 st_size;	/* total size, in bytes */
 		blksize_t st_blksize; /* blocksize for file system I/O */
 		blkcnt_t  st_blocks;  /* number of 512B blocks allocated */
-		time_t    st_atime;   /* time of last access */
-		time_t    st_mtime;   /* time of last modification */
-		time_t    st_ctime;   /* time of last status change */
+		time_t	st_atime;   /* time of last access */
+		time_t	st_mtime;   /* time of last modification */
+		time_t	st_ctime;   /* time of last status change */
 		};
 	- returns
 		- 0 on success
@@ -347,10 +460,10 @@ see [Endianness](## Endianness)
 	- int poll(struct pollfd *fds, nfds_t nfds, int timeout);
 		- fds is an array of structures of the following form
 			struct pollfd {
-               int   fd;         /* file descriptor */
-               short events;     /* requested events */
-               short revents;    /* returned events */
-           };
+			   int   fd;		 /* file descriptor */
+			   short events;	 /* requested events */
+			   short revents;	/* returned events */
+		   };
 			- fd: contains a file descriptor for an open file
 			- events: input paramater, a bit mask specifying the events the application is interested in for the fd
 			- revents: output parameter, filled by the kernel with the events that actually occured

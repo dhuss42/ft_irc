@@ -11,6 +11,7 @@
 #include <arpa/inet.h> // inet_addr
 #include <poll.h>
 #include <fstream>
+#include <signal.h>
 
 
 #define RED "\033[0;31m"

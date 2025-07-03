@@ -8,6 +8,7 @@ int	main()
 	int sockfd;
 	int	acceptfd;
 	sockaddr_in addr;
+	int counter = 0;
 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd == -1)
@@ -66,7 +67,6 @@ int	main()
 	else
 		std::cout << GREEN "created accepted Socket" WHITE << std::endl;
 
-	// currently makes a problem
 	if (fcntl(acceptfd, F_SETFL, O_NONBLOCK) == -1)
 	{
 		perror(RED "Error: listen" WHITE);
@@ -76,32 +76,45 @@ int	main()
 	}
 
 	bool loop = true;
+	char buffer[200];
+	pollfd mypoll;
+	memset(&mypoll, 0, sizeof(mypoll));
+	mypoll.events = POLL_IN;
+	mypoll.fd = acceptfd;
 	while (loop)
 	{
-
-		char buffer[200];
-		std::memset(buffer, 0 , sizeof(buffer));
-		size_t received = 0;
-		received = recv(acceptfd, buffer, sizeof(buffer), 0);
-		if (received <= 0)
+		int ret = poll(&mypoll, 1, 100);
+		if (ret == -1)
 		{
-			perror( RED "recv" RESET);
+			perror(RED "poll" WHITE);
 			break ;
 		}
+		else if (ret == 0)
+			counter++;
 		else
 		{
-			std::cout << "number of chars " << received << std::endl;
-			buffer[received] = '\0';
-			if (strcmp(buffer, "EXIT") == 0)
-				break ;
-			else
-				std::cout << "Received: " << buffer << std::endl;
-
-			const char* reply = "Message Received";
-			if (send(acceptfd, reply, strlen(reply), 0) <= 0)
+			std::memset(buffer, 0 , sizeof(buffer));
+			size_t received = 0;
+			received = recv(acceptfd, buffer, sizeof(buffer), 0);
+			if (received <= 0)
 			{
-				perror( RED "send" RESET);
+				perror( RED "recv" RESET);
 				break ;
+			}
+			else
+			{
+				buffer[received] = '\0';
+				if (strcmp(buffer, "EXIT") == 0)
+					break ;
+				else
+					std::cout << "It took " << counter * 100 << " milliseconds to receive: " << buffer << std::endl;
+
+				const char* reply = "Message Received";
+				if (send(acceptfd, reply, strlen(reply), 0) <= 0)
+				{
+					perror( RED "send" RESET);
+					break ;
+				}
 			}
 		}
 	}

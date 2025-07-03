@@ -8,6 +8,15 @@
 	[] new concepts
 [] reread subject with new information
 [] look up RFC 2810–2813 (updated IRC protocol specifications)
+[x] IRC architecture
+	- https://www.rfc-editor.org/rfc/rfc2810.html
+- IRC Server Protocol
+	- https://www.rfc-editor.org/rfc/rfc2813
+- IRC client Protocol
+	- https://www.rfc-editor.org/rfc/rfc2810.html#ref-IRC-CLIENT
+- Channel Management
+	- https://www.rfc-editor.org/rfc/rfc2811
+[] install client and connect to an IRC server and play around
 [] create a general structure
 [] divide project
 
@@ -34,8 +43,27 @@
 - error when empty message
 
 ## ====== Day 3 == 02.07 ======
-- defined all unknown functions mentioned in the subject
+- defined unknown functions mentioned in the subject
+	- epoll()
+		- https://www.youtube.com/watch?v=O-yMs3T0APU
+	- lseek()
+		- https://www.youtube.com/watch?v=20Gs3UpP0t4
 - worked on some example functions
 - added new concept:
 	- Endianness
 - thought about a first general structure
+
+## ====== Day 4 == 03.07 ======
+- fixed example functions (server) bow using poll and fcntl correctly
+- defined unknown functions mentioned in subject
+	- signals
+		- introduction
+			- https://www.youtube.com/watch?v=5We_HtLlAbs&list=PLfqABt5AS4FkW5mOn2Tn9ZZLLDwA3kZUY&index=16&pp=iAQB
+		- stopping and continuing execution of processes
+			- https://www.youtube.com/watch?v=3MZjaZxZYrE&list=PLfqABt5AS4FkW5mOn2Tn9ZZLLDwA3kZUY&index=17
+		- sigaction and why not to use signal
+			- https://www.youtube.com/watch?v=jF-1eFhyz1U&list=PLfqABt5AS4FkW5mOn2Tn9ZZLLDwA3kZUY&index=19
+- read  Internet Relay Chat: Architecture Documentation
+	- https://www.rfc-editor.org/rfc/rfc2810.html
+- read Internet Relay Chat: Server Protocol until 3.3 Messages
+	- https://www.rfc-editor.org/rfc/rfc2813#section-10
