@@ -107,7 +107,50 @@
 			- incorrect privileges
 		- if full set of parameters
 			- each must be checked and appropriate responses sent to the client
+	- Join message (4.2.1)
+		- used by client to start listening a specific channel
+		- checked by local server if client is permitted to join
+	- Mode message (4.2.3)
+		- allows both users and channels to have their mode changed
+		- when parsing these it is recommended to parse the enitre message, and then pass on the changes
+	
+- Connection 'Liveness'
+	- server polls each of its connections
+		- PING command is used if the server doesn't get a response from its peer in a given amoun of time
+		- if connection doesn't respond in time its connection is closed
 
+- Accepting a client to server connection
+	- Users (5.2.1)
+		- When server registers a new user connect it sends:
+			- user identifiers upon which it was registered
+			- the server name and version
+			the server birth information
+			- available user and channel modes
+			- introductory message
+			- other things I don't quite understand
+	- Services (5.2.2)
+		- when new service connection is made same requirements as for user count
+		- different replies are sent
+
+- Terminating server-client connections
+	- When client connection closes a QUITE message is generated on behalf of the cliebt by the server. No other message is generated or used.
+
+- Track nickname changes (5.6)
+	- servers keep history of nickname changes
+	- Messages which must trace nick changes are
+		- KILL (the nick being dosconnected)
+		- MODE
+		- KICK (the nick being removes from channel)
+	- server first checks for existance of nickname
+	- then check its history to see who that nick now belongs to
+
+- Tracking recently used nicknames (5.7)
+	- Nickname Delay
+		- servers keep track of nicknames which were recently used and were relesed as the result of a KILL message. 
+		- Those nicknames are then unavailable to the server clients and cannot be re-used (even though not used at that time) for a certain period of time
+
+- Flood control of clients 5.8
+	- algorithm that avoids spaming of clients and services
 
 ### IRC client
 - IRC client
@@ -115,11 +158,76 @@
 	- A client is anything connecting to a server that is not another server
 	- User Clients
 		-  programs providing a text based interface that is used to communicate interactively via IRC
+			- Operators
+				- to keep order within IRC network
+					- basic network tasks, disconnecting and reconnecting servers as needed
 	- Service Clients
 		- not used manually or for talking
 		- limited access to chat functions of the protocol
 		- more access to private data from server
 		- provide some kind of service to users like collecting statistics about the origin of users conencted on the IRC network
+	- Channels
+		- names begin with &, #, +, !
+			- define chanel types
+			- irrelevant for client-server protocol
+		- length up 50 chars
+			- no spaces
+			- no comma
+			- no ctrl g or ASCII 7
+		- channel names are case insensitive
+
+- Client to server connections
+	- Character codes
+		- message can be up to 512 bytes total including the delimiters
+			- max of 510 characters
+		- messages might arrive split or together because TCP does not preserve message boundaries
+		- IRC uses control codes the sequence \r\n → carriage return + line feed to delimit messages.
+		- parse the incoming stream by looking for the delimiters
+	- Messages (PARSING OF COMMANDS 2.3)
+		- consist of three main parts all separated by a space
+			- prefix (optional)
+				- :<prefix>
+				- indicates origin 
+				- usually only sent by servers
+				- users should only use it with their nickname
+			- command
+				- either a named command JOIN, PRIVMSG or a three digit numeric code like 001 etc
+			- command parameters (max 15)
+	- Message format
+		- empty message are silently ignored
+	- Numeric replies (2.4)
+		- messages sent to server usually generate reply
+		- most common reply is numeric
+			- used for errors and normal replies
+			- one message consisting of
+				- sender prefix
+				- three digit numeric
+				- target of the reply
+			- same as message just that keyword is numeric
+			- list of replies (5.)
+- Message Details (3) RELEVANT FOR PARSER
+	- ERR_NO_SUCHSERVER
+		- target of message could not be found
+		- server musst not send any other replies any other replies after this error
+		- server parses the complete message of the client and returns appropriate errors
+	- Channel operator Commands that are mandatory
+		- KICK
+			- Eject a client from the channel
+		- INVITE
+			- Invite a client to a channel
+		- TOPIC
+			- Change r view channel topic
+		- MODE
+			- Change the channel's mode
+				- i set/remove Invite-only channel
+				- t set/remove the restrictions of the TOPIC command to channel operators
+				- k set/remomve the channel key(password)
+				- o give/take channel operator privilege
+				- l set/remove the user limit to channel
+- optional features for messages (4)
+- Reply messages (5)
+
+
 
 - Architecture
 	- IRC network is a group of severs connected to each other
@@ -170,6 +278,8 @@
 
 - multiplexing
 	- at the moment I think it refers to a single message from one user being spread to all users in the same channel
+
+- TCP
 
 # new external functions
 
@@ -291,10 +401,7 @@ send and recv both block execution until data has been sent and received respect
 - getprotobyname
 	-  #include <netdb.h>
 	- struct protoent *getprotobyname(const char *name);
-	-  The getprotobyname() function shall search the database from the
-	beginning and find the first entry for which the protocol name
-	specified by name matches the p_name member, opening and closing a
-	connection to the database as necessary.
+	-  The getprotobyname() function shall search the database from the beginning and find the first entry for which the protocol name specified by name matches the p_name member, opening and closing a connection to the database as necessary.
 	- returns a pointer to a protoent structure if the
 	   requested entry was found, and a null pointer if the end of the
 	   database was reached or the requested entry was not found.
@@ -577,30 +684,18 @@ Ascend all 7 Layers
 	- Status connected
 	- but at the same time the original socket is maintaied that will contine to listen for other connections on that port
 
-## Server Functions
+## Order of Server Functions
 
-2. Create a socket - socket()
-	-
-3. Bind the socket - bind()
-	-
-4. Listen on the socket - listen()
-	-
-5. Accept a connection - accept()
-	-
-6. Send and receive data - recv(), send()
-- send
-	-
-- recv
-	-
-7. Disconnect - closes()
+1. Create a socket - socket()
+2. Bind the socket - bind()
+3. Listen on the socket - listen()
+4. Accept a connection - accept()
+5. Send and receive data - recv(), send()
+6. Disconnect - closes()
 
-## Client Functions
+## Order of Client Functions
 
-2. Create a socket - socket()
-3. connected to the server - connect()
-4. Send and receive data - recv(), send()
-- send
-	-
-- recv
-	-
-5. Disconnect - closes()
+1. Create a socket - socket()
+2. connected to the server - connect()
+3. Send and receive data - recv(), send()
+4. Disconnect - closes()

@@ -10,13 +10,14 @@
 [] look up RFC 2810–2813 (updated IRC protocol specifications)
 [x] IRC architecture
 	- https://www.rfc-editor.org/rfc/rfc2810.html
-- IRC Server Protocol
+[x] IRC Server Protocol
 	- https://www.rfc-editor.org/rfc/rfc2813
-- IRC client Protocol
-	- https://www.rfc-editor.org/rfc/rfc2810.html#ref-IRC-CLIENT
-- Channel Management
+[x] IRC client Protocol
+	- https://www.rfc-editor.org/rfc/rfc2812
+[] Channel Management
 	- https://www.rfc-editor.org/rfc/rfc2811
 [] install client and connect to an IRC server and play around
+	- https://www.irchelp.org/faq/new2irc.html 
 [] create a general structure
 [] divide project
 
@@ -65,5 +66,18 @@
 			- https://www.youtube.com/watch?v=jF-1eFhyz1U&list=PLfqABt5AS4FkW5mOn2Tn9ZZLLDwA3kZUY&index=19
 - read  Internet Relay Chat: Architecture Documentation
 	- https://www.rfc-editor.org/rfc/rfc2810.html
-- read Internet Relay Chat: Server Protocol until 3.3 Messages
+- read Internet Relay Chat: Server Protocol (skipped parts of 3 and 5 only server to server relevant I think),
 	- https://www.rfc-editor.org/rfc/rfc2813#section-10
+
+## ====== Day 5 == 04.07 ======
+- read Client Protocol Document
+	- https://www.rfc-editor.org/rfc/rfc2812 
+- worked on structure
+	- worked on structure for the server object
+	- worked on structure for the client objects
+	- worked on structure for main
+	- created directory structure and server related files
+	- added Makefile
+- thought about optional config file
+	- possibility to alter configuration of server without altering code
+	- requires additional file parsing
