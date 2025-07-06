@@ -46,8 +46,11 @@
 // 					create substring up to end of message
 //					pass to parser
 //					remove from buffer / remining bytes in buffer kept for next time (like get_next_line)
-//			parse commands
-//			carry out commands
+//			parse commands (strings)
+//				tokenise and store (container/array of strings)
+//			handle commands
+//				check permissions of client
+//				carry out commands
 // 				update server/client/channel state
 // 				send replies
 //	if client fd has .revents & (POLLHUB | POLLERR | POLLNVAL); means client called close() or exit, error occured on the socket(), invalid fd

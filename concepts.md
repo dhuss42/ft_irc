@@ -227,13 +227,113 @@
 - optional features for messages (4)
 - Reply messages (5)
 
+### IRC Channels
+- characterised by
+	- name
+		- up to 50 chars
+		- case insensitve
+		- names begin with &, #, +, ! (prefix)
+			- for different channel types
+		- no spaces
+		- no comma
+		- no ctrl g or ASCII 7
+		- colon is used as delimiter for channel mask
+	- properties
+	- current members
 
+- Prefixes
+	- & prefix
+		- local to the server where they are created
+	- + prefix
+		- channel does not support channel modes
+		- all modes are unset except the t channel flag
+	- ! prefix
+		- user that creates channel with ! is the channel creator
+		- user is automatically operator
+		- creator can change modes of channel with operators cannot
 
+- Channel properties
+	- each channel has it's own properties
+	- defined by channel modes
+		- can be manipulated by channel members
+		- modes affect how the server manages the channels
+
+- Priviledged Channel Members
+	- are allowed to perform these actions on channel
+		- INVITE 
+			- invites a client to an invite-only channel (mode +i)
+		- KICK
+			- Eject a client from the channel
+		- Mode
+			- Change the channel's mode, as well as members' privilieges
+		- PRIVMSG
+			- sending messages to the channel (mode +n, +m, +v)
+		- TOPIC
+			- change the channel topic in a mode +t channel
+
+- Channel Operators
+	- are considered to 'own' the channel
+		- shared among channel operators
+	- identified with @ next to nickname
+
+- Channel lifetime
+	- standard channels (&, #, +)
+		- created implicitly when the first user joins it
+		- cease to exist when last user leaves
+		- user who creates the channel is operator
+			- except for +
+	- safe channels (!)
+		- not implicitly created
+		- users send a special join command to the channel
+			- User only chooses part of the channel name
+				- server automaticlly prepends the user provided name with a channel identifier of 5 chars
+		- user automatically becomes channel creator
+		- server does not allow the creation of another channel with the same short name
+
+- Channel Modes (4.) (I only added the ones from the subject)
+	- i
+		- toggle invite-only channel flag
+		- only by channel operator, or if their mask matches Invite-list
+		- restricts usage of invite command
+	- t
+		- toggle the topic settable by channel operator only flag
+	- k
+		- set/remove channel key(password)
+		- channel key musst be made visible to the channel members in the reply sent by the server to a Mode query
+	- o
+		- give/ take channel operator priviledge
+	- l
+		- toggle userlimit
+		- when limit is reached server forbds local users to join the channel
+		- value of limit is only available to the channel members in the repl sent by the server to a Mode query
+
+- Tracking recently used channels (Channel Delay)
+	- applies to channels with # prefix
+	- if all channel members leave the channel, the channel becomes unavailable
+		- becomes available when a user joins or
+		- delay period has expiered
+			- channel ceases to exit and may be re-created
+			- duration should consider size user-wise and usual duration of networksplits
+
+- Safe Channels
+	- prefixed with !
+	- Channel Identifier
+		- current time in seconds since epoch is converted in a string of five characters using this base:
+			- "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+			- each character has a value starting from 0 for 'A' to 35 for '0'
+			- divide seconds by 36 and take the character (do it five times)
+			- last value will be the first, if there less than 5 numbers than it's padded with an A
+	- do not become unavailable
+	- i think the still have a time to live
+
+- Name Space
+	- server must forbid the creation of a new channel which has the same shortname of a channel currently existing
+
+### IRC Architecture
 - Architecture
 	- IRC network is a group of severs connected to each other
 	- A Single server is the simplest IRC network
 	- IRC protocol allows only for communication via the server not for client to client direct communication
-
 
 - IRC concepts
 	- 1 to 1 communication

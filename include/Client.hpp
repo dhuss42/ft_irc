@@ -17,7 +17,7 @@ class Client
 		//	username
 		//	hostname
 		//	modes
-		//	joined channels
+		//	joined channels map(channel name, *channels)
 		//	registration state
 
 		// optional considerations

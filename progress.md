@@ -7,19 +7,26 @@
 	[] create short test programms to understand new external functions
 	[] new concepts
 [] reread subject with new information
-[] look up RFC 2810–2813 (updated IRC protocol specifications)
+[x] look up RFC 2810–2813 (updated IRC protocol specifications)
 [x] IRC architecture
 	- https://www.rfc-editor.org/rfc/rfc2810.html
 [x] IRC Server Protocol
 	- https://www.rfc-editor.org/rfc/rfc2813
 [x] IRC client Protocol
 	- https://www.rfc-editor.org/rfc/rfc2812
-[] Channel Management
+[x] Channel Management
 	- https://www.rfc-editor.org/rfc/rfc2811
 [] install client and connect to an IRC server and play around
 	- https://www.irchelp.org/faq/new2irc.html 
-[] create a general structure
-[] divide project
+[x] create a general structure
+[x] divide project
+	- for two people
+		1. Handle Server, Clients and Channel state
+		2. Parse commands and carry out commands -> affect Channel state
+	- for three people
+		1. Handle, Server
+		2. parsing
+		3. Channel State
 
 ## ====== Day 1 == 25.06 ======
 - started reading subject (30min)
@@ -81,3 +88,9 @@
 - thought about optional config file
 	- possibility to alter configuration of server without altering code
 	- requires additional file parsing
+
+## ====== Day 6 == 06.07 ======
+- read Channel Management
+	- https://www.rfc-editor.org/rfc/rfc2811
+- created structure for channel class
+- finished first general structure (still needs details for parsing)

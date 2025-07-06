@@ -14,8 +14,9 @@ class Server
 		// portnumber
 		// password
 		// store pollfd structs inside a vector
-		// store channel objects inside a vector
-		// store client objects inside a vector
+		// store channel objects inside a map or unorded map because faster
+		// store client objects inside a map
+		// map pollfd.fd to client object
 	public:
 		Server();
 		~Server();
