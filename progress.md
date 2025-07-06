@@ -94,3 +94,4 @@
 	- https://www.rfc-editor.org/rfc/rfc2811
 - created structure for channel class
 - finished first general structure (still needs details for parsing)
+- added some information about the user commands required by the subject

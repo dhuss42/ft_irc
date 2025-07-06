@@ -210,6 +210,54 @@
 		- target of message could not be found
 		- server musst not send any other replies any other replies after this error
 		- server parses the complete message of the client and returns appropriate errors
+	- ordinary commands for users
+		- be able to authenticate
+			- Password message (3.1.1)
+				- Command:		PASS
+				- Paramaeter:	<password>
+				- used to set a connection password
+				- has to be sent before any attempt to register is made
+					- before NICK and USER
+				- Numeric Replies:
+					- ERR_NEEDMOREPARAMS
+					- ERR_ALREADYREGISTERED
+		- set nickname
+			- Nick message (3.1.2)
+				- Command: NICK
+				- Parameters: <nickname>
+				- used to give a nickname or change the existing one
+		- set usernmae
+			- User message (3.1.3)
+				- Command: USER
+				- Parameters: <user> <mode> <unused> <realname>
+				- used at the beginning of connection to specify the username, hostname and realname of a new user
+				- <mode>
+					- more things
+		- join a channel
+			- Join message (3.2.1)
+				- Command: JOIN
+				- Parameters: ( <channel> *( "," <channel>) [ <key> *("," <key>)]) / "0"
+				- used to request to start listening to the specific channel
+				- server has to be able to accept list of comma separated join messages and process each channel individually
+				- server should send one Join message per channel, not a single one with all of them combined
+				- Join message is an event that everybody inside the channel is informed about
+					- also MODE, KICK, QUIT, PRIVMSG to channel
+				- when join is successfull
+					- user receives a join message
+					- receives the channel's topic
+					- receives list of users on the channel including the user joining
+					- when argument "0" is defined
+						- user leaves all currently joined channels
+		- send private messages
+			- private messages (3.3.1)
+				- Command: PRIVMSG
+				- Parameters: <msgtarget> <text to be sent>
+				- used to send private messages between users, as well as to send messages to channels
+		- maybe also part? not in subject but makes sense
+		- maybe also quit? not in subject but makes sense
+			- Command: QUIT
+			- Parameters: <quit message>
+			- client session is terminated, server sends error message to client
 	- Channel operator Commands that are mandatory
 		- KICK
 			- Eject a client from the channel
