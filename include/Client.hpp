@@ -6,6 +6,7 @@
 class Client
 {
 	private:
+		std::string _nick;
 		// 	socket fd
 		//	pointer to server
 
@@ -21,7 +22,7 @@ class Client
 		//	registration state
 
 		// optional considerations
-		// 		away message 
+		// 		away message
 		//		last activity timestamp
 
 	public:

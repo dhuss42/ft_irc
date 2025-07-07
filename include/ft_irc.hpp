@@ -8,15 +8,17 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <netinet/in.h> 
+#include <netinet/in.h>
 #include <arpa/inet.h>
 #include <poll.h>
 #include <signal.h>
 
 #include <iostream>
-#include <map>
+#include <stdexcept>
+#include <unordered_map>
 #include <vector>
 
+#include "Errors.hpp"
 /*=================== Colours ==================*/
 
 #define RESET   "\033[0m"

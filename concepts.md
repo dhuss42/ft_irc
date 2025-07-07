@@ -113,7 +113,7 @@
 	- Mode message (4.2.3)
 		- allows both users and channels to have their mode changed
 		- when parsing these it is recommended to parse the enitre message, and then pass on the changes
-	
+
 - Connection 'Liveness'
 	- server polls each of its connections
 		- PING command is used if the server doesn't get a response from its peer in a given amoun of time
@@ -146,7 +146,7 @@
 
 - Tracking recently used nicknames (5.7)
 	- Nickname Delay
-		- servers keep track of nicknames which were recently used and were relesed as the result of a KILL message. 
+		- servers keep track of nicknames which were recently used and were relesed as the result of a KILL message.
 		- Those nicknames are then unavailable to the server clients and cannot be re-used (even though not used at that time) for a certain period of time
 
 - Flood control of clients 5.8
@@ -187,7 +187,7 @@
 		- consist of three main parts all separated by a space
 			- prefix (optional)
 				- :<prefix>
-				- indicates origin 
+				- indicates origin
 				- usually only sent by servers
 				- users should only use it with their nickname
 			- command
@@ -308,7 +308,7 @@
 
 - Priviledged Channel Members
 	- are allowed to perform these actions on channel
-		- INVITE 
+		- INVITE
 			- invites a client to an invite-only channel (mode +i)
 		- KICK
 			- Eject a client from the channel
@@ -428,6 +428,11 @@
 	- at the moment I think it refers to a single message from one user being spread to all users in the same channel
 
 - TCP
+	- Manages how a message is broken down and reassembled
+	- Establishes a connection before sending data
+	- controls size and rate of data packets
+	- Uses IP to to transport packets
+	- Can also connect devices and apps
 
 # new external functions
 

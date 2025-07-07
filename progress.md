@@ -6,6 +6,7 @@
 	[x] new functions
 	[] create short test programms to understand new external functions
 	[] new concepts
+		[] video on TCP https://www.youtube.com/watch?v=F27PLin3TV0
 [] reread subject with new information
 [x] look up RFC 2810–2813 (updated IRC protocol specifications)
 [x] IRC architecture
@@ -17,7 +18,10 @@
 [x] Channel Management
 	- https://www.rfc-editor.org/rfc/rfc2811
 [] install client and connect to an IRC server and play around
-	- https://www.irchelp.org/faq/new2irc.html 
+	- https://www.irchelp.org/faq/new2irc.html
+	- set up video for Hexchat (recommended in slack)
+		- https://www.youtube.com/watch?v=G9_vvWTb8sI
+		- for campus it needs to be inside VM
 [x] create a general structure
 [x] divide project
 	- for two people
@@ -78,7 +82,7 @@
 
 ## ====== Day 5 == 04.07 ======
 - read Client Protocol Document
-	- https://www.rfc-editor.org/rfc/rfc2812 
+	- https://www.rfc-editor.org/rfc/rfc2812
 - worked on structure
 	- worked on structure for the server object
 	- worked on structure for the client objects
@@ -95,3 +99,13 @@
 - created structure for channel class
 - finished first general structure (still needs details for parsing)
 - added some information about the user commands required by the subject
+
+## ====== Day 7 == 07.07 ======
+- implemented error handling logic
+- fixed Makefile
+- implemeted parsing of args for port and password
+	- further considerations to make for password (documented in server.cpp)
+- started implementing server class including initialiser methods
+	- Server constructor
+	- initialising Server
+		- socket(), fcntl() bind(), listen()

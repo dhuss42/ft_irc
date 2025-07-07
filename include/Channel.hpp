@@ -8,6 +8,7 @@
 class Channel
 {
 	private:
+		std::string _name;
 		// name
 		// prefix (could also just be part of the name)
 		// mode

@@ -5,15 +5,24 @@
 //  service inherits from client
 //  moderator inherits from user
 
+Client::Client()
+{
+}
+
+Client::~Client()
+{
+
+}
+
 // Constructor
 // if a client makes a connection create Client object
 // instantiate attributes
 // 	socket fd
 //	pointer to server
-// 
+//
 //  read buffer for the client
 //  write buffer
-// 
+//
 //  a netwide unique identifier
 //	nickname
 //	username
@@ -21,12 +30,12 @@
 //	modes
 //	joined channels
 //	registration state
-// 
+//
 
 // optional considerations
-// 		away message 
+// 		away message
 //		last activity timestamp
-//		
+//
 
 // Destructor
 // 	close socket?
