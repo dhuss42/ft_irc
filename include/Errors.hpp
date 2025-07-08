@@ -25,6 +25,9 @@ enum class ErrorCode
 	E_FCNTL,
 	E_BND,
 	E_LSTN,
+	E_PLL,
+	E_ACCPT,
+	E_SCKEMPTY,
 };
 
 class Errors : public std::runtime_error

@@ -28,7 +28,10 @@ int	main(int argc, char*argv[])
 {
 	try {
 		if (argc == 3)
+		{
 			Server server(argv[1], argv[2]);
+			server.serverLoop();
+		}
 		else
 			throw (Errors(ErrorCode::E_ARGNBR));
 	}

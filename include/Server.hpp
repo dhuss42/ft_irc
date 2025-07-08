@@ -47,9 +47,12 @@ class Server
 		Server(std::string portNbr, std::string password);
 		~Server();
 
+		// make as much private / const / static as possible for clean code
 		void	parseArgs(std::string portNbr, std::string password);
 		void	initServer();
-		void	addToPollFd(pollfd* toAdd);
+		void	serverLoop();
+		void	handlePollRevents();
+		void	newClient();
 };
 
 

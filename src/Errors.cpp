@@ -40,6 +40,12 @@ std::string Errors::make_message(ErrorCode code)
 			return ("bind error");
 		case ErrorCode::E_LSTN:
 			return ("listen error");
+		case ErrorCode::E_PLL:
+			return ("pull error");
+		case ErrorCode::E_ACCPT:
+			return ("accept error");
+		case ErrorCode::E_SCKEMPTY:
+			return ("socket vector empty");
 		default:
 			return ("Unknown error");
 	}

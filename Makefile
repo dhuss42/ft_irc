@@ -6,6 +6,7 @@ OBJ_DIR = $(SRC_DIR)/obj
 CPPFILES = \
 	main.cpp \
 	Server.cpp \
+	Client.cpp \
 	Errors.cpp
 
 SRCS = $(addprefix $(SRC_DIR)/, $(CPPFILES))

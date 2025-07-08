@@ -23,8 +23,17 @@ Server::Server(std::string portNbr, std::string password)
 	initServer();
 }
 
+// should make a separate file for freeing all resources
+// maybe better to handle delete and filedescriptors in client class!!
 Server::~Server()
 {
+	// frees allocated client objects
+	for (auto iti = _clientfd.begin(); iti != _clientfd.end(); iti++)
+	{
+		if (iti->second)
+			delete(iti->second);
+	}
+	// closes all open file descriptors
 	for (auto it = _sockets.rbegin(); it != _sockets.rend(); it++)
 	{
 		if (it->fd >= 0)
@@ -59,6 +68,26 @@ void	Server::parseArgs(std::string portNbr, std::string password)
 	}
 }
 
+pollfd	createPollfd()
+{
+	pollfd sock;
+
+	memset(&sock, 0, sizeof(pollfd));
+	// maybe distinguish with if for different types for .events
+	sock.events = POLL_IN;
+
+	try {
+		if (fcntl(sock.fd, F_SETFL, O_NONBLOCK) == -1) // not sure if I can place this here or after socket()
+			throw (Errors(ErrorCode::E_FCNTL));
+		std::cout << GREEN "set sock.fd to nonblocking" WHITE << std::endl;
+	}
+	catch(const std::exception& e) {
+		Errors::handleErrors(e);
+	}
+	
+	return (sock);
+}
+
 // setup server object
 // open socket
 // 		socket()
@@ -70,19 +99,16 @@ void	Server::parseArgs(std::string portNbr, std::string password)
 // 		listen()
 void	Server::initServer()
 {
-	// maybe write a short method for this as it will be hapening all the time for client connections
-	pollfd	sockfd;
-	memset(&sockfd, 0, sizeof(pollfd));
-	sockfd.events = POLLIN;
+	pollfd sockfd = createPollfd();
 
 	try {
 		sockfd.fd = socket(AF_INET, SOCK_STREAM, 0);
 		if (sockfd.fd == -1)
 			throw (Errors(ErrorCode::E_SCKFD));
-		std::cout << GREEN "created socket" WHITE << std::endl;
-		if (fcntl(sockfd.fd, F_SETFL, O_NONBLOCK) == -1)
-			throw (Errors(ErrorCode::E_FCNTL));
-		std::cout << GREEN "set sockfd to nonblocking" WHITE << std::endl;
+		std::cout << GREEN "created sockfd" WHITE << std::endl;
+		// if (fcntl(sockfd.fd, F_SETFL, O_NONBLOCK) == -1)
+		// 	throw (Errors(ErrorCode::E_FCNTL));
+		// std::cout << GREEN "set sockfd to nonblocking" WHITE << std::endl;
 		if (bind(sockfd.fd, (sockaddr*)&_addr, sizeof(_addr)) == -1)
 			throw (Errors(ErrorCode::E_BND));
 		std::cout << GREEN "bind IP address and port to socket" WHITE << std::endl;
@@ -137,3 +163,83 @@ void	Server::initServer()
 //	if client fd has .revents & (POLLHUB | POLLERR | POLLNVAL); means client called close() or exit, error occured on the socket(), invalid fd
 // 		clean up client object
 // 		remove from pollfd
+
+void	Server::newClient()
+{
+	std::cout << "listening socket has revents & POLLIN" << std::endl;
+	pollfd newConnection = createPollfd();
+	newConnection.fd = accept(_sockets.at(0).fd, NULL, NULL); // not sure here with NULL NULL
+	if (newConnection.fd == -1)
+		throw (Errors(ErrorCode::E_ACCPT));
+	std::cout << GREEN "created accepted Socket" WHITE << std::endl;
+	//	check for password
+	Client* client = new Client();
+
+	_clientfd[newConnection.fd] = client;
+	_sockets.push_back(newConnection);
+	// if password invalid
+	// send message
+}
+
+// handles filedescriptor poll.revents()
+// _socket[0] is always listening socket
+// if its revents is POLL_IN
+// 	a new client is added
+// the other pollfds inside _socket are clients
+// if they send a message their revents is set to POLL_IN
+// 	server needs to handle receiving the message and also replying 
+// if their revents is POLLHUB POLLERR or POLLINVAL
+// 	connection is somehow lost and server needs to handle that + cleanup
+void	Server::handlePollRevents()
+{
+	if (_sockets.at(0).revents & POLL_IN) // could change to [0] because I know that this position in the array is filled and it is faster than .at because no checking
+	{
+		newClient();
+	}
+	else
+	{
+		for (auto it = _sockets.begin(); it != _sockets.end(); std::next(it))
+		{
+			if (it->revents & POLL_IN)
+			{
+				std::cout << "receiving message" << std::endl;
+			}
+			else if (it->revents & (POLLHUP | POLLERR | POLLNVAL)) 
+			{
+				std::cout << "connection lost" << std::endl;
+			}
+		}
+	}
+}
+
+// handles poll return values
+// if non zero it calls handlePollRevents()
+void	Server::serverLoop()
+{
+	int ret = 0;
+
+	while (true)
+	{
+		try {
+			if (!_sockets.empty())
+			{
+				// Returns a pointer to the first element of the vector's internal array
+				ret = poll(_sockets.data(), _sockets.size(), 0);
+				if (ret == -1)
+					throw (Errors(ErrorCode::E_PLL));
+				else if (ret == 0)
+					sleep(1);
+				else
+				{
+					std::cout << "poll returned non negative value" << std::endl;
+					handlePollRevents();
+				}
+			}
+			else
+				throw (Errors(ErrorCode::E_SCKEMPTY));
+		}
+		catch(const std::exception& e) {
+			Errors::handleErrors(e);
+		}
+	}
+}

@@ -109,3 +109,17 @@
 	- Server constructor
 	- initialising Server
 		- socket(), fcntl() bind(), listen()
+
+## ====== Day 8 == 08.07 ======
+- worked on server Loop
+	- it is now possible to connect with custom client using the same port number
+	- loop handle poll() return values if non negativ revents are considered
+		- checks for new client connection
+			- accepts connection
+			- creates new client object(is currently empty)
+			- stores client object together with corresponding fd in map
+			- stores fd in vector of pollfds together with socket
+		- currently only prints message for receiving message and connection lost (still need implementation)
+	- listening socket is first in vector of pollfds and connecting client pollfds follow
+- more error handling
+- some documentation of the methods
