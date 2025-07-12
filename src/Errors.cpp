@@ -46,6 +46,10 @@ std::string Errors::make_message(ErrorCode code)
 			return ("accept error");
 		case ErrorCode::E_SCKEMPTY:
 			return ("socket vector empty");
+		case ErrorCode::E_RCV:
+			return ("recv error");
+		case ErrorCode::E_SND:
+			return ("send error");
 		default:
 			return ("Unknown error");
 	}

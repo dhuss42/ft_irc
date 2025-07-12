@@ -123,3 +123,17 @@
 	- listening socket is first in vector of pollfds and connecting client pollfds follow
 - more error handling
 - some documentation of the methods
+
+## ====== Day 9 == 09.07 ====== (1h)
+- implemented receivingMsg methods that fills teh buffer until a certain char is encountered
+	- needs to be changed to the char sequence that is needed for IRC
+- implemented sendMSg method
+- implemented basic password authentication just for testing the logic
+
+## ====== Day 10 == 12.07 ====== (1h)
+- worked on client connections and receiving messages
+	- currently multiple clients can be connected
+	- multiple messages can be sent
+	- problem when disconnecting client with crtl + c after entering the password, but not before entering password
+- receiveMsg function needs to be updated to break loop at correct char sequence
+	- this is a bigger thing that needs to be tackled

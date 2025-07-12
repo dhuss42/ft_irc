@@ -28,6 +28,8 @@ enum class ErrorCode
 	E_PLL,
 	E_ACCPT,
 	E_SCKEMPTY,
+	E_RCV,
+	E_SND,
 };
 
 class Errors : public std::runtime_error

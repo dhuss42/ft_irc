@@ -12,6 +12,7 @@ class Client
 
 		//  read buffer for the client
 		//  write buffer
+		std::string _buffer;
 
 		//  a netwide unique identifier
 		//	nickname
@@ -28,8 +29,13 @@ class Client
 	public:
 		Client();
 		~Client();
+
+	std::string getNick();
+
+	char*	getBufferPtr(void);
+	size_t	getBufferSize(void);
+	std::string getBuffer(void);
+	void	setBuffer(uint8_t ascii, size_t len);
 };
-
-
 
 #endif

@@ -1,5 +1,43 @@
 #include "test.hpp"
 
+void	receiveMsg(int &connection)
+{
+	char buffer[512];
+	size_t received = 0;
+	memset(buffer, 0, sizeof(buffer)); // could this lead to dataraces? when many connections
+
+	bool	loop = true;
+	int		last = 0;
+	int		tmp = 0;
+	while (loop)
+	{
+		received = recv(connection, buffer, sizeof(buffer), 0);
+		if (received <= 0)
+		{
+			perror("recv");
+			exit(EXIT_FAILURE);
+		}
+		else
+		{
+			buffer[received] = '\0';
+			tmp = received + last;
+			last = tmp;
+			for (int i = 0; i < tmp; i++)
+			{
+				if (buffer[i] == 't')
+				{
+					loop = false;
+					break ;
+				}
+			}
+		}
+		std::cout << buffer << std::endl;
+		// loop backwards over the string and locate the two signs
+		// if the two chars are found next to each other break the loop
+	}
+}
+
+
 // creates a socket
 // connects to the server
 
@@ -32,26 +70,28 @@ int	main()
 	bool loop = true;
 	while (loop)
 	{
-		char buffer[200];
+		std::string buffer(512, 0);
 		std::cout << "enter message: ";
-		std::cin.getline(buffer, 200);
-		if (strcmp(buffer, "EXIT") == 0)
+		std::getline(std::cin, buffer);
+		buffer += "\r\n";
+		if (strcmp(buffer.c_str(), "EXIT") == 0)
 			break ;
-		else if (send(clientSockfd, buffer, strlen(buffer), 0) <= 0)
+		else if (send(clientSockfd, buffer.c_str(), strlen(buffer.c_str()), 0) <= 0)
 		{
 			perror( RED "send" RESET);
 			break ;
 		}
-	
-		std::memset(buffer, 0, 200);
-		size_t received = recv(clientSockfd, buffer, 17, 0);
-		if (received <= 0)
-		{
-			perror( RED "recv" RESET);
-			break ;
-		}
-		buffer[received] = '\0';
-		std::cout << buffer << std::endl;
+
+		receiveMsg(clientSockfd);
+		// std::memset(buffer, 0, 200);
+		// size_t received = recv(clientSockfd, buffer, 17, 0);
+		// if (received <= 0)
+		// {
+		// 	perror( RED "recv" RESET);
+		// 	break ;
+		// }
+		// buffer[received] = '\0';
+		// std::cout << buffer << std::endl;
 
 	}
 

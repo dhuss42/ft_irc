@@ -38,6 +38,9 @@ class Server
 		// store channel objects inside a map or unorded map because faster
 		std::unordered_map <std::string, Channel* > _channelList;
 
+		// for receiving incoming messages
+		char _buffer[512]; // don't need should be in client
+
 		// store pollfd structs inside a vector
 		std::vector <pollfd> _sockets;
 		// map pollfd.fd to client object
@@ -52,7 +55,10 @@ class Server
 		void	initServer();
 		void	serverLoop();
 		void	handlePollRevents();
-		void	newClient();
+		void	newClient();	
+
+		void	receiveMsg(pollfd &connection, Client *client);
+		void	sendMsg(pollfd &connection, std::string reply);
 };
 
 

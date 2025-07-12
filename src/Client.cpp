@@ -5,13 +5,39 @@
 //  service inherits from client
 //  moderator inherits from user
 
-Client::Client()
+Client::Client() : _nick("default"), _buffer(512, 0)
 {
 }
 
 Client::~Client()
 {
 
+}
+
+
+std::string Client::getNick(void)
+{
+	return (_nick);
+}
+
+std::string Client::getBuffer(void)
+{
+	return (_buffer);
+}
+
+char* Client::getBufferPtr(void)
+{
+	return (_buffer.data());
+}
+
+size_t Client::getBufferSize(void)
+{
+	return (_buffer.size());
+}
+
+void	Client::setBuffer(uint8_t ascii, size_t len)
+{
+	std::memset(_buffer.data(), ascii, len);
 }
 
 // Constructor
