@@ -5,22 +5,67 @@
 //  service inherits from client
 //  moderator inherits from user
 
-Client::Client() : _nick("default"), _buffer(512, 0)
+Client::Client() : _nick("default")
 {
 }
 
 Client::~Client()
 {
-
+	std::cout << CYAN << "[" << _nick << "]: disconnected" WHITE << std::endl;
 }
 
+bool	Client::getRegistered(void)
+{
+	return (_registered);
+}
+
+void	Client::setRegistered(bool state)
+{
+	_registered = state;
+}
+
+bool	Client::getNickSet(void)
+{
+	return (_nickSet);
+}
+
+void	Client::setNickSet(bool state)
+{
+	_nickSet = state;
+}
+
+bool	Client::getUsernameSet(void)
+{
+	return (_usernameSet);
+}
+
+void	Client::setUsernameSet(bool state)
+{
+	_usernameSet = state;
+}
+
+
+void	Client::setSocket(int* socket)
+{
+	_socket = socket;
+}
+
+int Client::getSocket(void)
+{
+	return (*_socket);
+}
 
 std::string Client::getNick(void)
 {
 	return (_nick);
 }
 
-std::string Client::getBuffer(void)
+void	Client::setNick(std::string str)
+{
+	_nick = str;
+}
+
+std::string& Client::getBuffer(void)
 {
 	return (_buffer);
 }
@@ -35,9 +80,24 @@ size_t Client::getBufferSize(void)
 	return (_buffer.size());
 }
 
-void	Client::setBuffer(uint8_t ascii, size_t len)
+void	Client::setBufferToValue(uint8_t ascii, size_t len)
 {
 	std::memset(_buffer.data(), ascii, len);
+}
+
+void	Client::setBuffer(std::string str)
+{
+	_buffer = str;
+}
+
+void	Client::setRemainder(std::string str)
+{
+	_remainder = str;
+}
+
+std::string	Client::getRemainder(void)
+{
+	return(_remainder);
 }
 
 // Constructor

@@ -77,7 +77,7 @@ pollfd	createPollfd()
 	sock.events = POLL_IN;
 
 	try {
-		if (fcntl(sock.fd, F_SETFL, O_NONBLOCK) == -1) // not sure if I can place this here or after socket()
+		if (fcntl(sock.fd, F_SETFL, O_NONBLOCK) == -1)
 			throw (Errors(ErrorCode::E_FCNTL));
 		std::cout << GREEN "set sock.fd to nonblocking" WHITE << std::endl;
 	}
@@ -105,13 +105,10 @@ void	Server::initServer()
 		sockfd.fd = socket(AF_INET, SOCK_STREAM, 0);
 		if (sockfd.fd == -1)
 			throw (Errors(ErrorCode::E_SCKFD));
-		std::cout << GREEN "created sockfd" WHITE << std::endl;
 		if (bind(sockfd.fd, (sockaddr*)&_addr, sizeof(_addr)) == -1)
 			throw (Errors(ErrorCode::E_BND));
-		std::cout << GREEN "bind IP address and port to socket" WHITE << std::endl;
-		if (listen(sockfd.fd, 32) == -1) // now listens for 32 connections
+		if (listen(sockfd.fd, 32) == -1)
 			throw (Errors(ErrorCode::E_LSTN));
-		std::cout << GREEN "listening on socket" WHITE << std::endl;
 		_sockets.push_back(sockfd);
 	}
 	catch(const std::exception& e) {
@@ -162,50 +159,80 @@ void	Server::initServer()
 // 		remove from pollfd
 
 // receive messages
-void	Server::receiveMsg(pollfd &connection, Client *client)
+int	Server::receiveMsg(pollfd &connection, Client *client)
 {
-	int received = 0;
+	std::cout << MAGENTA "[DEBUGG] ===== receiveMsg ======= " WHITE << std::endl;
+	char	tmp[512] = {0};
+	int		received = recv(connection.fd, tmp, sizeof(tmp), 0);
 
-	client->setBuffer(0, 512); // not sure about reseting buffer here, could be problematic when multiple /r/n sequences in one message
-	bool	loop = true;
-	int		last = 0;
-	int		tmp = 0;
-	while (loop)
+	if (received == -1)
+		throw (Errors(ErrorCode::E_RCV)); // probably should not exit here
+	else if (received == 0)
 	{
-		received = recv(connection.fd, client->getBufferPtr(), client->getBufferSize(), 0);
-		if (received == -1)
-			throw (Errors(ErrorCode::E_RCV)); // probably should not exit here
-		else if (received == 0)
+		std::cout << CYAN << "[" << client->getNick() << "] closed their connection" << std::endl;
+		return (-1);
+	}
+	else
+	{
+		// std::cout << YELLOW "[DEBUGG] recv is non negative" WHITE << std::endl;
+		
+		std::string fullBuffer = client->getRemainder() + std::string(tmp, received);
+		client->setRemainder("");
+		
+		std::size_t pos;
+		while ((pos = fullBuffer.find("\r\n")) != std::string::npos)
 		{
-			std::cout << CYAN << "[" << client->getNick() << "] closed their connection" << std::endl;
-			loop = false;
+			client->setBuffer(fullBuffer.substr(0, pos));
+			std::cout << BOLDCYAN << "[DEBUG] buffer: " << client->getBuffer() << RESET << std::endl;
+			pseudoParser(client->getBuffer(), client);
+			fullBuffer = fullBuffer.substr(pos + 2);;
 		}
-		else
-		{
-			tmp = received + last;
-			last = tmp;
-			for (int i = 0; i < tmp; i++)
-			{
-				if (client->getBufferPtr()[i] == '\r' && client->getBuffer()[i + 1] == '\n') // change to actual value $'\r\n'
-				{
-					loop = false;
-					break ;
-				}
-			}
-		}
-		// loop backwards over the string and locate the two signs
-		// if the two chars are found next to each other break the loop
+		client->setRemainder(fullBuffer);
+		if (!fullBuffer.empty())
+			std::cout << BOLDCYAN << "[DEBUG] remainder: " << client->getRemainder() << RESET << std::endl;
 	}
 	std::cout << GREEN << "[" << client->getNick() << "]" << " received: " << client->getBuffer() << WHITE << std::endl;
+	client->setBufferToValue(0, client->getBufferSize());
+	return (0);
 }
 
 // uncertain about the throw, wether they bubble up correctly to the next catch
 // send messages
-void	Server::sendMsg(pollfd &connection, std::string reply)
+void	Server::sendMsg(int connection, std::string reply)
 {
-	if (send(connection.fd, reply.c_str(), std::strlen(reply.c_str()), 0) <= 0) // uncertain about the zero at the moment
+	reply = ":" + _name + " " + reply + "\r\n";
+	if (send(connection, reply.c_str(), reply.size(), 0) <= 0) // uncertain about the zero at the moment
 	{
 		throw (Errors(ErrorCode::E_SND));
+	}
+}
+
+void Server::pseudoParser(std::string message, Client* client)
+{
+	std::size_t pos = 0;
+	(void) pos;
+
+	if (message.find("PASS") == 0)
+	{
+		pos = message.find(" ");
+		// compare what follows the space to the password
+		// set registered to true
+		client->setRegistered(true);
+	}
+	else if (message.find("CAP LS 302")  == 0)
+	{
+		sendMsg(client->getSocket(), "CAP * LS :");
+	}
+	else if (message.find("NICK") == 0)
+	{
+		client->setNick(message.substr(6));
+		// copy every following space into client Nick
+		client->setNickSet(true);
+	}
+	else if (message.find("USER") == 0)
+	{
+		// copy every following space into client User
+		client->setUsernameSet(true);
 	}
 }
 
@@ -217,28 +244,69 @@ void	Server::newClient()
 	std::cout << "[DEBUGG] listening socket has revents & POLLIN" << std::endl;
 	pollfd newConnection = createPollfd();
 
-	newConnection.fd = accept(_sockets.at(0).fd, NULL, NULL); // not sure here with NULL NULL
+	newConnection.fd = accept(_sockets[0].fd, NULL, NULL); // not sure here with NULL NULL
 	if (newConnection.fd == -1)
 		throw (Errors(ErrorCode::E_ACCPT));
 	else
 	{
 		std::cout << GREEN "[DEBUGG] created accepted Socket" WHITE << std::endl;
 		Client* client = new Client();
-		receiveMsg(newConnection, client);
+		client->setSocket(&newConnection.fd);
 		
-		if (std::strcmp(client->getBufferPtr(), _password.c_str()) == 0)
+		// authentication process
+		// for irssi multiple messages are sent by the client first
+		// 1. checks for capabilities
+		// 	-> requires server to send capabilities
+		// 		:ircserv CAP * LS :
+		// 2. premature JOIN message
+		// 3. CAP END
+		// 4. PASS hallo
+		// 5. NICK irssitest
+		// 6. USER david david 127.0.0.1 :David
+		while(!(client->getNickSet() && client->getUsernameSet() && client->getRegistered()))
 		{
-			std::cout << GREEN "[DEBUGG] password is correct" WHITE << std::endl;
-			sendMsg(newConnection, GREEN "password is correct" WHITE);
-	
-			_clientfd[newConnection.fd] = client;
-			_sockets.push_back(newConnection);
+			if (receiveMsg(newConnection, client) == -1)
+				return ;
 		}
-		else
-		{
-			std::cout << RED "[DEBUGG] password is incorrect" WHITE << std::endl;
-			sendMsg(newConnection, RED "password is incorrect" WHITE);
-		}
+		sendMsg(newConnection.fd, "001 " + client->getNick() + " :Welcome to the IRC server");
+
+
+
+		// also add nick and username after pw
+
+		// for (int counter = 2; counter > -1; counter--)
+		// {
+		// 	if (receiveMsg(newConnection, client) == -1)
+		// 		return ;
+		// 	std::cout << YELLOW "[DEBUGG] after recev MSG" WHITE << std::endl;
+		// 	if (std::strcmp(client->getBufferPtr(), _password.c_str()) == 0)
+		// 	{
+		// 		std::cout << GREEN "[DEBUGG] password is correct" WHITE << std::endl;
+		// 		sendMsg(newConnection, GREEN "password is correct" WHITE);
+				_clientfd[newConnection.fd] = client;
+				_sockets.push_back(newConnection);
+		// 		break ;
+		// 	}
+		// 	else
+		// 	{
+		// 		if (counter == 0)
+		// 		{
+		// 			sendMsg(newConnection, RED "entered passord incorrect 3 times" WHITE);
+		// 			std::cout << "[DEBUGG] entered passord incorrect 3 times" WHITE << std::endl;
+		// 			close(newConnection.fd);
+		// 			delete client;
+		// 			break ;
+		// 		}
+		// 		else
+		// 		{
+		// 			std::string msg = RED "password is incorrect. Remaining tries: " WHITE;
+		// 			msg += std::to_string(counter);
+		// 			std::cout << "[DEBUGG] " << msg <<  WHITE << std::endl;
+		// 			sendMsg(newConnection, msg);
+				// }
+			// }
+		// }
+
 	}
 	std::cout << YELLOW "[DEBUGG] exiting newClient()" WHITE << std::endl;
 }
@@ -254,25 +322,38 @@ void	Server::newClient()
 // 	connection is somehow lost and server needs to handle that + cleanup
 void	Server::handlePollRevents()
 {
-	if (_sockets.at(0).revents & POLL_IN) // could change to [0] because I know that this position in the array is filled and it is faster than .at because no checking
+	if (_sockets[0].revents & POLL_IN) // could change to [0] because I know that this position in the array is filled and it is faster than .at because no checking
 	{
 		newClient();
 	}
 	else
 	{
 		std::cout << YELLOW "[DEBUGG] entered else in handlePollRevents()" WHITE << std::endl;
-		for (auto it = _sockets.begin(); it != _sockets.end(); it++)
+		for (auto it = _sockets.begin(); it != _sockets.end();)
 		{
 			std::cout << YELLOW "[DEBUGG] entered for in handlePollRevents()" WHITE << std::endl;
 			if (it->revents & POLL_IN)
 			{
-				receiveMsg(*it, _clientfd[it->fd]);
-				sendMsg(*it, "[Server] Message receivedt");
+				if (receiveMsg(*it, _clientfd[it->fd]) != -1)
+				{
+					sendMsg(it->fd, "[Server] Message received");
+					++it;
+				}
+				else
+				{
+					close(it->fd);
+					_clientfd.erase(it->fd);
+					it = _sockets.erase(it);
+				}
 			}
 			else if (it->revents & (POLLHUP | POLLERR | POLLNVAL)) 
 			{
-				std::cout << "connection lost" << std::endl;
+				close(it->fd);
+				_clientfd.erase(it->fd);
+				it = _sockets.erase(it);
 			}
+			else
+				++it;
 		}
 	}
 	std::cout << YELLOW "[DEBUGG] exiting handlePollRevents()" WHITE << std::endl;

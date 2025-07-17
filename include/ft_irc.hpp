@@ -17,6 +17,9 @@
 #include <stdexcept>
 #include <unordered_map>
 #include <vector>
+#include <regex>
+#include <iomanip>
+#include <string>
 
 #include "Errors.hpp"
 /*=================== Colours ==================*/

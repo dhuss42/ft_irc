@@ -18,10 +18,9 @@
 [x] Channel Management
 	- https://www.rfc-editor.org/rfc/rfc2811
 [] install client and connect to an IRC server and play around
-	- https://www.irchelp.org/faq/new2irc.html
-	- set up video for Hexchat (recommended in slack)
-		- https://www.youtube.com/watch?v=G9_vvWTb8sI
-		- for campus it needs to be inside VM
+	- decided to use irssi
+	- https://modern.ircdocs.horse/#connection-registration
+		[] read this documentation for the correct protocol between the server and irssi
 [x] create a general structure
 [x] divide project
 	- for two people
@@ -137,3 +136,28 @@
 	- problem when disconnecting client with crtl + c after entering the password, but not before entering password
 - receiveMsg function needs to be updated to break loop at correct char sequence
 	- this is a bigger thing that needs to be tackled
+
+## ====== Day 11 == 17.07 ====== (7h)
+- fixed receiving messages
+- fixed closed connection on client side
+- trying connection with irssi
+	- https://modern.ircdocs.horse/#connection-registration
+		- documentation for the connection
+	- can connect
+	- sends CAP LS 302
+		- server capabilities makes it possible to connect when server does not posses the capabilities
+	- server responds with no capabilities
+	- client sends JOIN and CAP END
+- !!!! connecting irssi and ircserv works now !!!!
+	- irssi -c 127.0.0.1 -p 12345 -n irssitest -w hallo
+		- irssi -> launches the IRC client
+		- -c 127.0.0.1 Connects to server at IP localhost
+		- -p 12345 is the port
+		- -n sets nickname
+		- -w provides password
+	- sending the password, nick and user name work
+	- server also sends
+		- MODE +i
+		- WHOIS
+		- PING
+- next steps should be cleaning up the code and properly freeing resources when connections are closed

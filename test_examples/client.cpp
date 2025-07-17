@@ -24,7 +24,7 @@ void	receiveMsg(int &connection)
 			last = tmp;
 			for (int i = 0; i < tmp; i++)
 			{
-				if (buffer[i] == 't')
+				if (buffer[i] == '\r' && buffer[i + 1] == '\n')
 				{
 					loop = false;
 					break ;

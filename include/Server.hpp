@@ -28,6 +28,7 @@ class Channel;
 class Server
 {
 	private:
+		std::string _name = "irc_custom";
 		sockaddr_in	_addr;
 
 		// uint16_t	_portNbr;
@@ -57,9 +58,12 @@ class Server
 		void	handlePollRevents();
 		void	newClient();	
 
-		void	receiveMsg(pollfd &connection, Client *client);
-		void	sendMsg(pollfd &connection, std::string reply);
-};
+		int		receiveMsg(pollfd &connection, Client *client);
+		void	sendMsg(int connection, std::string reply);
+
+		// remove later only for authentication
+		void pseudoParser(std::string message, Client* client);
+	};
 
 
 #endif

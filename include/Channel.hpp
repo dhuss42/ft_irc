@@ -17,6 +17,10 @@ class Channel
 			// t(topic settable only by operator),
 			// k (password),
 			// l (userlimit)
+		bool	_inv;
+		bool	_topic;
+		bool	_pswrdTgle;
+		bool	_usrLmtTgl;
 		// password (if k is active)
 		// userlimit
 		// channel creator
