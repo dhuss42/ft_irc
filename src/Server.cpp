@@ -12,6 +12,9 @@
 
 #include "Server.hpp"
 
+/*----------------------*/
+/* Constructor			*/
+/*----------------------*/
 Server::Server(std::string portNbr, std::string password)
 {
 	std::memset(&_addr, 0, sizeof(_addr));
@@ -25,6 +28,9 @@ Server::Server(std::string portNbr, std::string password)
 
 // should make a separate file for freeing all resources
 // maybe better to handle delete and filedescriptors in client class!!
+/*----------------------*/
+/* Destructor			*/
+/*----------------------*/
 Server::~Server()
 {
 	// frees allocated client objects
@@ -45,6 +51,14 @@ Server::~Server()
 	// min length, special chars, not allowed chars, uppecase/lowercase, digit required?
 // also max length of the password?
 // also empty string = no password or error?
+/*----------------------------------------------------------------------*/
+/* parse both args														*/
+/*	- verify that portnbr is only digits								*/
+/*	- convert to int													*/
+/*	- verify that portnbr is withn valid range and usable				*/
+/*	- convert to network byte order with htons							*/
+/*		- done so that all machines understand the data consistantly	*/
+/*----------------------------------------------------------------------*/
 void	Server::parseArgs(std::string portNbr, std::string password)
 {
 	try {
@@ -68,6 +82,12 @@ void	Server::parseArgs(std::string portNbr, std::string password)
 	}
 }
 
+/*--------------------------------------*/
+/* Creates a pollfd set to 0			*/
+/*	- create pollfd						*/
+/*	- memset it to 0 so no trash		*/
+/*	- set to non-blocking				*/
+/*--------------------------------------*/
 pollfd	createPollfd()
 {
 	pollfd sock;
@@ -79,7 +99,7 @@ pollfd	createPollfd()
 	try {
 		if (fcntl(sock.fd, F_SETFL, O_NONBLOCK) == -1)
 			throw (Errors(ErrorCode::E_FCNTL));
-		std::cout << GREEN "set sock.fd to nonblocking" WHITE << std::endl;
+		// std::cout << GREEN "set sock.fd to nonblocking" WHITE << std::endl;
 	}
 	catch(const std::exception& e) {
 		Errors::handleErrors(e);
@@ -88,15 +108,14 @@ pollfd	createPollfd()
 	return (sock);
 }
 
-// setup server object
-// open socket
-// 		socket()
-// set to non blocking
-// 		fctnl()
-// bind IP and port to socket
-// 		bind()
-// listen for incoming connections
-// 		listen()
+/*------------------------------------------*/
+/* initialise Server Object					*/
+/*	- create a pollfd set to non-blocking	*/
+/*	- open listening socket					*/
+/*	- bin IP and port to socket				*/
+/*	- listing for incoming connections		*/
+/*	- add to sockets vector					*/
+/*------------------------------------------*/
 void	Server::initServer()
 {
 	pollfd sockfd = createPollfd();
@@ -116,21 +135,13 @@ void	Server::initServer()
 	}
 }
 
-// create pollfd() vector
-// 		1. listening socket()
-//			.events = POLLIN for readable events
-//		2-n. client FDs when they connect
-// 			.events = POLLIN
-
-
 // update pollfd() vector
 // 	add new client fds
 //		pushback new client fds
 //	remove disconnected client fds
 // 		erase client fd
 
-
-// Server loop
+// Server loop logic
 // monitor socketfd and connected clients fd with poll()
 // 	if socket fd has .revents & POLLIN a new client wants to connect
 // 		accept() waiting clients
@@ -158,7 +169,18 @@ void	Server::initServer()
 // 		clean up client object
 // 		remove from pollfd
 
-// receive messages
+/*--------------------------------------------------------------------------*/
+/* receives messages from client											*/
+/*	- recv stores msg in tmp buffer 										s*/
+/*	- returns -1 on error and 0 on closed connection						*/
+/*	- else returns nbr of bytes received 									*/
+/*		- gets remainder from las recv call									*/
+/*		- Loop: finds delimiters "\r\n" in received msg						*/
+/*		- sets clients buffer to everything preceeding delimiters			*/
+/*		- stores remaing message in a buffer and repeats the loop			*/
+/*		- after loop the remainder is stored in clients remainder			*/
+/*		- buffer is set to 0												*/
+/*--------------------------------------------------------------------------*/
 int	Server::receiveMsg(pollfd &connection, Client *client)
 {
 	std::cout << MAGENTA "[DEBUGG] ===== receiveMsg ======= " WHITE << std::endl;
@@ -169,7 +191,7 @@ int	Server::receiveMsg(pollfd &connection, Client *client)
 		throw (Errors(ErrorCode::E_RCV)); // probably should not exit here
 	else if (received == 0)
 	{
-		std::cout << CYAN << "[" << client->getNick() << "] closed their connection" << std::endl;
+		std::cout << CYAN << "[" << client->getNick() << "] closed their connection" << std::endl; // needs cleanup
 		return (-1);
 	}
 	else
@@ -196,17 +218,27 @@ int	Server::receiveMsg(pollfd &connection, Client *client)
 	return (0);
 }
 
-// uncertain about the throw, wether they bubble up correctly to the next catch
-// send messages
+/*------------------------------------------------------------------*/
+/* sends replies to client											*/
+/*	- replies are patched together for the correct format for irssi */
+/*		- every msg sent must end in \r\n							*/
+/*------------------------------------------------------------------*/
 void	Server::sendMsg(int connection, std::string reply)
 {
 	reply = ":" + _name + " " + reply + "\r\n";
 	if (send(connection, reply.c_str(), reply.size(), 0) <= 0) // uncertain about the zero at the moment
 	{
-		throw (Errors(ErrorCode::E_SND));
+		throw (Errors(ErrorCode::E_SND)); // uncertain about wether it bubbles up correctly to the next catch
 	}
 }
 
+
+/*----------------------------------------------------------*/
+/* NOT FOR THE FINAL PRODUCT								*/
+/* "parses" the msgs sent by irssi							*/
+/*	- only implemented for authentication handshake to work */
+/* should be handled by the parser							*/
+/*----------------------------------------------------------*/
 void Server::pseudoParser(std::string message, Client* client)
 {
 	std::size_t pos = 0;
@@ -236,9 +268,28 @@ void Server::pseudoParser(std::string message, Client* client)
 	}
 }
 
-// adds new client if requested connection is accepted
-// new connection is added to _sockets vector
-// also newConnection.fd and client object are mapped together
+/*------------------------------------------------------------------*/
+/* Adds new client to _sockets vector if authentication successful	*/
+/*	- accepts incoming connection									*/
+/*	- created new Client object										*/
+/*																	*/
+/* runns through irrsi authentication handshake						*/
+/*  	1. [irssi] inquires capabilities							*/
+/*			-> [ircserv] sends capabilties							*/
+/*		2. [irssi] sends premature join msg							*/
+/*		3. [irssi] sends CAP END									*/
+/*		4. [irssi] sends PASS <password>							*/
+/*		5. [irssi] sends NICK <nickname>							*/
+/*		6. [irssi] sends USER <username>							*/
+/*			-> [ircerv] sends Welcome message						*/
+/*																	*/
+/* needs work on success and failure handling of authentication		*/
+/*	- on successfull authentication									*/
+/*		- client.fd and client object are mapped (seems redundant)	*/
+/*		- client fd is added to _sockets vector						*/
+/*	- on failure													*/
+/*		- fd should be closed and client object deleted				*/
+/*------------------------------------------------------------------*/
 void	Server::newClient()
 {
 	std::cout << "[DEBUGG] listening socket has revents & POLLIN" << std::endl;
@@ -250,29 +301,16 @@ void	Server::newClient()
 	else
 	{
 		std::cout << GREEN "[DEBUGG] created accepted Socket" WHITE << std::endl;
-		Client* client = new Client();
-		client->setSocket(&newConnection.fd);
+		Client* client = new Client(&newConnection.fd);
 		
-		// authentication process
-		// for irssi multiple messages are sent by the client first
-		// 1. checks for capabilities
-		// 	-> requires server to send capabilities
-		// 		:ircserv CAP * LS :
-		// 2. premature JOIN message
-		// 3. CAP END
-		// 4. PASS hallo
-		// 5. NICK irssitest
-		// 6. USER david david 127.0.0.1 :David
 		while(!(client->getNickSet() && client->getUsernameSet() && client->getRegistered()))
 		{
 			if (receiveMsg(newConnection, client) == -1)
 				return ;
 		}
-		sendMsg(newConnection.fd, "001 " + client->getNick() + " :Welcome to the IRC server");
+		sendMsg(newConnection.fd, "001 " + client->getNick() + " :Welcome to the IRC server"); // server replies need to be handled more gracefully
 
-
-
-		// also add nick and username after pw
+		// handle properly successfull connection and unsuccessfull connection
 
 		// for (int counter = 2; counter > -1; counter--)
 		// {
@@ -283,7 +321,7 @@ void	Server::newClient()
 		// 	{
 		// 		std::cout << GREEN "[DEBUGG] password is correct" WHITE << std::endl;
 		// 		sendMsg(newConnection, GREEN "password is correct" WHITE);
-				_clientfd[newConnection.fd] = client;
+				_clientfd[newConnection.fd] = client; // seems redundant if fd is passed into constructor, server only needs list of clients then
 				_sockets.push_back(newConnection);
 		// 		break ;
 		// 	}
@@ -311,44 +349,44 @@ void	Server::newClient()
 	std::cout << YELLOW "[DEBUGG] exiting newClient()" WHITE << std::endl;
 }
 
-// handles filedescriptor poll.revents()
-// _socket[0] is always listening socket
-// if its revents is POLL_IN
-// 	a new client is added
-// the other pollfds inside _socket are clients
-// if they send a message their revents is set to POLL_IN
-// 	server needs to handle receiving the message and also replying 
-// if their revents is POLLHUB POLLERR or POLLINVAL
-// 	connection is somehow lost and server needs to handle that + cleanup
+/*----------------------------------------------------------------------------------*/
+/* handles pollfd poll.revents() 													*/
+/*	- checks if a new connection to the listening socket has been made				*/
+/*		- if so it calls newClient, which adds new connections to _sockets vec		*/
+/*	- else it iterates over _sockets vector											*/
+/* 		- if the current pollfd in _sockets has revents POLL_IN -> data to read		*/
+/*			- receives msg of that client and sends reply -> reply needs work still */
+/*			- if receiving msg fails then connection is closed						*/
+/*		- if current revents POLLHUB POLLERR or POLLINVAL							*/
+/*			- connection is lost and resources cleaned up							*/
+/*----------------------------------------------------------------------------------*/
 void	Server::handlePollRevents()
 {
-	if (_sockets[0].revents & POLL_IN) // could change to [0] because I know that this position in the array is filled and it is faster than .at because no checking
-	{
+	if (_sockets[0].revents & POLL_IN)
 		newClient();
-	}
 	else
 	{
-		std::cout << YELLOW "[DEBUGG] entered else in handlePollRevents()" WHITE << std::endl;
+		// std::cout << YELLOW "[DEBUGG] entered else in handlePollRevents()" WHITE << std::endl;
 		for (auto it = _sockets.begin(); it != _sockets.end();)
 		{
-			std::cout << YELLOW "[DEBUGG] entered for in handlePollRevents()" WHITE << std::endl;
+			// std::cout << YELLOW "[DEBUGG] entered for in handlePollRevents()" WHITE << std::endl;
 			if (it->revents & POLL_IN)
 			{
 				if (receiveMsg(*it, _clientfd[it->fd]) != -1)
 				{
-					sendMsg(it->fd, "[Server] Message received");
+					sendMsg(it->fd, "[Server] Message received"); // needs to be updated
 					++it;
 				}
 				else
 				{
-					close(it->fd);
+					close(it->fd); // handle closing fds inside client destructor
 					_clientfd.erase(it->fd);
 					it = _sockets.erase(it);
 				}
 			}
 			else if (it->revents & (POLLHUP | POLLERR | POLLNVAL)) 
 			{
-				close(it->fd);
+				close(it->fd); // handle closing fds inside client destructor
 				_clientfd.erase(it->fd);
 				it = _sockets.erase(it);
 			}
@@ -356,11 +394,20 @@ void	Server::handlePollRevents()
 				++it;
 		}
 	}
-	std::cout << YELLOW "[DEBUGG] exiting handlePollRevents()" WHITE << std::endl;
+	// std::cout << YELLOW "[DEBUGG] exiting handlePollRevents()" WHITE << std::endl;
 }
 
-// handles poll return values
-// if non zero it calls handlePollRevents()
+
+/*------------------------------------------------------------------------------*/
+/* Loop that keeps Server running 												*/
+/*	- Verifies that the servers listening socket is present at _sockets[0]		*/
+/*	- Calls Poll to wait on multiple fd at the same time						*/
+/*		- if -1 there is an error -> currently exits							*/
+/*		- if 0 system timeout -> currently just sleeps (Placeholder)			*/
+/*		- non negative															*/
+/*			- nbr of elements whos revents have been set to non zero			*/
+/*			- calls handle Pollevents for further processing					*/
+/*------------------------------------------------------------------------------*/
 void	Server::serverLoop()
 {
 	int ret = 0;
@@ -370,7 +417,6 @@ void	Server::serverLoop()
 		try {
 			if (!_sockets.empty())
 			{
-				// Returns a pointer to the first element of the vector's internal array
 				ret = poll(_sockets.data(), _sockets.size(), 0);
 				if (ret == -1)
 					throw (Errors(ErrorCode::E_PLL));
@@ -378,7 +424,7 @@ void	Server::serverLoop()
 					sleep(1);
 				else
 				{
-					std::cout << MAGENTA "[DEBUGG] poll() has returned a positive value" WHITE << std::endl;
+					// std::cout << MAGENTA "[DEBUGG] poll() has returned a positive value" WHITE << std::endl;
 					handlePollRevents();
 				}
 			}

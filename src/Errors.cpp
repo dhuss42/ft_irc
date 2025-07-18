@@ -10,6 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+// should slipt into errors critical for server infrastructure
+// which should result in closing the program 
+// and errors that should simple be handled gracefully without a shutdown
+
 #include "Errors.hpp"
 
 Errors::Errors(ErrorCode code) : std::runtime_error(make_message(code)), _code(code)

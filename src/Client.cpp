@@ -5,7 +5,7 @@
 //  service inherits from client
 //  moderator inherits from user
 
-Client::Client() : _nick("default")
+Client::Client(int* fd) : _nick("default"), _socket(fd)
 {
 }
 
