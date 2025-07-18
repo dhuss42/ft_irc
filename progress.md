@@ -161,3 +161,21 @@
 		- WHOIS
 		- PING
 - next steps should be cleaning up the code and properly freeing resources when connections are closed
+
+## ====== Day 12 == 18.07 ====== 
+- worked on documentation of Server class
+- small fixes for client class
+- testing with valgrind
+	- Container:
+		- docker build -t valgrind .
+		- docker run -p 12345:12345 -it --rm -v /Users/david/coding/42/circle_5/ft_irc:/app valgrind
+		- go into app folder
+	- ircserv
+		- _addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	- connect normally with irssi
+	- needs signal handling for correct destructor call for server
+		- handled SIGINT
+			- currently 1 leak when client disconnects with quit
+				- solved
+			- 5 still reachables too
+			- leak when there is a bind error

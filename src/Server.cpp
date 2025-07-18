@@ -12,6 +12,8 @@
 
 #include "Server.hpp"
 
+//================ Orthodox Form ================//
+
 /*----------------------*/
 /* Constructor			*/
 /*----------------------*/
@@ -20,7 +22,8 @@ Server::Server(std::string portNbr, std::string password)
 	std::memset(&_addr, 0, sizeof(_addr));
 	_addr.sin_family = AF_INET;
 	// currently set to localhost
-	_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+	_addr.sin_addr.s_addr = htonl(INADDR_ANY); // changed to 0.0.0.0 for testing with container
+	// _addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK); 
 	parseArgs(portNbr, password);
 	// could set this directly in parsing if the portNbr is only needed there
 	initServer();
@@ -46,6 +49,8 @@ Server::~Server()
 			close(it->fd);
 	}
 }
+
+//================ Member Methods ================//
 
 // additional considerations to make regarding to safe password policy (could be toggled on and off inside config file)
 	// min length, special chars, not allowed chars, uppecase/lowercase, digit required?
@@ -301,12 +306,15 @@ void	Server::newClient()
 	else
 	{
 		std::cout << GREEN "[DEBUGG] created accepted Socket" WHITE << std::endl;
-		Client* client = new Client(&newConnection.fd);
+		Client* client = new Client(newConnection.fd);
 		
 		while(!(client->getNickSet() && client->getUsernameSet() && client->getRegistered()))
 		{
 			if (receiveMsg(newConnection, client) == -1)
+			{
+				delete client;
 				return ;
+			}
 		}
 		sendMsg(newConnection.fd, "001 " + client->getNick() + " :Welcome to the IRC server"); // server replies need to be handled more gracefully
 
@@ -379,7 +387,8 @@ void	Server::handlePollRevents()
 				}
 				else
 				{
-					close(it->fd); // handle closing fds inside client destructor
+					// close(it->fd); // handle closing fds inside client destructor
+					delete _clientfd[it->fd];
 					_clientfd.erase(it->fd);
 					it = _sockets.erase(it);
 				}
@@ -435,4 +444,43 @@ void	Server::serverLoop()
 			Errors::handleErrors(e);
 		}
 	}
+}
+
+//================ Signals ================//
+
+/*-------------------------------------*/
+/* handles events for incoming signals */
+/*-------------------------------------*/
+void	Server::handleSignal(int sig)
+{
+	switch (sig)
+	{
+	case SIGINT:
+		std::cout << BLUE << "received SIGINT" << std::endl;
+		exit(EXIT_SUCCESS);
+		break;
+	case SIGKILL:
+		std::cout << BLUE << "received SIGTERM" << std::endl;
+		exit(EXIT_SUCCESS); // 
+		break;
+	default:
+		std::cout << BLUE << "unhandled Signal: " << sig << std::endl;
+		break;
+	}
+}
+
+/*--------------------------------------------------*/
+/* handles signals like ctrl +c						*/
+/*	- when ctrl + c is pressed calls handle signal	*/
+/*--------------------------------------------------*/
+void	Server::setupSignalHandler()
+{
+	struct sigaction sa;
+
+	memset(&sa, 0, sizeof(sa));
+	sa.sa_handler = handleSignal;
+	sa.sa_flags = 0;
+	sigaction(SIGINT, &sa, nullptr);
+	sigaction(SIGTERM, &sa, nullptr);
+	// add more signals here with sigaction
 }

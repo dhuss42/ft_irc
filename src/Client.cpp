@@ -5,12 +5,14 @@
 //  service inherits from client
 //  moderator inherits from user
 
-Client::Client(int* fd) : _nick("default"), _socket(fd)
+Client::Client(int fd) : _nick("default"), _socket(fd)
 {
 }
 
 Client::~Client()
 {
+	if (_socket)
+		close(_socket);
 	std::cout << CYAN << "[" << _nick << "]: disconnected" WHITE << std::endl;
 }
 
@@ -45,14 +47,14 @@ void	Client::setUsernameSet(bool state)
 }
 
 
-void	Client::setSocket(int* socket)
+void	Client::setSocket(int socket)
 {
 	_socket = socket;
 }
 
 int Client::getSocket(void)
 {
-	return (*_socket);
+	return (_socket);
 }
 
 std::string Client::getNick(void)

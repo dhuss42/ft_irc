@@ -20,6 +20,7 @@
 #include <regex>
 #include <iomanip>
 #include <string>
+#include <cstring>
 
 #include "Errors.hpp"
 /*=================== Colours ==================*/

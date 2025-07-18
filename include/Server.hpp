@@ -46,10 +46,16 @@ class Server
 		std::vector <pollfd> _sockets;
 		// map pollfd.fd to client object
 		std::unordered_map <int, Client* > _clientfd;
+
 	public:
 		Server();
 		Server(std::string portNbr, std::string password);
 		~Server();
+
+		// signals
+		void	shutdown();
+		static void handleSignal(int sig);
+		static void setupSignalHandler();
 
 		// make as much private / const / static as possible for clean code
 		void	parseArgs(std::string portNbr, std::string password);

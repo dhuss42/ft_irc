@@ -24,12 +24,18 @@
 // parse arguments
 // start server loop
 
+
+// handle signals here or inside the Server class
+// 	SIGINT
+//	
+
 int	main(int argc, char*argv[])
 {
 	try {
 		if (argc == 3)
 		{
 			Server server(argv[1], argv[2]);
+			Server::setupSignalHandler();
 			server.serverLoop();
 		}
 		else

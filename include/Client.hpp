@@ -12,7 +12,7 @@ class Client
 		std::string _username;
 		// Server		*server;
 		// 	socket fd
-		int* _socket;
+		int _socket;
 		//	pointer to server
 
 		//  read buffer for the client
@@ -37,7 +37,7 @@ class Client
 		//		last activity timestamp
 
 	public:
-		Client();
+		Client(int fd);
 		~Client();
 
 	bool	getRegistered(void);
@@ -49,7 +49,7 @@ class Client
 	bool	getUsernameSet(void);
 	void	setUsernameSet(bool state);
 
-	void	setSocket(int* socket);
+	void	setSocket(int socket);
 	int		getSocket(void);
 
 	std::string getNick();
