@@ -40,6 +40,10 @@ class Client
 		Client(int fd);
 		~Client();
 
+	void	sendMsg(std::string name, std::string reply);
+	void	pseudoParser(std::string message);
+	int		receiveMsg();
+
 	bool	getRegistered(void);
 	void	setRegistered(bool state);
 

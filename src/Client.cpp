@@ -16,6 +16,105 @@ Client::~Client()
 	std::cout << CYAN << "[" << _nick << "]: disconnected" WHITE << std::endl;
 }
 
+
+/*----------------------------------------------------------*/
+/* NOT FOR THE FINAL PRODUCT								*/
+/* "parses" the msgs sent by irssi							*/
+/*	- only implemented for authentication handshake to work */
+/* should be handled by the parser							*/
+/*----------------------------------------------------------*/
+void Client::pseudoParser(std::string message)
+{
+	std::size_t pos = 0;
+	(void) pos;
+
+	if (message.find("PASS") == 0)
+	{
+		pos = message.find(" ");
+		// compare what follows the space to the password
+		// set registered to true
+		_registered = true;
+	}
+	else if (message.find("CAP LS 302")  == 0)
+	{
+		sendMsg("irc_custom", "CAP * LS :"); // get the name somewhere
+	}
+	else if (message.find("NICK") == 0)
+	{
+		_nick = message.substr(6);
+		// copy every following space into client Nick
+		_nickSet = true;
+	}
+	else if (message.find("USER") == 0)
+	{
+		// copy every following space into client Users
+		_usernameSet = true;
+	}
+}
+
+/*--------------------------------------------------------------------------*/
+/* receives messages from client											*/
+/*	- recv stores msg in tmp buffer 										s*/
+/*	- returns -1 on error and 0 on closed connection						*/
+/*	- else returns nbr of bytes received 									*/
+/*		- gets remainder from las recv call									*/
+/*		- Loop: finds delimiters "\r\n" in received msg						*/
+/*		- sets clients buffer to everything preceeding delimiters			*/
+/*		- stores remaing message in a buffer and repeats the loop			*/
+/*		- after loop the remainder is stored in clients remainder			*/
+/*		- buffer is set to 0												*/
+/*--------------------------------------------------------------------------*/
+int	Client::receiveMsg()
+{
+	std::cout << MAGENTA "[DEBUGG] ===== receiveMsg ======= " WHITE << std::endl;
+	char	tmp[512] = {0};
+	int		received = recv(_socket, tmp, sizeof(tmp), 0);
+
+	if (received == -1)
+		throw (Errors(ErrorCode::E_RCV)); // probably should not exit here
+	else if (received == 0)
+	{
+		std::cout << CYAN << "[" << _nick << "] closed their connection" << std::endl; // needs cleanup
+		return (-1);
+	}
+	else
+	{
+		// std::cout << YELLOW "[DEBUGG] recv is non negative" WHITE << std::endl;
+		
+		std::string fullBuffer = _remainder + std::string(tmp, received);
+		_remainder = "";
+		
+		std::size_t pos;
+		while ((pos = fullBuffer.find("\r\n")) != std::string::npos)
+		{
+			_buffer = fullBuffer.substr(0, pos);
+			std::cout << BOLDCYAN << "[DEBUG] buffer: " << _buffer << RESET << std::endl;
+			pseudoParser(_buffer);
+			fullBuffer = fullBuffer.substr(pos + 2);;
+		}
+		_remainder = fullBuffer;
+		if (!fullBuffer.empty())
+			std::cout << BOLDCYAN << "[DEBUG] remainder: " << _remainder << RESET << std::endl;
+	}
+	std::cout << GREEN << "[" << _nick << "]" << " received: " << _buffer << WHITE << std::endl;
+	std::memset(_buffer.data(), 0, _buffer.length());
+	return (0);
+}
+
+/*------------------------------------------------------------------*/
+/* sends replies to client											*/
+/*	- replies are patched together for the correct format for irssi */
+/*		- every msg sent must end in \r\n							*/
+/*------------------------------------------------------------------*/
+void	Client::sendMsg(std::string name, std::string reply)
+{
+	reply = ":" + name + " " + reply + "\r\n";
+	if (send(_socket, reply.c_str(), reply.size(), 0) <= 0) // uncertain about the zero at the moment
+	{
+		throw (Errors(ErrorCode::E_SND)); // uncertain about wether it bubbles up correctly to the next catch
+	}
+}
+
 bool	Client::getRegistered(void)
 {
 	return (_registered);

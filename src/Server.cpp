@@ -174,104 +174,6 @@ void	Server::initServer()
 // 		clean up client object
 // 		remove from pollfd
 
-/*--------------------------------------------------------------------------*/
-/* receives messages from client											*/
-/*	- recv stores msg in tmp buffer 										s*/
-/*	- returns -1 on error and 0 on closed connection						*/
-/*	- else returns nbr of bytes received 									*/
-/*		- gets remainder from las recv call									*/
-/*		- Loop: finds delimiters "\r\n" in received msg						*/
-/*		- sets clients buffer to everything preceeding delimiters			*/
-/*		- stores remaing message in a buffer and repeats the loop			*/
-/*		- after loop the remainder is stored in clients remainder			*/
-/*		- buffer is set to 0												*/
-/*--------------------------------------------------------------------------*/
-int	Server::receiveMsg(pollfd &connection, Client *client)
-{
-	std::cout << MAGENTA "[DEBUGG] ===== receiveMsg ======= " WHITE << std::endl;
-	char	tmp[512] = {0};
-	int		received = recv(connection.fd, tmp, sizeof(tmp), 0);
-
-	if (received == -1)
-		throw (Errors(ErrorCode::E_RCV)); // probably should not exit here
-	else if (received == 0)
-	{
-		std::cout << CYAN << "[" << client->getNick() << "] closed their connection" << std::endl; // needs cleanup
-		return (-1);
-	}
-	else
-	{
-		// std::cout << YELLOW "[DEBUGG] recv is non negative" WHITE << std::endl;
-		
-		std::string fullBuffer = client->getRemainder() + std::string(tmp, received);
-		client->setRemainder("");
-		
-		std::size_t pos;
-		while ((pos = fullBuffer.find("\r\n")) != std::string::npos)
-		{
-			client->setBuffer(fullBuffer.substr(0, pos));
-			std::cout << BOLDCYAN << "[DEBUG] buffer: " << client->getBuffer() << RESET << std::endl;
-			pseudoParser(client->getBuffer(), client);
-			fullBuffer = fullBuffer.substr(pos + 2);;
-		}
-		client->setRemainder(fullBuffer);
-		if (!fullBuffer.empty())
-			std::cout << BOLDCYAN << "[DEBUG] remainder: " << client->getRemainder() << RESET << std::endl;
-	}
-	std::cout << GREEN << "[" << client->getNick() << "]" << " received: " << client->getBuffer() << WHITE << std::endl;
-	client->setBufferToValue(0, client->getBufferSize());
-	return (0);
-}
-
-/*------------------------------------------------------------------*/
-/* sends replies to client											*/
-/*	- replies are patched together for the correct format for irssi */
-/*		- every msg sent must end in \r\n							*/
-/*------------------------------------------------------------------*/
-void	Server::sendMsg(int connection, std::string reply)
-{
-	reply = ":" + _name + " " + reply + "\r\n";
-	if (send(connection, reply.c_str(), reply.size(), 0) <= 0) // uncertain about the zero at the moment
-	{
-		throw (Errors(ErrorCode::E_SND)); // uncertain about wether it bubbles up correctly to the next catch
-	}
-}
-
-
-/*----------------------------------------------------------*/
-/* NOT FOR THE FINAL PRODUCT								*/
-/* "parses" the msgs sent by irssi							*/
-/*	- only implemented for authentication handshake to work */
-/* should be handled by the parser							*/
-/*----------------------------------------------------------*/
-void Server::pseudoParser(std::string message, Client* client)
-{
-	std::size_t pos = 0;
-	(void) pos;
-
-	if (message.find("PASS") == 0)
-	{
-		pos = message.find(" ");
-		// compare what follows the space to the password
-		// set registered to true
-		client->setRegistered(true);
-	}
-	else if (message.find("CAP LS 302")  == 0)
-	{
-		sendMsg(client->getSocket(), "CAP * LS :");
-	}
-	else if (message.find("NICK") == 0)
-	{
-		client->setNick(message.substr(6));
-		// copy every following space into client Nick
-		client->setNickSet(true);
-	}
-	else if (message.find("USER") == 0)
-	{
-		// copy every following space into client User
-		client->setUsernameSet(true);
-	}
-}
 
 /*------------------------------------------------------------------*/
 /* Adds new client to _sockets vector if authentication successful	*/
@@ -308,15 +210,15 @@ void	Server::newClient()
 		std::cout << GREEN "[DEBUGG] created accepted Socket" WHITE << std::endl;
 		Client* client = new Client(newConnection.fd);
 		
-		while(!(client->getNickSet() && client->getUsernameSet() && client->getRegistered()))
+		while(!(client->getNickSet() && client->getUsernameSet() && client->getRegistered())) // also move into Client class
 		{
-			if (receiveMsg(newConnection, client) == -1)
+			if (client->receiveMsg() == -1)
 			{
 				delete client;
 				return ;
 			}
 		}
-		sendMsg(newConnection.fd, "001 " + client->getNick() + " :Welcome to the IRC server"); // server replies need to be handled more gracefully
+		client->sendMsg(_name, "001 " + client->getNick() + " :Welcome to the IRC server"); // server replies need to be handled more gracefully
 
 		// handle properly successfull connection and unsuccessfull connection
 
@@ -380,9 +282,9 @@ void	Server::handlePollRevents()
 			// std::cout << YELLOW "[DEBUGG] entered for in handlePollRevents()" WHITE << std::endl;
 			if (it->revents & POLL_IN)
 			{
-				if (receiveMsg(*it, _clientfd[it->fd]) != -1)
+				if (_clientfd[it->fd]->receiveMsg() != -1)
 				{
-					sendMsg(it->fd, "[Server] Message received"); // needs to be updated
+					_clientfd[it->fd]->sendMsg(_name, "[Server] Message received"); // needs to be updated
 					++it;
 				}
 				else
@@ -456,15 +358,15 @@ void	Server::handleSignal(int sig)
 	switch (sig)
 	{
 	case SIGINT:
-		std::cout << BLUE << "received SIGINT" << std::endl;
+		std::cout << BLUE << "received SIGINT" << WHITE << std::endl;
 		exit(EXIT_SUCCESS);
 		break;
 	case SIGKILL:
-		std::cout << BLUE << "received SIGTERM" << std::endl;
+		std::cout << BLUE << "received SIGTERM" << WHITE << std::endl;
 		exit(EXIT_SUCCESS); // 
 		break;
 	default:
-		std::cout << BLUE << "unhandled Signal: " << sig << std::endl;
+		std::cout << BLUE << "unhandled Signal: " << sig << WHITE << std::endl;
 		break;
 	}
 }

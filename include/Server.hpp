@@ -64,11 +64,11 @@ class Server
 		void	handlePollRevents();
 		void	newClient();	
 
-		int		receiveMsg(pollfd &connection, Client *client);
-		void	sendMsg(int connection, std::string reply);
+		// int		receiveMsg(pollfd &connection, Client *client);
+		// void	sendMsg(int connection, std::string reply);
 
 		// remove later only for authentication
-		void pseudoParser(std::string message, Client* client);
+		// void pseudoParser(std::string message, Client* client);
 	};
 
 

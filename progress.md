@@ -162,7 +162,7 @@
 		- PING
 - next steps should be cleaning up the code and properly freeing resources when connections are closed
 
-## ====== Day 12 == 18.07 ====== 
+## ====== Day 12 == 18.07 ====== (7h)
 - worked on documentation of Server class
 - small fixes for client class
 - testing with valgrind
@@ -179,3 +179,6 @@
 				- solved
 			- 5 still reachables too
 			- leak when there is a bind error
+
+## ====== Day 12 == 18.07 ====== (40min)
+- refactored sending and receiving messages so that it is part of client class now not server class
