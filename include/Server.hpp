@@ -57,6 +57,8 @@ class Server
 		static void handleSignal(int sig);
 		static void setupSignalHandler();
 
+		void	closedConnection(std::vector<pollfd>::iterator &it);
+
 		// make as much private / const / static as possible for clean code
 		void	parseArgs(std::string portNbr, std::string password);
 		void	initServer();

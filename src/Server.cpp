@@ -12,6 +12,8 @@
 
 #include "Server.hpp"
 
+static volatile sig_atomic_t shouldExit = 0;
+
 //================ Orthodox Form ================//
 
 /*----------------------*/
@@ -42,12 +44,15 @@ Server::~Server()
 		if (iti->second)
 			delete(iti->second);
 	}
+	_clientfd.clear();
+	_clientList.clear();
 	// closes all open file descriptors
 	for (auto it = _sockets.rbegin(); it != _sockets.rend(); it++)
 	{
 		if (it->fd >= 0)
 			close(it->fd);
 	}
+	_sockets.clear();
 }
 
 //================ Member Methods ================//
@@ -174,6 +179,21 @@ void	Server::initServer()
 // 		clean up client object
 // 		remove from pollfd
 
+/*------------------------------------------------------------------*/
+/* handles cleanup for closing connections							*/
+/*------------------------------------------------------------------*/
+void	Server::closedConnection(std::vector<pollfd>::iterator &it)
+{
+	Client* client = _clientfd[it->fd];
+
+	if (client)
+	{
+		_clientList.erase(client->getNick());
+		delete client;
+		_clientfd.erase(it->fd);
+	}
+	it = _sockets.erase(it);
+}
 
 /*------------------------------------------------------------------*/
 /* Adds new client to _sockets vector if authentication successful	*/
@@ -209,52 +229,15 @@ void	Server::newClient()
 	{
 		std::cout << GREEN "[DEBUGG] created accepted Socket" WHITE << std::endl;
 		Client* client = new Client(newConnection.fd);
-		
-		while(!(client->getNickSet() && client->getUsernameSet() && client->getRegistered())) // also move into Client class
+		if (client->authentication() == -1)
+			delete client;
+		else
 		{
-			if (client->receiveMsg() == -1)
-			{
-				delete client;
-				return ;
-			}
+			_clientfd[newConnection.fd] = client;
+			_clientList[client->getNick()] = client;
+			_sockets.push_back(newConnection);
 		}
-		client->sendMsg(_name, "001 " + client->getNick() + " :Welcome to the IRC server"); // server replies need to be handled more gracefully
-
 		// handle properly successfull connection and unsuccessfull connection
-
-		// for (int counter = 2; counter > -1; counter--)
-		// {
-		// 	if (receiveMsg(newConnection, client) == -1)
-		// 		return ;
-		// 	std::cout << YELLOW "[DEBUGG] after recev MSG" WHITE << std::endl;
-		// 	if (std::strcmp(client->getBufferPtr(), _password.c_str()) == 0)
-		// 	{
-		// 		std::cout << GREEN "[DEBUGG] password is correct" WHITE << std::endl;
-		// 		sendMsg(newConnection, GREEN "password is correct" WHITE);
-				_clientfd[newConnection.fd] = client; // seems redundant if fd is passed into constructor, server only needs list of clients then
-				_sockets.push_back(newConnection);
-		// 		break ;
-		// 	}
-		// 	else
-		// 	{
-		// 		if (counter == 0)
-		// 		{
-		// 			sendMsg(newConnection, RED "entered passord incorrect 3 times" WHITE);
-		// 			std::cout << "[DEBUGG] entered passord incorrect 3 times" WHITE << std::endl;
-		// 			close(newConnection.fd);
-		// 			delete client;
-		// 			break ;
-		// 		}
-		// 		else
-		// 		{
-		// 			std::string msg = RED "password is incorrect. Remaining tries: " WHITE;
-		// 			msg += std::to_string(counter);
-		// 			std::cout << "[DEBUGG] " << msg <<  WHITE << std::endl;
-		// 			sendMsg(newConnection, msg);
-				// }
-			// }
-		// }
-
 	}
 	std::cout << YELLOW "[DEBUGG] exiting newClient()" WHITE << std::endl;
 }
@@ -288,19 +271,10 @@ void	Server::handlePollRevents()
 					++it;
 				}
 				else
-				{
-					// close(it->fd); // handle closing fds inside client destructor
-					delete _clientfd[it->fd];
-					_clientfd.erase(it->fd);
-					it = _sockets.erase(it);
-				}
+					closedConnection(it);
 			}
 			else if (it->revents & (POLLHUP | POLLERR | POLLNVAL)) 
-			{
-				close(it->fd); // handle closing fds inside client destructor
-				_clientfd.erase(it->fd);
-				it = _sockets.erase(it);
-			}
+				closedConnection(it);
 			else
 				++it;
 		}
@@ -323,7 +297,7 @@ void	Server::serverLoop()
 {
 	int ret = 0;
 
-	while (true)
+	while (!shouldExit)
 	{
 		try {
 			if (!_sockets.empty())
@@ -359,11 +333,11 @@ void	Server::handleSignal(int sig)
 	{
 	case SIGINT:
 		std::cout << BLUE << "received SIGINT" << WHITE << std::endl;
-		exit(EXIT_SUCCESS);
+		shouldExit = 1;
 		break;
 	case SIGKILL:
 		std::cout << BLUE << "received SIGTERM" << WHITE << std::endl;
-		exit(EXIT_SUCCESS); // 
+		shouldExit = 1;
 		break;
 	default:
 		std::cout << BLUE << "unhandled Signal: " << sig << WHITE << std::endl;

@@ -10,7 +10,7 @@ class Client
 	private:
 		std::string _nick;
 		std::string _username;
-		// Server		*server;
+		// Server		*_server;
 		// 	socket fd
 		int _socket;
 		//	pointer to server
@@ -40,8 +40,9 @@ class Client
 		Client(int fd);
 		~Client();
 
-	void	sendMsg(std::string name, std::string reply);
 	void	pseudoParser(std::string message);
+	void	sendMsg(std::string name, std::string reply);
+	int		authentication();
 	int		receiveMsg();
 
 	bool	getRegistered(void);

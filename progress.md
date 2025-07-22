@@ -180,5 +180,9 @@
 			- 5 still reachables too
 			- leak when there is a bind error
 
-## ====== Day 12 == 18.07 ====== (40min)
+## ====== Day 12 == 21.07 ====== (40min)
 - refactored sending and receiving messages so that it is part of client class now not server class
+
+## ====== Day 13 == 22.07 ====== (40min)
+- handles leaks and still reachables
+	- main problem was exiting when pressing ctrl + c instead of returning in main

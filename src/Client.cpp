@@ -11,7 +11,7 @@ Client::Client(int fd) : _nick("default"), _socket(fd)
 
 Client::~Client()
 {
-	if (_socket)
+	if (_socket >= 0)
 		close(_socket);
 	std::cout << CYAN << "[" << _nick << "]: disconnected" WHITE << std::endl;
 }
@@ -52,6 +52,17 @@ void Client::pseudoParser(std::string message)
 	}
 }
 
+int	Client::authentication()
+{
+	while(!(_nickSet && _usernameSet && _registered))
+	{
+		if (receiveMsg() == -1)
+			return (-1);
+	}
+	sendMsg("irc_custom", "001 " + _nick + " :Welcome to the IRC server"); // server replies need to be handled more gracefully
+	return (1);
+}
+
 /*--------------------------------------------------------------------------*/
 /* receives messages from client											*/
 /*	- recv stores msg in tmp buffer 										s*/
@@ -71,7 +82,10 @@ int	Client::receiveMsg()
 	int		received = recv(_socket, tmp, sizeof(tmp), 0);
 
 	if (received == -1)
-		throw (Errors(ErrorCode::E_RCV)); // probably should not exit here
+	{
+		std::cerr << RED "Error: recv" << WHITE << std::endl;
+		return (-1);
+	}
 	else if (received == 0)
 	{
 		std::cout << CYAN << "[" << _nick << "] closed their connection" << std::endl; // needs cleanup
@@ -97,7 +111,7 @@ int	Client::receiveMsg()
 			std::cout << BOLDCYAN << "[DEBUG] remainder: " << _remainder << RESET << std::endl;
 	}
 	std::cout << GREEN << "[" << _nick << "]" << " received: " << _buffer << WHITE << std::endl;
-	std::memset(_buffer.data(), 0, _buffer.length());
+	_buffer.clear();
 	return (0);
 }
 
