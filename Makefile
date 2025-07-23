@@ -7,6 +7,7 @@ CPPFILES = \
 	main.cpp \
 	Server.cpp \
 	Client.cpp \
+	Channel.cpp \
 	Errors.cpp
 
 SRCS = $(addprefix $(SRC_DIR)/, $(CPPFILES))

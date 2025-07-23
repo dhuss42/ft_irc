@@ -187,7 +187,9 @@
 - handles leaks and still reachables
 	- main problem was exiting when pressing ctrl + c instead of returning in main
 
-## ====== Day 14 == 23.07 ====== (4h)
+## ====== Day 14 == 23.07 ====== (6h)
 - added setsockopt so there is no time out for bind()
 - added minor things for Channels, Clients
 - added basic methods and attributes for Channels class
+- worked on server -> Channel logic
+	- needs further work also handling adding users

@@ -360,3 +360,49 @@ void	Server::setupSignalHandler()
 	sigaction(SIGTERM, &sa, nullptr);
 	// add more signals here with sigaction
 }
+
+//================ getters & setters ================//
+
+//================ verify ================//
+bool	Server::isChannel(const std::string& name)
+{
+	return (_channelList.find(name) != _channelList.end());
+}
+
+//================ add Channels and Users ================//
+
+void	Server::addChannel(Channel* channel)
+{
+	if (channel && !isChannel(channel->getName()))
+		_channelList[channel->getName()] = channel;
+}
+
+void	Server::removeChannel(Channel* channel)
+{
+
+	if (channel && isChannel(channel->getName()))
+	{
+		delete channel;
+		_channelList.erase(channel->getName());
+	}
+}
+
+// Channel*	Server::getChannel(void)
+// {
+	
+// }
+
+// void	Server::addChannel(Client* client)
+// {
+
+// }
+
+// void	Server::removeChannel(Client* client)
+// {
+
+// }
+
+// Client*	Server::getClient(void)
+// {
+
+// }

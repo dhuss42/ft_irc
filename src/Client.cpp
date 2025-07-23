@@ -5,8 +5,9 @@
 //  service inherits from client
 //  moderator inherits from user
 
-Client::Client(int fd, Server* server) : _nick("default"), _socket(fd), _server(server)
+Client::Client(int fd, Server* server) : _nick("default"), _server(server), _socket(fd)
 {
+	(void) _server;
 }
 
 Client::~Client()
@@ -49,6 +50,13 @@ void Client::pseudoParser(std::string message)
 	{
 		// copy every following space into client Users
 		_usernameSet = true;
+	}
+	else if (message.find("JOIN"))
+	{
+
+		Channel *channel = new Channel(message.substr(5));
+		_server->addChannel(channel);
+		channel->addUser(this);
 	}
 }
 

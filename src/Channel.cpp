@@ -10,6 +10,21 @@ Channel::~Channel()
 {
 }
 
+// ======= verfication =======//
+bool	Channel::verifyChannelName(std::string name)
+{
+	if (name.size() >= 50)
+		return (false);
+	if (name[0] == '#' || name[0] == '&' || name[0] == '+' || name[0] == '!')
+	{
+		if (name.find(' ') != std::string::npos ||
+			name.find(',') != std::string::npos ||
+			name.find(7) != std::string::npos)
+			return (false);
+	}
+	return (false);
+}
+
 //================ Messaging ================//
 
 /*------------------------------------------------------*/
@@ -33,10 +48,25 @@ void	Channel::addUser(Client* client)
 {
 	if (client)
 	{
-		// check for userlimit
-		// check if user is in invite list if invOnly is set
-		_users[client->getNick()] = client;
-		client->sendMsg("irc_custom", "available commands: JOIN, MODE, KICK, PART, QUIT, PRIVMSG/NOTICE"); // use  irssi client as a reference
+		if (_usrLmtTgl && _users.size() >= _userLimit)
+		{
+			std::cout << "[DEBUG] user limit is set and userLimit " << _userLimit << " is reached!" << std::endl;
+			return ;
+		}
+		if (_invOnly && !isInvited(client))
+		{
+			std::cout << "[DEBUG] invite Only is set and user is not invited!" << std::endl;
+			return ;
+		}
+		if (auto it = _users.find(client->getNick()) == _users.end())
+		{
+			std::cout << "[DEBUG] Client added to Channel!" << std::endl;
+			_users[client->getNick()] = client;
+			client->sendMsg("irc_custom", "available commands: JOIN, MODE, KICK, PART, QUIT, PRIVMSG/NOTICE"); // use  irssi client as a reference
+			removeInvUsers(client);
+		}
+		else
+			std::cout << "[DEBUG] Client is already part of the Channel!" << std::endl;
 		
 	}
 	// if the client exists
@@ -46,8 +76,6 @@ void	Channel::addUser(Client* client)
 	// user receives join message
 	// user receives channel topic
 	// user receives list of users who are on the channel including the user joining
-
-	// 
 }
 
 void	Channel::removeUser(Client* client)
@@ -65,8 +93,10 @@ void	Channel::addOperator(Client* client)
 {
 	if (client)
 	{
-		// check if client is already in list
-		_operators[client->getNick()] = client;
+		if (auto it = _operators.find(client->getNick()) == _operators.end())
+		{
+			_operators[client->getNick()] = client;
+		}
 	}
 }
 
@@ -81,8 +111,27 @@ void	Channel::removeOperator(Client* client)
 	}
 }
 
-// add to inv list
-// remove from inv list
+void	Channel::addInvUsers(Client* client)
+{
+	if (client)
+	{
+		if (auto it = _invitedUsers.find(client->getNick()) == _invitedUsers.end())
+		{
+			_invitedUsers[client->getNick()] = client;
+		}
+	}
+}
+
+void	Channel::removeInvUsers(Client *client)
+{
+	if (client)
+	{
+		if (_invitedUsers.find(client->getNick()) != _invitedUsers.end())
+		{
+			_invitedUsers.erase(client->getNick());
+		}
+	}
+}
 
 //================ verify Clients ================//
 bool	Channel::isOperator(const Client* client)
@@ -145,6 +194,16 @@ std::string Channel::getPassword(void)
 void	Channel::setPassword(std::string password)
 {
 		_password = password;
+}
+
+std::size_t	Channel::getUserLimit(void)
+{
+	return (_userLimit);
+}
+
+void	Channel::setUserLimit(std::size_t userLimit)
+{
+	_userLimit = userLimit;
 }
 
 // ======= set and get modes =======//

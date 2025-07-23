@@ -53,7 +53,6 @@ class Server
 		~Server();
 
 		// signals
-		void	shutdown();
 		static void handleSignal(int sig);
 		static void setupSignalHandler();
 
@@ -65,12 +64,18 @@ class Server
 		void	serverLoop();
 		void	handlePollRevents();
 		void	newClient();	
+		
+		//======= verify =======//
+		bool	isChannel(const std::string& name);
 
-		// int		receiveMsg(pollfd &connection, Client *client);
-		// void	sendMsg(int connection, std::string reply);
+		//======= Add Channels and Users =======//
+		void	addChannel(Channel* channel);
+		void	removeChannel(Channel* channel);
+		Channel*	getChannel(void);
 
-		// remove later only for authentication
-		// void pseudoParser(std::string message, Client* client);
+		void	addChannel(Client* client);
+		void	removeChannel(Client* client);
+		Client*	getClient(void);
 	};
 
 

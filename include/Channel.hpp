@@ -33,16 +33,16 @@ class Channel
 		~Channel();
 
 		// ======= verfication =======//
-		bool	verifyChannelName(std::string name); // <-- 2do
+		bool	verifyChannelName(std::string name);
 
 		// ======= Adding and Removing Clients =======//
 		void	addUser(Client* client);
 		void	addOperator(Client* client);
-		void	addInvUsers(Client* client); // <-- 2do
+		void	addInvUsers(Client* client);
 
 		void	removeUser(Client* client);
 		void	removeOperator(Client* client);
-		void	removeInvUsers(Client* client); // <-- 2do
+		void	removeInvUsers(Client* client);
 		
 		// ======= send Messages =======//
 		void	broadcast(const std::string& msg, Client* sender);
@@ -56,12 +56,12 @@ class Channel
 		std::string	getName(void);
 		std::string	getTopic(void);
 		std::string	getPassword(void);
-		std::size_t	getUserLimit(void); // <-- 2do
+		std::size_t	getUserLimit(void);
 
 		void		setName(std::string name); // might not need this as channel names are fixed
 		void		setTopic(std::string topic);
 		void		setPassword(std::string password);
-		void		setUserLimit(std::size_t userLimit); // <-- 2do
+		void		setUserLimit(std::size_t userLimit);
 
 		// ======= set and get modes =======//
 		bool	getInvOnly(void);

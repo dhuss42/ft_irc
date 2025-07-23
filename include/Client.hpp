@@ -3,6 +3,7 @@
 
 #include "ft_irc.hpp"
 #include "Channel.hpp"
+#include "Server.hpp"
 
 class Server;
 
