@@ -23,6 +23,7 @@ enum class ErrorCode
 	E_PSSWRD,
 	E_SCKFD,
 	E_FCNTL,
+	E_SCKOPT,
 	E_BND,
 	E_LSTN,
 	E_PLL,

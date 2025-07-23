@@ -23,16 +23,12 @@ Server::Server(std::string portNbr, std::string password)
 {
 	std::memset(&_addr, 0, sizeof(_addr));
 	_addr.sin_family = AF_INET;
-	// currently set to localhost
-	_addr.sin_addr.s_addr = htonl(INADDR_ANY); // changed to 0.0.0.0 for testing with container
-	// _addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK); 
+	_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	parseArgs(portNbr, password);
 	// could set this directly in parsing if the portNbr is only needed there
 	initServer();
 }
 
-// should make a separate file for freeing all resources
-// maybe better to handle delete and filedescriptors in client class!!
 /*----------------------*/
 /* Destructor			*/
 /*----------------------*/
@@ -118,25 +114,29 @@ pollfd	createPollfd()
 	return (sock);
 }
 
-/*------------------------------------------*/
-/* initialise Server Object					*/
-/*	- create a pollfd set to non-blocking	*/
-/*	- open listening socket					*/
-/*	- bin IP and port to socket				*/
-/*	- listing for incoming connections		*/
-/*	- add to sockets vector					*/
-/*------------------------------------------*/
+/*--------------------------------------------------------------*/
+/* initialise Server Object										*/
+/*	- create a pollfd set to non-blocking						*/
+/*	- open listening socket										*/
+/*	- set options so it can be reused immediately after closing */
+/*	- bin IP and port to socket									*/
+/*	- listing for incoming connections							*/
+/*	- add to sockets vector										*/
+/*--------------------------------------------------------------*/
 void	Server::initServer()
 {
 	pollfd sockfd = createPollfd();
+	int opt = 1;
 
 	try {
 		sockfd.fd = socket(AF_INET, SOCK_STREAM, 0);
 		if (sockfd.fd == -1)
 			throw (Errors(ErrorCode::E_SCKFD));
+		if (setsockopt(sockfd.fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
+			throw (Errors(ErrorCode::E_SCKOPT));
 		if (bind(sockfd.fd, (sockaddr*)&_addr, sizeof(_addr)) == -1)
 			throw (Errors(ErrorCode::E_BND));
-		if (listen(sockfd.fd, 32) == -1)
+		if (listen(sockfd.fd, SOMAXCONN) == -1)
 			throw (Errors(ErrorCode::E_LSTN));
 		_sockets.push_back(sockfd);
 	}
@@ -228,7 +228,7 @@ void	Server::newClient()
 	else
 	{
 		std::cout << GREEN "[DEBUGG] created accepted Socket" WHITE << std::endl;
-		Client* client = new Client(newConnection.fd);
+		Client* client = new Client(newConnection.fd, this);
 		if (client->authentication() == -1)
 			delete client;
 		else

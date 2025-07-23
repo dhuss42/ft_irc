@@ -5,7 +5,7 @@
 //  service inherits from client
 //  moderator inherits from user
 
-Client::Client(int fd) : _nick("default"), _socket(fd)
+Client::Client(int fd, Server* server) : _nick("default"), _socket(fd), _server(server)
 {
 }
 
@@ -52,6 +52,7 @@ void Client::pseudoParser(std::string message)
 	}
 }
 
+// Needs adjustment after proper Parser handling
 int	Client::authentication()
 {
 	while(!(_nickSet && _usernameSet && _registered))
@@ -170,7 +171,7 @@ int Client::getSocket(void)
 	return (_socket);
 }
 
-std::string Client::getNick(void)
+std::string Client::getNick(void) const
 {
 	return (_nick);
 }

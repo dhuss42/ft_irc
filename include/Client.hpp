@@ -2,6 +2,7 @@
 # define CLIENT_HPP
 
 #include "ft_irc.hpp"
+#include "Channel.hpp"
 
 class Server;
 
@@ -10,34 +11,31 @@ class Client
 	private:
 		std::string _nick;
 		std::string _username;
-		// Server		*_server;
-		// 	socket fd
-		int _socket;
-		//	pointer to server
+		//  a netwide unique identifier
+		//	hostname
 
-		//  read buffer for the client
-		//  write buffer
+		Server*		_server;
+		int 		_socket;
+
 		std::string _buffer;
 		std::string	_remainder;
+		//  write buffer ?
 
-		//  a netwide unique identifier
-		//	nickname
-		//	username
-		//	hostname
 		//	modes
-		//	joined channels map(channel name, *channels)
-		//	registration state
+
+		std::unordered_map<std::string, Channel*> _joinedChannels;
+
+		// registration state
 		bool	_registered = false;
 		bool	_nickSet = false;
 		bool	_usernameSet = false;
-
 
 		// optional considerations
 		// 		away message
 		//		last activity timestamp
 
 	public:
-		Client(int fd);
+		Client(int fd, Server* server);
 		~Client();
 
 	void	pseudoParser(std::string message);
@@ -57,7 +55,7 @@ class Client
 	void	setSocket(int socket);
 	int		getSocket(void);
 
-	std::string getNick();
+	std::string getNick() const;
 	void	setNick(std::string str);
 
 	char*	getBufferPtr(void);

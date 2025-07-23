@@ -40,6 +40,8 @@ std::string Errors::make_message(ErrorCode code)
 			return ("socket error");
 		case ErrorCode::E_FCNTL:
 			return ("fcntl error");
+		case ErrorCode::E_SCKOPT:
+			return ("setsockopt error");
 		case ErrorCode::E_BND:
 			return ("bind error");
 		case ErrorCode::E_LSTN:
@@ -95,5 +97,4 @@ void	Errors::handleErrors(const std::exception& e)
 	}
 	else
 		std::cerr << RED "Error: " << e.what() << WHITE << std::endl;
-	std::exit(EXIT_FAILURE);
 }

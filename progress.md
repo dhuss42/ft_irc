@@ -183,6 +183,11 @@
 ## ====== Day 12 == 21.07 ====== (40min)
 - refactored sending and receiving messages so that it is part of client class now not server class
 
-## ====== Day 13 == 22.07 ====== (40min)
+## ====== Day 13 == 22.07 ====== (3h)
 - handles leaks and still reachables
 	- main problem was exiting when pressing ctrl + c instead of returning in main
+
+## ====== Day 14 == 23.07 ====== (4h)
+- added setsockopt so there is no time out for bind()
+- added minor things for Channels, Clients
+- added basic methods and attributes for Channels class
