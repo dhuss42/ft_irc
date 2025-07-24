@@ -32,10 +32,19 @@ bool	Channel::verifyChannelName(std::string name)
 /*------------------------------------------------------*/
 void	Channel::broadcast(const std::string& msg, Client* sender)
 {
+	std::cout << MAGENTA << "===========boradcast==========" WHITE << std::endl;
+	std::cout << "[DEBUG] before nullptr check" << std::endl;
+	std::cout << "[DEBUG] msg " << msg << std::endl;
 	if (sender)
 	{
+		int counter = 0;
+		std::cout << "[DEBUG] inside if(sender)" << std::endl;
+		std::cout << "[DEBUG] _users.size()" << _users.size() << std::endl;
+
 		for (auto it = _users.begin(); it != _users.end(); ++it)
 		{
+			std::cout << "[DEBUG] users: " << it->second->getNick() << std::endl;
+			std::cout << "[DEBUG] run: " << counter++ << std::endl;
 			if (it->second != sender)
 				it->second->sendMsg("irc_custom", msg); // need to change for access to server name
 		}
@@ -60,10 +69,11 @@ void	Channel::addUser(Client* client)
 		}
 		if (auto it = _users.find(client->getNick()) == _users.end())
 		{
-			std::cout << "[DEBUG] Client added to Channel!" << std::endl;
+			std::cout << "[DEBUG] Client added !" << client->getNick() << " to " << this->getName() << std::endl;
 			_users[client->getNick()] = client;
 			client->sendMsg("irc_custom", "available commands: JOIN, MODE, KICK, PART, QUIT, PRIVMSG/NOTICE"); // use  irssi client as a reference
-			removeInvUsers(client);
+			if (_invOnly)
+				removeInvUsers(client); // check if inv is toggled on
 		}
 		else
 			std::cout << "[DEBUG] Client is already part of the Channel!" << std::endl;

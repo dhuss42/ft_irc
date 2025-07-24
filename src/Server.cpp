@@ -393,7 +393,10 @@ void	Server::removeChannel(Channel* channel)
 
 Channel*	Server::getChannel(std::string name)
 {
-	return (_channelList[name]);
+	auto it = _channelList.find(name);
+	if (it != _channelList.end())
+		return (it->second);
+	return (nullptr);
 }
 
 // need to think more about how I want to run things for thins function

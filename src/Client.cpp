@@ -31,6 +31,7 @@ void Client::pseudoParser(std::string message)
 	std::cout << MAGENTA << "===========pseudo Parser==========" WHITE << std::endl;
 	if (message.find("PASS") == 0)
 	{
+		std::cout << "[DEBUG] PASS" << std::endl;
 		pos = message.find(" ");
 		// compare what follows the space to the password
 		// set registered to true
@@ -42,35 +43,56 @@ void Client::pseudoParser(std::string message)
 	}
 	else if (message.find("NICK") == 0)
 	{
+		std::cout << "[DEBUG] NICK" << std::endl;
 		_nick = message.substr(6);
 		// copy every following space into client Nick
 		_nickSet = true;
 	}
 	else if (message.find("USER") == 0)
 	{
+		std::cout << "[DEBUG] USER" << std::endl;
 		// copy every following space into client Users
 		_usernameSet = true;
 	}
-	else if (message.find("JOIN"))
+	else if (message.find("JOIN") == 0)
 	{
-			Channel *channel = new Channel(message.substr(5));
-			if (_server->isChannel(channel->getName()))
+		std::cout << "[DEBUG] JOIN: " << message << std::endl;
+		std::size_t pos = message.find('#');
+		if (pos == std::string::npos)
+		{
+
+		}
+		else
+		{
+			if (_server->isChannel(message.substr(pos)))
+				std::cout << "channel exists already" << std::endl;
+			Channel *channel = _server->getChannel(message.substr(pos));
+			if (!channel)
+			{
+				std::cout << "[DEBUG] adding channel with name " << message.substr(pos) << std::endl;
+				channel = new Channel(message.substr(pos));
 				_server->addChannel(channel);
-			else
-				delete channel;
+			}
 			channel->addUser(this);
+		}
 	}
-	else if (message.find("PRIVMSG")) //PRIVMSG chan msg
+	else if (message.find("PRIVMSG") == 0) //PRIVMSG chan msg
 	{
-		// wanted to test channel broadcasting maybe need to wait for correct parser logic
+		// PRIVMSG #chan :hallo
+		// currently segfaults because shitty pseudoparser
 		std::cout << "[DEBUG] PRIVMSG" << std::endl;
 		std::cout << message << std::endl;
 		std::cout << message.length() << std::endl;
-		if (message.find("JOIN") != std::string::npos)
-		{
-			Channel *channel = _server->getChannel(message.substr(8, 4)); // channel name is 4 chars
-			channel->broadcast(message.substr(13), this);
-		}
+		std::size_t pos = message.find('#');
+		std::cout << "[DEBUG] pos " << pos << std::endl;
+		std::size_t pos2 = message.find(':');
+		std::cout << "[DEBUG] pos2 " << pos2 << std::endl;
+		Channel *channel = _server->getChannel(message.substr(pos, 5)); // channel name can only be 4 chars -> better extract everything up to colon
+		std::cout << "[DEBUG] channel name " << message.substr(pos, 5) << std::endl;
+		if (channel)
+			std::cout << "[DEBUG] exists" << message.substr(pos, 5) << std::endl;
+		channel->broadcast(message.substr(pos2 + 1), this); // better extract everything after colon
+		std::cout << "[DEBUG] test2" << std::endl;
 	}
 }
 
