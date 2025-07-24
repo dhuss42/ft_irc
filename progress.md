@@ -193,3 +193,7 @@
 - added basic methods and attributes for Channels class
 - worked on server -> Channel logic
 	- needs further work also handling adding users
+
+## ====== Day 15 == 24.07 ====== (1h)
+- worked on sending messages in channels
+	- needs proper parser logic to handle incoming messages from irssi

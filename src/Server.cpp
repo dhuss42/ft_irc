@@ -369,7 +369,12 @@ bool	Server::isChannel(const std::string& name)
 	return (_channelList.find(name) != _channelList.end());
 }
 
-//================ add Channels and Users ================//
+bool	Server::isClient(const std::string& name)
+{
+	return (_clientList.find(name) != _clientList.end());
+}
+
+//================ add Channels and Clients ================//
 
 void	Server::addChannel(Channel* channel)
 {
@@ -379,7 +384,6 @@ void	Server::addChannel(Channel* channel)
 
 void	Server::removeChannel(Channel* channel)
 {
-
 	if (channel && isChannel(channel->getName()))
 	{
 		delete channel;
@@ -387,20 +391,27 @@ void	Server::removeChannel(Channel* channel)
 	}
 }
 
-// Channel*	Server::getChannel(void)
-// {
-	
-// }
+Channel*	Server::getChannel(std::string name)
+{
+	return (_channelList[name]);
+}
 
-// void	Server::addChannel(Client* client)
-// {
+// need to think more about how I want to run things for thins function
+void	Server::addClient(Client* client)
+{
+	if (client && !isClient(client->getNick()))
+	{
+		_clientList[client->getNick()] = client;
+	}
+}
 
-// }
-
-// void	Server::removeChannel(Client* client)
-// {
-
-// }
+void	Server::removeClient(Client* client)
+{
+	if (client && isClient(client->getNick()))
+	{
+		
+	}
+}
 
 // Client*	Server::getClient(void)
 // {

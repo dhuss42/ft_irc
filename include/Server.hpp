@@ -67,15 +67,16 @@ class Server
 		
 		//======= verify =======//
 		bool	isChannel(const std::string& name);
+		bool	isClient(const std::string& name);
 
-		//======= Add Channels and Users =======//
+		//======= Add Channels and Clients =======//
 		void	addChannel(Channel* channel);
 		void	removeChannel(Channel* channel);
-		Channel*	getChannel(void);
+		Channel*	getChannel(std::string name);
 
-		void	addChannel(Client* client);
-		void	removeChannel(Client* client);
-		Client*	getClient(void);
+		void	addClient(Client* client);
+		void	removeClient(Client* client);
+		Client*	getClient(void); // not sure if needed
 	};
 
 

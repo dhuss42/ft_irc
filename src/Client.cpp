@@ -1,10 +1,9 @@
 #include "Client.hpp"
 
-// Thoughts on Inheritance
-// 	user inhertis from client
-//  service inherits from client
-//  moderator inherits from user
 
+// it might make sense to pass pollfd, this would save me from having two unorderedmaps with clients
+// I could just have the clients nick and a pointer to the client
+// instead of having to containers I could also extract the value I need
 Client::Client(int fd, Server* server) : _nick("default"), _server(server), _socket(fd)
 {
 	(void) _server;
@@ -29,6 +28,7 @@ void Client::pseudoParser(std::string message)
 	std::size_t pos = 0;
 	(void) pos;
 
+	std::cout << MAGENTA << "===========pseudo Parser==========" WHITE << std::endl;
 	if (message.find("PASS") == 0)
 	{
 		pos = message.find(" ");
@@ -53,10 +53,24 @@ void Client::pseudoParser(std::string message)
 	}
 	else if (message.find("JOIN"))
 	{
-
-		Channel *channel = new Channel(message.substr(5));
-		_server->addChannel(channel);
-		channel->addUser(this);
+			Channel *channel = new Channel(message.substr(5));
+			if (_server->isChannel(channel->getName()))
+				_server->addChannel(channel);
+			else
+				delete channel;
+			channel->addUser(this);
+	}
+	else if (message.find("PRIVMSG")) //PRIVMSG chan msg
+	{
+		// wanted to test channel broadcasting maybe need to wait for correct parser logic
+		std::cout << "[DEBUG] PRIVMSG" << std::endl;
+		std::cout << message << std::endl;
+		std::cout << message.length() << std::endl;
+		if (message.find("JOIN") != std::string::npos)
+		{
+			Channel *channel = _server->getChannel(message.substr(8, 4)); // channel name is 4 chars
+			channel->broadcast(message.substr(13), this);
+		}
 	}
 }
 
