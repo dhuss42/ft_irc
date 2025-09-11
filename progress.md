@@ -197,3 +197,14 @@
 ## ====== Day 15 == 24.07 ====== (2h)
 - worked on sending messages in channels
 	- needs proper formating for being displayed in channels
+
+## ====== Day 16 == 10.09 ====== 
+- returned after 6 weeks, need to identify what is not working at the moment  
+- Problem with communication inside channels, two users can join the same channel but do not receive the messages  
+- clients connecting seem to skip the first letter of their name  
+	- could be because of terrible presudo parser  
+- First commands needed to be handled by parser should be -> see Day 11 https://modern.ircdocs.horse/#connection-registration 
+	- CAP LS 302 -> for server capabilities
+	- JOIN
+	- PASS
+	- NICK

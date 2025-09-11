@@ -39,7 +39,7 @@ void	Channel::broadcast(const std::string& msg, Client* sender)
 	{
 		int counter = 0;
 		std::cout << "[DEBUG] inside if(sender)" << std::endl;
-		std::cout << "[DEBUG] _users.size()" << _users.size() << std::endl;
+		std::cout << "[DEBUG] _users.size(): " << _users.size() << std::endl;
 
 		for (auto it = _users.begin(); it != _users.end(); ++it)
 		{
