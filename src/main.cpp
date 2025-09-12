@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
+/*   By: maustel <maustel@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:23 by dhuss             #+#    #+#             */
-/*   Updated: 2025/07/07 15:57:49 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/08 17:35:45 by maustel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 
 // handle signals here or inside the Server class
 // 	SIGINT
-//	
+//
 
 int	main(int argc, char*argv[])
 {

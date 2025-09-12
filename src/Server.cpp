@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
+/*   By: maustel <maustel@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/07/07 16:03:54 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/09 13:08:18 by maustel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ pollfd	createPollfd()
 	catch(const std::exception& e) {
 		Errors::handleErrors(e);
 	}
-	
+
 	return (sock);
 }
 
@@ -273,7 +273,7 @@ void	Server::handlePollRevents()
 				else
 					closedConnection(it);
 			}
-			else if (it->revents & (POLLHUP | POLLERR | POLLNVAL)) 
+			else if (it->revents & (POLLHUP | POLLERR | POLLNVAL))
 				closedConnection(it);
 			else
 				++it;
@@ -309,7 +309,7 @@ void	Server::serverLoop()
 					sleep(1);
 				else
 				{
-					// std::cout << MAGENTA "[DEBUGG] poll() has returned a positive value" WHITE << std::endl;
+					std::cout << MAGENTA "[DEBUGG] poll() has returned a positive value" WHITE << std::endl;
 					handlePollRevents();
 				}
 			}
@@ -412,7 +412,7 @@ void	Server::removeClient(Client* client)
 {
 	if (client && isClient(client->getNick()))
 	{
-		
+
 	}
 }
 

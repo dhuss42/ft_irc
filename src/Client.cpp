@@ -29,6 +29,7 @@ void Client::pseudoParser(std::string message)
 	(void) pos;
 
 	std::cout << MAGENTA << "===========pseudo Parser==========" WHITE << std::endl;
+	std::cout << message << std::endl;
 	if (message.find("PASS") == 0)
 	{
 		std::cout << "[DEBUG] PASS" << std::endl;
@@ -139,10 +140,10 @@ int	Client::receiveMsg()
 	else
 	{
 		// std::cout << YELLOW "[DEBUGG] recv is non negative" WHITE << std::endl;
-		
+
 		std::string fullBuffer = _remainder + std::string(tmp, received);
 		_remainder = "";
-		
+
 		std::size_t pos;
 		while ((pos = fullBuffer.find("\r\n")) != std::string::npos)
 		{

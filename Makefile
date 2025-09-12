@@ -14,7 +14,7 @@ SRCS = $(addprefix $(SRC_DIR)/, $(CPPFILES))
 OBJS = $(addprefix $(OBJ_DIR)/, $(CPPFILES:.cpp=.o))
 
 INCLUDE = -I./include
-FLAGS = -Wall -Werror -Wextra -g -std=c++17 $(INCLUDE)
+FLAGS = -Wall -Wextra -g -std=c++17 $(INCLUDE)	#-Werror
 NAME = ircserv
 
 $(NAME) : $(OBJS)
