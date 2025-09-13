@@ -3,9 +3,11 @@
 
 #include "ft_irc.hpp"
 #include "Channel.hpp"
-#include "Server.hpp"
+#include "Server.hpp"	//put class includes in the end of file(?)
+#include "Message.hpp"	//put class includes in the end of file(?)
 
 class Server;
+class Message;
 
 class Client
 {
@@ -39,6 +41,7 @@ class Client
 		Client(int fd, Server* server);
 		~Client();
 
+	Message parser(std::string message);
 	void	pseudoParser(std::string message);
 	void	sendMsg(std::string name, std::string reply);
 	int		authentication();

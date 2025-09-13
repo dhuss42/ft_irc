@@ -8,7 +8,7 @@
 [] read again subject
 [x] try if push to repo works
 [x] try out commands we have to implement with official server
-[] create git branch Milena
+[x] create git branch Milena
 
 ## ====== Day 1 == 08.09.2025 ======
 - created new access token and did first push on github
@@ -78,12 +78,62 @@
     JOIN
     MSG
 
-## ==== QUESTIONS ====
-- David Irc server:
-	- connecting works, but then further commands dont arrive, because
-		it does not remain connected (?) Irssi: Not connected to server -> needs password at connection
-	- why at connection from client to server it arrives the join command?
+## ====== Day 5 == 12.09.2025 ======
+- Read authentication file: https://modern.ircdocs.horse/#connection-registration
 
+- in our IRC server the commands during registration are:
+    ## --- initial connection phase ---
+    - CAP LS 302 -> answer from server: list of available capabilities
+    ## --- capability negotiation ---
+    - JOIN : (client asks if this command exists)-> server acknowledges or rejects
+    - CAP END
+    ## --- authentication phase ---
+    - PASS <password> -> server accepts or rejects
+    ## --- registration phase ---
+    - NICK <nickname> -> error if nickname in use, otherwise accept
+    - USER <username> <hostname> <servername> :<realname> -> server: sends welcome message
+    ## --- post registration phase ---
+    - MODE <nickname> +i -> server: confirms mode change
+    - WHOS <nickname> (Requests information about users matching nickname) -> server: Send WHO replies
+    ## --- keep alive ---
+    - PING irc_custom -> server responds: PONG irc_custom
+
+- commands to handle:
+    ## --- server commands ---
+    - CAP
+    - PING
+    - NOTICE
+    - PASS
+    - QUIT
+    ## --- client commands ---
+    - PRIVMSG -> (?) maybe channel command?
+    - NICK
+    - USER
+    - WHO
+    ## --- channel commands ---
+    - JOIN
+    - PART
+    - KICK
+    - MODE
+    - TOPIC
+    - INVITE
+
+todo:
+[] think about parsing structure
+    - how to organize command and options?
+    - start with simple commands and no structure
+    - look up commands in manual
+    - test commands in existing network with options
+    - test commands in our server and check what happens so far
+
+## ====== Day 6 == 13.09.2025 ======
+- reading about good practice for irc perser
+    https://modern.ircdocs.horse/impl.html
+
+
+
+
+## ==== QUESTIONS ====
 - Parser job:
     - if command does not exist or not enough parameters -> is handled already by irssi
     - follow rules of protocol (for example nickname has maximum 15 char(?))
@@ -93,8 +143,12 @@
 
 - Parser = command parsing + command handlers?
 - parser in ClientClass?
-- how to handle send private messages -> PRIVMSG <user> :<message-content> --- but in irssi: "/msg <user> private <message-content>"
 
-- authenticate -> ?
+- do we have sendToCLient function?
+    -> yes. But: not working here
+    else if (message.find("CAP LS 302")  == 0)
+	{
+		sendMsg("irc_custom", "CAP * LS :");
+	}
 
-
+- at registration phase: MODE <nickname> +i -> at nickname the first letter isnt included

@@ -8,7 +8,9 @@ CPPFILES = \
 	Server.cpp \
 	Client.cpp \
 	Channel.cpp \
-	Errors.cpp
+	Errors.cpp \
+	Message.cpp \
+	Parser.cpp
 
 SRCS = $(addprefix $(SRC_DIR)/, $(CPPFILES))
 OBJS = $(addprefix $(OBJ_DIR)/, $(CPPFILES:.cpp=.o))
