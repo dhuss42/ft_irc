@@ -126,6 +126,13 @@ todo:
     - test commands in existing network with options
     - test commands in our server and check what happens so far
 
+## ====== Day 6 == 13.09.2025 ======
+- reading about good practice for irc perser
+    https://modern.ircdocs.horse/impl.html
+
+
+
+
 ## ==== QUESTIONS ====
 - Parser job:
     - if command does not exist or not enough parameters -> is handled already by irssi
@@ -138,4 +145,9 @@ todo:
 - parser in ClientClass?
 
 - do we have sendToCLient function?
+    -> yes. But: not working here
+    else if (message.find("CAP LS 302")  == 0)
+	{
+		sendMsg("irc_custom", "CAP * LS :");
+	}
 

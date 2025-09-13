@@ -42,6 +42,11 @@ void Client::pseudoParser(std::string message)
 	{
 		sendMsg("irc_custom", "CAP * LS :"); // get the name somewhere
 	}
+	else if (message.find("PING")  == 0)
+	{
+		std::cout << " [DEBUG] PING" << std::endl;
+		sendMsg("irc_custom", "PONG irc_custom"); // get the name somewhere
+	}
 	else if (message.find("NICK") == 0)
 	{
 		std::cout << "[DEBUG] NICK" << std::endl;
