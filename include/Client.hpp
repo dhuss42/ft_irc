@@ -41,7 +41,7 @@ class Client
 		Client(int fd, Server* server);
 		~Client();
 
-	Message Parser(std::string message);
+	Message parser(std::string message);
 	void	pseudoParser(std::string message);
 	void	sendMsg(std::string name, std::string reply);
 	int		authentication();

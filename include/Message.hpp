@@ -28,7 +28,7 @@ class Message
 		Message();
 		~Message();
 		Message(const Message &other);
-		MEssage &operator=(const Message &other);
+		Message& operator=(const Message &other);
 };
 
 

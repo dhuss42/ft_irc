@@ -151,3 +151,4 @@ todo:
 		sendMsg("irc_custom", "CAP * LS :");
 	}
 
+- at registration phase: MODE <nickname> +i -> at nickname the first letter isnt included
