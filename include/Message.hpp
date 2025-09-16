@@ -29,6 +29,8 @@ class Message
 		~Message();
 		Message(const Message &other);
 		Message& operator=(const Message &other);
+
+		void splitMessage(std::string rawMessage);
 };
 
 

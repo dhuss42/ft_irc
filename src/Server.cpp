@@ -6,7 +6,7 @@
 /*   By: maustel <maustel@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/09 13:08:18 by maustel          ###   ########.fr       */
+/*   Updated: 2025/09/16 15:35:10 by maustel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,10 +259,10 @@ void	Server::handlePollRevents()
 		newClient();
 	else
 	{
-		// std::cout << YELLOW "[DEBUGG] entered else in handlePollRevents()" WHITE << std::endl;
+		std::cout << YELLOW "[DEBUGG] entered else in handlePollRevents()" WHITE << std::endl;
 		for (auto it = _sockets.begin(); it != _sockets.end();)
 		{
-			// std::cout << YELLOW "[DEBUGG] entered for in handlePollRevents()" WHITE << std::endl;
+			std::cout << YELLOW "[DEBUGG] entered for in handlePollRevents()" WHITE << std::endl;
 			if (it->revents & POLL_IN)
 			{
 				if (_clientfd[it->fd]->receiveMsg() != -1)

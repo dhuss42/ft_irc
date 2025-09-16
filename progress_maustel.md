@@ -94,7 +94,7 @@
     - USER <username> <hostname> <servername> :<realname> -> server: sends welcome message
     ## --- post registration phase ---
     - MODE <nickname> +i -> server: confirms mode change
-    - WHOS <nickname> (Requests information about users matching nickname) -> server: Send WHO replies
+    - WHOIS <nickname> (Requests information about users matching nickname) -> server: Send WHO replies
     ## --- keep alive ---
     - PING irc_custom -> server responds: PONG irc_custom
 
@@ -109,7 +109,7 @@
     - PRIVMSG -> (?) maybe channel command?
     - NICK
     - USER
-    - WHO
+    - WHOIS
     ## --- channel commands ---
     - JOIN
     - PART
@@ -130,13 +130,46 @@ todo:
 - reading about good practice for irc perser
     https://modern.ircdocs.horse/impl.html
 
+- decided how to structure parsing
+- created class message
+- started with parser
+- idea:
+    - split raw message into command and vector of parameters
+    - while splitting check if there are any ' ' (not valid) or ':' (after that, rest of raw message is one parameter)
+    - then go to specific handlers
 
+- to do:
+    - parsing function devided into steps and single functions for each step
 
+## ====== Day 7 == 16.09.2025 ======
+- Info: irssi takes commands without ':' and adds them automatically
+    - example: /topic #<channel> :this is the topic of the channel
+        ->in irssi I type: /topic #<channel> this is the topic of the channel
+        ->in server arrives: /topic #<channel> :this is the topic of the channel
+- also too many qhitespaces are eliminated by irssi
 
+- finished split function
+- problem: command is empty in USER and JOIN at registration phase -> solved
+
+- starting with most important handlerfunctions to make it possible to connect
+
+- problem: parser prototype seems to not connect properly
+
+- to do:
+    - make run the parser prototype (compare with pseudoparser and test)
+
+    - in server:
+        - getName
+        - getPassword
+    - (?) -> handler functions directly in server??
+    - improve handler functions with exceptions instead of errormessages and mor functionalities
+    - maybe write operator overload function << for message to print the whole message for debugging
 ## ==== QUESTIONS ====
 - Parser job:
     - if command does not exist or not enough parameters -> is handled already by irssi
+    - but commands we do not handle have to throw error message
     - follow rules of protocol (for example nickname has maximum 15 char(?))
+    - forbidden channel names
     - check for options
     - handle / execute functions (that will be written by david)
     - if required, send response
@@ -144,11 +177,14 @@ todo:
 - Parser = command parsing + command handlers?
 - parser in ClientClass?
 
-- do we have sendToCLient function?
+[x] do we have sendToCLient function?
     -> yes. But: not working here
-    else if (message.find("CAP LS 302")  == 0)
+    else if (message.find("CAP  LS 302")  == 0)
 	{
 		sendMsg("irc_custom", "CAP * LS :");
 	}
+    -> yes it works, it gets translated as "Capabilities supported:"
 
 - at registration phase: MODE <nickname> +i -> at nickname the first letter isnt included
+
+- (???) my parser does not keep the conenction to server, why??

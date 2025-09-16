@@ -41,7 +41,7 @@ class Client
 		Client(int fd, Server* server);
 		~Client();
 
-	Message parser(std::string message);
+	Message parser(std::string rawMessage);
 	void	pseudoParser(std::string message);
 	void	sendMsg(std::string name, std::string reply);
 	int		authentication();
@@ -70,6 +70,17 @@ class Client
 
 	void	setRemainder(std::string str);
 	std::string getRemainder(void);
+
+	//handler functions
+	// not sure if bool or void
+	bool handleCap(Message message);
+	bool handleJoin(Message message);
+	bool handlePass(Message message);
+	bool handleNick(Message message);
+	bool handleUser(Message message);
+	bool handleMode(Message message);
+	bool handleWhois(Message message);
+	bool handlePing(Message message);
 };
 
 #endif
