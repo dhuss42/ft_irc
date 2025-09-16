@@ -3,14 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maustel <maustel@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2025/09/16 15:59:20 by dhuss            ###   ########.fr       */
-=======
-/*   Updated: 2025/09/16 15:35:10 by maustel          ###   ########.fr       */
->>>>>>> master
+/*   Updated: 2025/09/16 16:26:26 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -424,11 +420,8 @@ void	Server::removeClient(Client* client)
 // {
 
 // }
-<<<<<<< HEAD
 
 std::string& Server::getName(void)
 {
 	return (_name);
 }
-=======
->>>>>>> master
