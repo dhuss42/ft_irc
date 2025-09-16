@@ -94,7 +94,7 @@
     - USER <username> <hostname> <servername> :<realname> -> server: sends welcome message
     ## --- post registration phase ---
     - MODE <nickname> +i -> server: confirms mode change
-    - WHOS <nickname> (Requests information about users matching nickname) -> server: Send WHO replies
+    - WHOIS <nickname> (Requests information about users matching nickname) -> server: Send WHO replies
     ## --- keep alive ---
     - PING irc_custom -> server responds: PONG irc_custom
 
@@ -109,7 +109,7 @@
     - PRIVMSG -> (?) maybe channel command?
     - NICK
     - USER
-    - WHO
+    - WHOIS
     ## --- channel commands ---
     - JOIN
     - PART
@@ -151,6 +151,17 @@ todo:
 - finished split function
 - problem: command is empty in USER and JOIN at registration phase -> solved
 
+- starting with most important handlerfunctions to make it possible to connect
+
+- to do:
+    - make run the parser prototype (compare with pseidoparser and test)
+
+    - in server:
+        - getName
+        - getPassword
+    - (?) -> handler functions directly in server??
+    - improve handler functions with exceptions instead of errormessages and mor functionalities
+    - maybe write operator overload function << for message to print the whole message for debugging
 ## ==== QUESTIONS ====
 - Parser job:
     - if command does not exist or not enough parameters -> is handled already by irssi
