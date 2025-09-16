@@ -21,6 +21,7 @@
 #include <iomanip>
 #include <string>
 #include <cstring>
+#include <sstream>
 
 #include "Errors.hpp"
 /*=================== Colours ==================*/

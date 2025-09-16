@@ -59,9 +59,10 @@ bool Client::handlePass(Message message)
 	std::cout << "[DEBUG] PASS: " << std::endl;
 	if (message.params[1].empty() || message.params[1] != "123") //change 123 to getPassword
 	{
-		sendMsg("irc_custom", "wrong password! Refused!");
-		return (false);	//do not connect
+		// sendMsg("irc_custom", "wrong password! Refused!");
+		// return (false);	//do not connect
 	}
+	this->_registered + true;
 	return (true);
 }
 

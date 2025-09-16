@@ -218,6 +218,6 @@
 	- currently not displaying the message in irssi because of the way the server is replying to irssi
 	- need to read upon the correct way for it to respond
 - need proper sendmsg method
-	- implement username
-	- hostname
+	[x] implement username
+	[x] hostname
 	- correct string formating for reply to be acknoledged by irssi
