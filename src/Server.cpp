@@ -3,10 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
+/*   By: maustel <maustel@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/09/16 15:59:20 by dhuss            ###   ########.fr       */
+=======
+/*   Updated: 2025/09/16 15:35:10 by maustel          ###   ########.fr       */
+>>>>>>> master
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,10 +263,10 @@ void	Server::handlePollRevents()
 		newClient();
 	else
 	{
-		// std::cout << YELLOW "[DEBUGG] entered else in handlePollRevents()" WHITE << std::endl;
+		std::cout << YELLOW "[DEBUGG] entered else in handlePollRevents()" WHITE << std::endl;
 		for (auto it = _sockets.begin(); it != _sockets.end();)
 		{
-			// std::cout << YELLOW "[DEBUGG] entered for in handlePollRevents()" WHITE << std::endl;
+			std::cout << YELLOW "[DEBUGG] entered for in handlePollRevents()" WHITE << std::endl;
 			if (it->revents & POLL_IN)
 			{
 				if (_clientfd[it->fd]->receiveMsg() != -1)
@@ -309,7 +313,7 @@ void	Server::serverLoop()
 					sleep(1);
 				else
 				{
-					// std::cout << MAGENTA "[DEBUGG] poll() has returned a positive value" WHITE << std::endl;
+					std::cout << MAGENTA "[DEBUGG] poll() has returned a positive value" WHITE << std::endl;
 					handlePollRevents();
 				}
 			}
@@ -420,8 +424,11 @@ void	Server::removeClient(Client* client)
 // {
 
 // }
+<<<<<<< HEAD
 
 std::string& Server::getName(void)
 {
 	return (_name);
 }
+=======
+>>>>>>> master

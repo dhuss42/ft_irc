@@ -1,4 +1,5 @@
 # include "test.hpp"
+#include <cstring>
 // create a socket
 // bind the socket
 // listen on the socket

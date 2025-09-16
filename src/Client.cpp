@@ -29,6 +29,7 @@ void Client::pseudoParser(std::string message)
 	(void) pos;
 
 	std::cout << MAGENTA << "===========pseudo Parser==========" WHITE << std::endl;
+	std::cout << message << std::endl;
 	if (message.find("PASS") == 0)
 	{
 		std::cout << "[DEBUG] PASS" << std::endl;
@@ -40,6 +41,11 @@ void Client::pseudoParser(std::string message)
 	else if (message.find("CAP LS 302")  == 0)
 	{
 		sendMsg("irc_custom", "CAP * LS :"); // get the name somewhere
+	}
+	else if (message.find("PING")  == 0)
+	{
+		std::cout << " [DEBUG] PING" << std::endl;
+		sendMsg("irc_custom", "PONG irc_custom"); // get the name somewhere
 	}
 	else if (message.find("NICK") == 0)
 	{
@@ -160,8 +166,9 @@ int	Client::receiveMsg()
 		{
 			_buffer = fullBuffer.substr(0, pos);
 			std::cout << BOLDCYAN << "[DEBUG] buffer: " << _buffer << RESET << std::endl;
-			pseudoParser(_buffer);
-			fullBuffer = fullBuffer.substr(pos + 2);
+			parser(_buffer);
+			// pseudoParser(_buffer);
+			fullBuffer = fullBuffer.substr(pos + 2);;
 		}
 		_remainder = fullBuffer;
 		if (!fullBuffer.empty())

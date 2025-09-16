@@ -1,5 +1,5 @@
 #include "test.hpp"
-
+#include <cstring>
 void	receiveMsg(int &connection)
 {
 	char buffer[512];
@@ -66,7 +66,7 @@ int	main()
 	}
 	else
 		std::cout << GREEN "connection established" WHITE << std::endl;
-	
+
 	bool loop = true;
 	while (loop)
 	{
