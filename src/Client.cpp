@@ -4,7 +4,7 @@
 // it might make sense to pass pollfd, this would save me from having two unorderedmaps with clients
 // I could just have the clients nick and a pointer to the client
 // instead of having to containers I could also extract the value I need
-Client::Client(int fd, Server* server) : _nick("default"), _server(server), _socket(fd)
+Client::Client(int fd, Server* server) : _nick("default"), _username("default"), _realname("default"), _hostname(server->getName()), _server(server), _socket(fd)
 {
 	(void) _server;
 }
@@ -44,14 +44,26 @@ void Client::pseudoParser(std::string message)
 	else if (message.find("NICK") == 0)
 	{
 		std::cout << "[DEBUG] NICK" << std::endl;
-		_nick = message.substr(6);
+		_nick = message.substr(5);
 		// copy every following space into client Nick
 		_nickSet = true;
 	}
 	else if (message.find("USER") == 0)
 	{
-		std::cout << "[DEBUG] USER" << std::endl;
-		// copy every following space into client Users
+		std::cout << "[DEBUG] USER " << std::endl;
+		std::cout << message << std::endl;
+
+		std::smatch matches;
+		std::regex pattern("^(USER) (\\S+) (\\S+) (\\S+) :(.+)$");
+		if (std::regex_match(message, matches, pattern))
+		{
+			_username = matches[2];
+			_hostname = matches[4];
+			_realname = matches[5];
+			std::cout << "[DEBUG] username: " << _username << std::endl;
+			std::cout << "[DEBUG] hostname: " << _hostname << std::endl; // not sure if better to have servername here or IP Address, this seems slower than doing it constructor
+			std::cout << "[DEBUG] realname: " << _realname << std::endl;
+		}
 		_usernameSet = true;
 	}
 	else if (message.find("JOIN") == 0)
@@ -139,17 +151,17 @@ int	Client::receiveMsg()
 	else
 	{
 		// std::cout << YELLOW "[DEBUGG] recv is non negative" WHITE << std::endl;
-		
+
 		std::string fullBuffer = _remainder + std::string(tmp, received);
 		_remainder = "";
-		
+
 		std::size_t pos;
 		while ((pos = fullBuffer.find("\r\n")) != std::string::npos)
 		{
 			_buffer = fullBuffer.substr(0, pos);
 			std::cout << BOLDCYAN << "[DEBUG] buffer: " << _buffer << RESET << std::endl;
 			pseudoParser(_buffer);
-			fullBuffer = fullBuffer.substr(pos + 2);;
+			fullBuffer = fullBuffer.substr(pos + 2);
 		}
 		_remainder = fullBuffer;
 		if (!fullBuffer.empty())
@@ -168,6 +180,8 @@ int	Client::receiveMsg()
 void	Client::sendMsg(std::string name, std::string reply)
 {
 	reply = ":" + name + " " + reply + "\r\n";
+	std::cout << "[DEBUG] current reply: " << name << std::endl;
+	std::cout << "[DEBUG] sendMsg to " << getNick() << " socket=" << _socket << " msg=" << reply << std::endl;
 	if (send(_socket, reply.c_str(), reply.size(), 0) <= 0) // uncertain about the zero at the moment
 	{
 		throw (Errors(ErrorCode::E_SND)); // uncertain about wether it bubbles up correctly to the next catch
@@ -258,6 +272,21 @@ void	Client::setRemainder(std::string str)
 std::string	Client::getRemainder(void)
 {
 	return(_remainder);
+}
+
+std::string	Client::getUsername()
+{
+	return (_username);
+}
+
+std::string	Client::getHostname()
+{
+	return (_hostname);
+}
+
+std::string	Client::getRealname()
+{
+	return (_realname);
 }
 
 // Constructor

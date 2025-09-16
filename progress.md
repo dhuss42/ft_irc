@@ -198,13 +198,26 @@
 - worked on sending messages in channels
 	- needs proper formating for being displayed in channels
 
-## ====== Day 16 == 10.09 ====== 
-- returned after 6 weeks, need to identify what is not working at the moment  
-- Problem with communication inside channels, two users can join the same channel but do not receive the messages  
-- clients connecting seem to skip the first letter of their name  
-	- could be because of terrible presudo parser  
-- First commands needed to be handled by parser should be -> see Day 11 https://modern.ircdocs.horse/#connection-registration 
+## ====== Day 16 == 10.09 ======
+- returned after 6 weeks, need to identify what is not working at the moment
+- Problem with communication inside channels, two users can join the same channel but do not receive the messages
+- clients connecting seem to skip the first letter of their name
+	- could be because of terrible presudo parser
+- First commands needed to be handled by parser should be -> see Day 11 https://modern.ircdocs.horse/#connection-registration
 	- CAP LS 302 -> for server capabilities
 	- JOIN
 	- PASS
 	- NICK
+
+## ====== Day 17 == 16.09 ======
+[x] get irssi running on campus
+[x] play around to get back into logic
+[x] fix naming bug in pseudoparser
+- think about the logic in creating a new channel
+- work on sending the message back to the server
+	- currently not displaying the message in irssi because of the way the server is replying to irssi
+	- need to read upon the correct way for it to respond
+- need proper sendmsg method
+	- implement username
+	- hostname
+	- correct string formating for reply to be acknoledged by irssi

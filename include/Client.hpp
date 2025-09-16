@@ -12,8 +12,8 @@ class Client
 	private:
 		std::string _nick;
 		std::string _username;
-		//  a netwide unique identifier
-		//	hostname
+		std::string _realname;
+		std::string _hostname;
 
 		Server*		_server;
 		int 		_socket;
@@ -58,6 +58,11 @@ class Client
 
 	std::string getNick() const;
 	void	setNick(std::string str);
+
+	std::string	getUsername();
+	std::string getHostname();
+	std::string getRealname();
+
 
 	char*	getBufferPtr(void);
 	size_t	getBufferSize(void);

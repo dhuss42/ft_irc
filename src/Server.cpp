@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/07/07 16:03:54 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/16 15:59:20 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ pollfd	createPollfd()
 	catch(const std::exception& e) {
 		Errors::handleErrors(e);
 	}
-	
+
 	return (sock);
 }
 
@@ -273,7 +273,7 @@ void	Server::handlePollRevents()
 				else
 					closedConnection(it);
 			}
-			else if (it->revents & (POLLHUP | POLLERR | POLLNVAL)) 
+			else if (it->revents & (POLLHUP | POLLERR | POLLNVAL))
 				closedConnection(it);
 			else
 				++it;
@@ -412,7 +412,7 @@ void	Server::removeClient(Client* client)
 {
 	if (client && isClient(client->getNick()))
 	{
-		
+
 	}
 }
 
@@ -420,3 +420,8 @@ void	Server::removeClient(Client* client)
 // {
 
 // }
+
+std::string& Server::getName(void)
+{
+	return (_name);
+}

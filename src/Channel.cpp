@@ -39,14 +39,24 @@ void	Channel::broadcast(const std::string& msg, Client* sender)
 	{
 		int counter = 0;
 		std::cout << "[DEBUG] inside if(sender)" << std::endl;
+		std::cout << "[DEBUG] sender is: " << sender->getNick() << std::endl;
 		std::cout << "[DEBUG] _users.size(): " << _users.size() << std::endl;
 
-		for (auto it = _users.begin(); it != _users.end(); ++it)
+		for (auto it = _users.begin(); it != _users.end(); it++)
 		{
 			std::cout << "[DEBUG] users: " << it->second->getNick() << std::endl;
 			std::cout << "[DEBUG] run: " << counter++ << std::endl;
+			std::cout << "[DEBUG] sender ptr: " << sender << std::endl;
+			std::cout << "[DEBUG] sender socket: " << sender->getSocket() << std::endl;
+			std::cout << "[DEBUG] user ptr:   " << it->second << std::endl;
+			std::cout << "[DEBUG] user socket:   " << it->second->getSocket() << std::endl;
 			if (it->second != sender)
-				it->second->sendMsg("irc_custom", msg); // need to change for access to server name
+			{
+				std::cout << "[DEBUG]" << "_user is not equal to sender" << std::endl;
+				std::string prefix = sender->getNick() + "!" + sender->getUsername() + "@" + sender->getHostname();
+				std::cout << "[DEBUG] prefix: " << prefix << std::endl;
+				it->second->sendMsg(prefix, msg);
+			}
 		}
 	}
 }
@@ -77,7 +87,7 @@ void	Channel::addUser(Client* client)
 		}
 		else
 			std::cout << "[DEBUG] Client is already part of the Channel!" << std::endl;
-		
+
 	}
 	// if the client exists
 	// add to map

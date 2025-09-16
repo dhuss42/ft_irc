@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:30 by dhuss             #+#    #+#             */
-/*   Updated: 2025/07/07 16:02:47 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/16 15:59:18 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,8 @@ class Server
 		void	initServer();
 		void	serverLoop();
 		void	handlePollRevents();
-		void	newClient();	
-		
+		void	newClient();
+
 		//======= verify =======//
 		bool	isChannel(const std::string& name);
 		bool	isClient(const std::string& name);
@@ -77,6 +77,9 @@ class Server
 		void	addClient(Client* client);
 		void	removeClient(Client* client);
 		Client*	getClient(void); // not sure if needed
+
+		//======= getters & setters =======//
+		std::string& getName(void);
 	};
 
 
