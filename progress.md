@@ -209,7 +209,7 @@
 	- PASS
 	- NICK
 
-## ====== Day 17 == 16.09 ======
+## ====== Day 17 == 16.09 ====== (6:45h)
 [x] get irssi running on campus
 [x] play around to get back into logic
 [x] fix naming bug in pseudoparser

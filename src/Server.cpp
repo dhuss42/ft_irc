@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/16 16:26:26 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/16 16:55:38 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,9 +230,13 @@ void	Server::newClient()
 		std::cout << GREEN "[DEBUGG] created accepted Socket" WHITE << std::endl;
 		Client* client = new Client(newConnection.fd, this);
 		if (client->authentication() == -1)
+		{
+			std::cout << "IT GOES INSIDE HERE THE IF ALWAYS WHEN NEW CLIENT" << std::endl;
 			delete client;
+		}
 		else
 		{
+			std::cout << "IT GOES INSIDE THE CORRECT ONE" << std::endl;
 			_clientfd[newConnection.fd] = client;
 			_clientList[client->getNick()] = client;
 			_sockets.push_back(newConnection);
