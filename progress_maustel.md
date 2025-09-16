@@ -130,13 +130,33 @@ todo:
 - reading about good practice for irc perser
     https://modern.ircdocs.horse/impl.html
 
+- decided how to structure parsing
+- created class message
+- started with parser
+- idea:
+    - split raw message into command and vector of parameters
+    - while splitting check if there are any ' ' (not valid) or ':' (after that, rest of raw message is one parameter)
+    - then go to specific handlers
 
+- to do:
+    - parsing function devided into steps and single functions for each step
 
+## ====== Day 7 == 16.09.2025 ======
+- Info: irssi takes commands without ':' and adds them automatically
+    - example: /topic #<channel> :this is the topic of the channel
+        ->in irssi I type: /topic #<channel> this is the topic of the channel
+        ->in server arrives: /topic #<channel> :this is the topic of the channel
+- also too many qhitespaces are eliminated by irssi
+
+- finished split function
+- problem: command is empty in USER and JOIN at registration phase -> solved
 
 ## ==== QUESTIONS ====
 - Parser job:
     - if command does not exist or not enough parameters -> is handled already by irssi
+    - but commands we do not handle have to throw error message
     - follow rules of protocol (for example nickname has maximum 15 char(?))
+    - forbidden channel names
     - check for options
     - handle / execute functions (that will be written by david)
     - if required, send response

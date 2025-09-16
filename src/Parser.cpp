@@ -12,20 +12,14 @@
 
 #include "Client.hpp"
 
-Message Client::parser(std::string raw_message)
+Message Client::parser(std::string rawMessage)
 {
 	Message message;
 
-	std::cout << "DEBUG [PARSER]: " << std::endl;
-	std::stringstream ss(raw_message);
-	std::string arg;
+	std::cout << YELLOW << "DEBUG [PARSER]: " << std::endl;
+	message.splitMessage(rawMessage);
 
-	//add check if ' ' (not valid) or ':' (all following works including ' ' get into params[i])
-	while (ss >> arg)
-	{
-		message.params.push_back(arg);
-	}
-
+	std::cout << "Command: " << message.command << std::endl;
 	for (auto it = message.params.begin(); it != message.params.end(); ++it)
 	{
 		std::cout << YELLOW << *it << RESET << std::endl;
