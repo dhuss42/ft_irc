@@ -153,8 +153,10 @@ todo:
 
 - starting with most important handlerfunctions to make it possible to connect
 
+- problem: parser prototype seems to not connect properly
+
 - to do:
-    - make run the parser prototype (compare with pseidoparser and test)
+    - make run the parser prototype (compare with pseudoparser and test)
 
     - in server:
         - getName
@@ -175,11 +177,14 @@ todo:
 - Parser = command parsing + command handlers?
 - parser in ClientClass?
 
-- do we have sendToCLient function?
+[x] do we have sendToCLient function?
     -> yes. But: not working here
-    else if (message.find("CAP LS 302")  == 0)
+    else if (message.find("CAP  LS 302")  == 0)
 	{
 		sendMsg("irc_custom", "CAP * LS :");
 	}
+    -> yes it works, it gets translated as "Capabilities supported:"
 
 - at registration phase: MODE <nickname> +i -> at nickname the first letter isnt included
+
+- (???) my parser does not keep the conenction to server, why??
