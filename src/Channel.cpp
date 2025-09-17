@@ -38,7 +38,7 @@ void	Channel::broadcast(const std::string& msg, Client* sender)
 			if (it->second != sender)
 			{
 				std::cout << "[DEBUG]" << "_user is not equal to sender" << std::endl;
-				std::string prefix = sender->getNick() + "!" + sender->getUsername() + "@" + sender->getHostname();
+				std::string prefix = sender->getNick() + "!" + sender->getUsername() + "@" + sender->getHostname() + " PRIVMSG " + getName() + " :";
 				std::cout << "[DEBUG] prefix: " << prefix << std::endl;
 				it->second->sendMsg(prefix, msg);
 			}
@@ -92,7 +92,7 @@ void	Channel::addUser(Client* client, const std::string& password)
 		}
 		else
 			std::cout << "[DEBUG] Client is already part of the Channel!" << std::endl;
-
+		printUsers();
 	}
 	// if the client exists
 	// add to map
@@ -101,6 +101,13 @@ void	Channel::addUser(Client* client, const std::string& password)
 	// user receives join message
 	// user receives channel topic
 	// user receives list of users who are on the channel including the user joining
+}
+
+void	Channel::printUsers(void)
+{
+	int i = 1;
+	for (auto it = _users.begin(); it != _users.end(); it++)
+		std::cout << GREEN "[DEBUG] [" << i++ << "] " << it->first << WHITE << std::endl;
 }
 
 void	Channel::removeUser(Client* client)
