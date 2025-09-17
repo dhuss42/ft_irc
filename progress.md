@@ -222,11 +222,11 @@
 	[x] hostname
 	- correct string formating for reply to be acknoledged by irssi
 
-## ====== Day 17 == 17.09 ====== ()
-[] look into correct string formating when sending replies
-[] look into broadcasting messages in channels
+## ====== Day 17 == 17.09 ====== (6:30h)
+[x] look into correct string formating when sending replies
+[x] look into broadcasting messages in channels
 [x] make pseudo-code for function verifying nicknames
-[] make an overview of things that still need do be implemented
+[x] make an overview of things that still need do be implemented
 
 Channel Stuff
 - reminder to implement delete channel when last member has left, except "!"
@@ -255,3 +255,6 @@ Messaging
 
 Casemapping
 - when new clients and channels are registered check wether the name exists already (Dan, dan)
+	- done for channels
+
+- currently server can send some messages back and forth but seems to hang after some messages and sometimes the server segfaults
