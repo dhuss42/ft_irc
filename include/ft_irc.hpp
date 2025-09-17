@@ -46,4 +46,9 @@
 #define BOLDCYAN    "\033[1m\033[36m"
 #define BOLDWHITE   "\033[1m\033[37m"
 
+/*=================== utils ==================*/
+bool	verifyChannelName(const std::string& name);
+void toLower(std::string& str);
+
+
 #endif

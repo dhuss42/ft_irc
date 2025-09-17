@@ -27,30 +27,11 @@ bool Client::handleCap(Message message)
 	{
 		std::cout << "[DEBUG] JOIN: " << std::endl;
 
-	// if (message.params[1].empty())
-	// {
-	// 	// sendMsg("irc_custom", "join is working"); //improve this reply maybe
-	// 	return (true);
-	// }
 
-	std::size_t pos = message.params[1].find('#');
-	if (pos == std::string::npos)
-	{
+		Channel* channel = _server->createChannel(message.params[1], this);
+		if (channel)
+			channel->addUser(this, message.params[2]);
 
-	}
-	else
-	{
-		if (_server->isChannel(message.params[1]))
-			std::cout << "channel exists already" << std::endl;
-		Channel *channel = _server->getChannel(message.params[1]);
-		if (!channel)
-		{
-			std::cout << "[DEBUG] adding channel with name " << message.params[1] << std::endl;
-			channel = new Channel(message.params[1]);
-			_server->addChannel(channel);
-		}
-		channel->addUser(this);
-	}
 	return (true);
 }
 

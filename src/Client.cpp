@@ -17,102 +17,102 @@ Client::~Client()
 }
 
 
-/*----------------------------------------------------------*/
-/* NOT FOR THE FINAL PRODUCT								*/
-/* "parses" the msgs sent by irssi							*/
-/*	- only implemented for authentication handshake to work */
-/* should be handled by the parser							*/
-/*----------------------------------------------------------*/
-void Client::pseudoParser(std::string message)
-{
-	std::size_t pos = 0;
-	(void) pos;
+// /*----------------------------------------------------------*/
+// /* NOT FOR THE FINAL PRODUCT								*/
+// /* "parses" the msgs sent by irssi							*/
+// /*	- only implemented for authentication handshake to work */
+// /* should be handled by the parser							*/
+// /*----------------------------------------------------------*/
+// void Client::pseudoParser(std::string message)
+// {
+// 	std::size_t pos = 0;
+// 	(void) pos;
 
-	std::cout << MAGENTA << "===========pseudo Parser==========" WHITE << std::endl;
-	std::cout << message << std::endl;
-	if (message.find("PASS") == 0)
-	{
-		std::cout << "[DEBUG] PASS" << std::endl;
-		pos = message.find(" ");
-		// compare what follows the space to the password
-		// set registered to true
-		_registered = true;
-	}
-	else if (message.find("CAP LS 302")  == 0)
-	{
-		sendMsg("irc_custom", "CAP * LS :"); // get the name somewhere
-	}
-	else if (message.find("PING")  == 0)
-	{
-		std::cout << " [DEBUG] PING" << std::endl;
-		sendMsg("irc_custom", "PONG irc_custom"); // get the name somewhere
-	}
-	else if (message.find("NICK") == 0)
-	{
-		std::cout << "[DEBUG] NICK" << std::endl;
-		_nick = message.substr(5);
-		// copy every following space into client Nick
-		_nickSet = true;
-	}
-	else if (message.find("USER") == 0)
-	{
-		std::cout << "[DEBUG] USER " << std::endl;
-		std::cout << message << std::endl;
+// 	std::cout << MAGENTA << "===========pseudo Parser==========" WHITE << std::endl;
+// 	std::cout << message << std::endl;
+// 	if (message.find("PASS") == 0)
+// 	{
+// 		std::cout << "[DEBUG] PASS" << std::endl;
+// 		pos = message.find(" ");
+// 		// compare what follows the space to the password
+// 		// set registered to true
+// 		_registered = true;
+// 	}
+// 	else if (message.find("CAP LS 302")  == 0)
+// 	{
+// 		sendMsg("irc_custom", "CAP * LS :"); // get the name somewhere
+// 	}
+// 	else if (message.find("PING")  == 0)
+// 	{
+// 		std::cout << " [DEBUG] PING" << std::endl;
+// 		sendMsg("irc_custom", "PONG irc_custom"); // get the name somewhere
+// 	}
+// 	else if (message.find("NICK") == 0)
+// 	{
+// 		std::cout << "[DEBUG] NICK" << std::endl;
+// 		_nick = message.substr(5);
+// 		// copy every following space into client Nick
+// 		_nickSet = true;
+// 	}
+// 	else if (message.find("USER") == 0)
+// 	{
+// 		std::cout << "[DEBUG] USER " << std::endl;
+// 		std::cout << message << std::endl;
 
-		std::smatch matches;
-		std::regex pattern("^(USER) (\\S+) (\\S+) (\\S+) :(.+)$");
-		if (std::regex_match(message, matches, pattern))
-		{
-			_username = matches[2];
-			_hostname = matches[4];
-			_realname = matches[5];
-			std::cout << "[DEBUG] username: " << _username << std::endl;
-			std::cout << "[DEBUG] hostname: " << _hostname << std::endl; // not sure if better to have servername here or IP Address, this seems slower than doing it constructor
-			std::cout << "[DEBUG] realname: " << _realname << std::endl;
-		}
-		_usernameSet = true;
-	}
-	else if (message.find("JOIN") == 0)
-	{
-		std::cout << "[DEBUG] JOIN: " << message << std::endl;
-		std::size_t pos = message.find('#');
-		if (pos == std::string::npos)
-		{
+// 		std::smatch matches;
+// 		std::regex pattern("^(USER) (\\S+) (\\S+) (\\S+) :(.+)$");
+// 		if (std::regex_match(message, matches, pattern))
+// 		{
+// 			_username = matches[2];
+// 			_hostname = matches[4];
+// 			_realname = matches[5];
+// 			std::cout << "[DEBUG] username: " << _username << std::endl;
+// 			std::cout << "[DEBUG] hostname: " << _hostname << std::endl; // not sure if better to have servername here or IP Address, this seems slower than doing it constructor
+// 			std::cout << "[DEBUG] realname: " << _realname << std::endl;
+// 		}
+// 		_usernameSet = true;
+// 	}
+// 	else if (message.find("JOIN") == 0)
+// 	{
+// 		std::cout << "[DEBUG] JOIN: " << message << std::endl;
+// 		std::size_t pos = message.find('#');
+// 		if (pos == std::string::npos)
+// 		{
 
-		}
-		else
-		{
-			if (_server->isChannel(message.substr(pos)))
-				std::cout << "channel exists already" << std::endl;
-			Channel *channel = _server->getChannel(message.substr(pos));
-			if (!channel)
-			{
-				std::cout << "[DEBUG] adding channel with name " << message.substr(pos) << std::endl;
-				channel = new Channel(message.substr(pos));
-				_server->addChannel(channel);
-			}
-			channel->addUser(this);
-		}
-	}
-	else if (message.find("PRIVMSG") == 0) //PRIVMSG chan msg
-	{
-		// PRIVMSG #chan :hallo
-		// currently segfaults because shitty pseudoparser
-		std::cout << "[DEBUG] PRIVMSG" << std::endl;
-		std::cout << message << std::endl;
-		std::cout << message.length() << std::endl;
-		std::size_t pos = message.find('#');
-		std::cout << "[DEBUG] pos " << pos << std::endl;
-		std::size_t pos2 = message.find(':');
-		std::cout << "[DEBUG] pos2 " << pos2 << std::endl;
-		Channel *channel = _server->getChannel(message.substr(pos, 5)); // channel name can only be 4 chars -> better extract everything up to colon
-		std::cout << "[DEBUG] channel name " << message.substr(pos, 5) << std::endl;
-		if (channel)
-			std::cout << "[DEBUG] exists" << message.substr(pos, 5) << std::endl;
-		channel->broadcast(message.substr(pos2 + 1), this); // better extract everything after colon
-		std::cout << "[DEBUG] test2" << std::endl;
-	}
-}
+// 		}
+// 		else
+// 		{
+// 			if (_server->isChannel(message.substr(pos)))
+// 				std::cout << "channel exists already" << std::endl;
+// 			Channel *channel = _server->getChannel(message.substr(pos));
+// 			if (!channel)
+// 			{
+// 				std::cout << "[DEBUG] adding channel with name " << message.substr(pos) << std::endl;
+// 				channel = new Channel(message.substr(pos));
+// 				_server->addChannel(channel);
+// 			}
+// 			channel->addUser(this);
+// 		}
+// 	}
+// 	else if (message.find("PRIVMSG") == 0) //PRIVMSG chan msg
+// 	{
+// 		// PRIVMSG #chan :hallo
+// 		// currently segfaults because shitty pseudoparser
+// 		std::cout << "[DEBUG] PRIVMSG" << std::endl;
+// 		std::cout << message << std::endl;
+// 		std::cout << message.length() << std::endl;
+// 		std::size_t pos = message.find('#');
+// 		std::cout << "[DEBUG] pos " << pos << std::endl;
+// 		std::size_t pos2 = message.find(':');
+// 		std::cout << "[DEBUG] pos2 " << pos2 << std::endl;
+// 		Channel *channel = _server->getChannel(message.substr(pos, 5)); // channel name can only be 4 chars -> better extract everything up to colon
+// 		std::cout << "[DEBUG] channel name " << message.substr(pos, 5) << std::endl;
+// 		if (channel)
+// 			std::cout << "[DEBUG] exists" << message.substr(pos, 5) << std::endl;
+// 		channel->broadcast(message.substr(pos2 + 1), this); // better extract everything after colon
+// 		std::cout << "[DEBUG] test2" << std::endl;
+// 	}
+// }
 
 // Needs adjustment after proper Parser handling
 int	Client::authentication()

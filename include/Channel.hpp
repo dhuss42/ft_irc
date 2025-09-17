@@ -32,20 +32,19 @@ class Channel
 		Channel(std::string name);
 		~Channel();
 
-		// ======= verfication =======//
-		bool	verifyChannelName(std::string name);
-
 		// ======= Adding and Removing Clients =======//
-		void	addUser(Client* client);
+		void	addUser(Client* client, const std::string& password);
 		void	addOperator(Client* client);
 		void	addInvUsers(Client* client);
 
 		void	removeUser(Client* client);
 		void	removeOperator(Client* client);
 		void	removeInvUsers(Client* client);
-		
+
 		// ======= send Messages =======//
 		void	broadcast(const std::string& msg, Client* sender);
+
+		void	changeTopic(const std::string& topic, const Client* client);
 
 		// ======= verify Clients =======//
 		bool	isOperator(const Client* client);

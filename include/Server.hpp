@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:30 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/16 15:59:18 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/17 13:09:45 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,8 @@ class Server
 		void	addChannel(Channel* channel);
 		void	removeChannel(Channel* channel);
 		Channel*	getChannel(std::string name);
+		Channel*	createChannel(std::string& name, Client *client);
+
 
 		void	addClient(Client* client);
 		void	removeClient(Client* client);

@@ -2,27 +2,12 @@
 
 //================ Orthodox Form ================//
 
-Channel::Channel(std::string name) : _name(name), _invOnly(false), _topicOp(false), _pswrdTgle(false), _usrLmtTgl(false)
+Channel::Channel(std::string name) : _name(name), _invOnly(false), _topicOp(true), _pswrdTgle(false), _usrLmtTgl(false)
 {
 }
 
 Channel::~Channel()
 {
-}
-
-// ======= verfication =======//
-bool	Channel::verifyChannelName(std::string name)
-{
-	if (name.size() >= 50)
-		return (false);
-	if (name[0] == '#' || name[0] == '&' || name[0] == '+' || name[0] == '!')
-	{
-		if (name.find(' ') != std::string::npos ||
-			name.find(',') != std::string::npos ||
-			name.find(7) != std::string::npos)
-			return (false);
-	}
-	return (false);
 }
 
 //================ Messaging ================//
@@ -61,9 +46,24 @@ void	Channel::broadcast(const std::string& msg, Client* sender)
 	}
 }
 
+//================ Channel Operations ================//
+void	Channel::changeTopic(const std::string& topic, const Client* client)
+{
+	if (_topicOp && !isOperator(client))
+	{
+		std::cout << "[DEBUG] only Operator can change topic and " << client->getNick() << " is not an operator for this channel" << std::endl;
+		return ;
+	}
+	else
+		setTopic(topic);
+	// check if only operator can change topic
+	// if so check if the client wanting to change the topic is an operator
+	// if so change the topic
+}
+
 //================ Adding & Removing clients ================//
 
-void	Channel::addUser(Client* client)
+void	Channel::addUser(Client* client, const std::string& password)
 {
 	if (client)
 	{
@@ -75,6 +75,11 @@ void	Channel::addUser(Client* client)
 		if (_invOnly && !isInvited(client))
 		{
 			std::cout << "[DEBUG] invite Only is set and user is not invited!" << std::endl;
+			return ;
+		}
+		if (_pswrdTgle && password != _password)
+		{
+			std::cout << "[DEBUG] password is set and wrong password!" << std::endl;
 			return ;
 		}
 		if (auto it = _users.find(client->getNick()) == _users.end())

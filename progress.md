@@ -221,3 +221,37 @@
 	[x] implement username
 	[x] hostname
 	- correct string formating for reply to be acknoledged by irssi
+
+## ====== Day 17 == 17.09 ====== ()
+[] look into correct string formating when sending replies
+[] look into broadcasting messages in channels
+[x] make pseudo-code for function verifying nicknames
+[] make an overview of things that still need do be implemented
+
+Channel Stuff
+- reminder to implement delete channel when last member has left, except "!"
+- make method creating different channel types
+[x] split the logic so that the parser calls this method and it's not part of the parser
+[x] implement changing the topic of a channel
+[x] consider if the boolean is set for topic only op
+- think about how to implement channelop prefix '@'
+
+Messaging
+- one to one communication Client A -> Server -> Client B
+- One to many
+	- Channel
+		- single client in Server Client A -> Server
+		- two clients like one to one communication
+		- three clients goes to all clients
+	- To Host/Server Masl
+		- not sure if we need to do this
+	- To A List
+		- not sure if we need to do this
+- One to All
+	- broadcast to every client
+	- broadcast to ever server
+- Client to Server
+	- commands that change the state of information (channel membership, channel modes, user status, etc.)
+
+Casemapping
+- when new clients and channels are registered check wether the name exists already (Dan, dan)
