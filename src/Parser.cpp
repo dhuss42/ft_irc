@@ -22,16 +22,38 @@ bool Client::handleCap(Message message)
 		// sendMsg("irc_custom", "FARTING\nPIPI\nKAKA"); //change to available commands
 	}
 	return (true);
-	}
-	bool Client::handleJoin(Message message)
-	{
-		std::cout << "[DEBUG] JOIN: " << std::endl;
+}
+
+bool Client::handleJoin(Message message)
+{
+	std::cout << "[DEBUG] JOIN: " << std::endl;
 
 
+<<<<<<< HEAD
 		Channel* channel = _server->createChannel(message.params[1], this);
 		if (channel)
 			channel->addUser(this, message.params[2]);
 
+=======
+	std::size_t pos = message.params[1].find('#');
+	if (pos == std::string::npos)
+	{
+		
+	}
+	else
+	{
+		if (_server->isChannel(message.params[1]))
+			std::cout << "channel exists already" << std::endl;
+		Channel *channel = _server->getChannel(message.params[1]);
+		if (!channel)
+		{
+			std::cout << "[DEBUG] adding channel with name " << message.params[1] << std::endl;
+			channel = new Channel(message.params[1]);
+			_server->addChannel(channel);
+		}
+		channel->addUser(this);
+	}
+>>>>>>> e4b0d4f914bf57b26ecfc5ea5fdfcb9fe6f1ffe1
 	return (true);
 }
 
@@ -40,6 +62,7 @@ bool Client::handlePass(Message message)
 	std::cout << "[DEBUG] PASS: " << std::endl;
 	if (message.params[1].empty() || message.params[1] != "123") //change 123 to getPassword
 	{
+
 		sendMsg("irc_custom", "wrong password! Refused!");
 		return (false);	//do not connect
 	}
@@ -59,16 +82,28 @@ bool Client::handleNick(Message message)
 }
 
 /*
-	- USER <username> <hostname> <servername> :<realname> -> server: sends welcome message
+	- USER <username> <hostname> <servername> :<realname>
+		-> server: sends welcome message when all flags are set
+	ERR_NEEDMOREPARAMS
+	ERR_ALREADYREGISTRED: If the client tries to send another USER message after registration
+		-> "You may not reregister"
 */
 bool Client::handleUser(Message message)
 {
 	std::cout << "[DEBUG] USER: " << std::endl;
 	if (message.params[1].empty())
 		return false;	//throw exception
-	// this->_username = message.params[1];
+
+	if (message.params.size() == 5)
+	{
+		this->_username = message.params[1];
+		this->_hostname = message.params[2];
+		this->_realname = message.params[4];
+		std::cout << "[DEBUG] username: " << this->_username << std::endl;
+		std::cout << "[DEBUG] hostname: " << this->_hostname << std::endl; // not sure if better to have servername here or IP Address, this seems slower than doing it constructor
+		std::cout << "[DEBUG] realname: " << this->_realname << std::endl;
+	}
 	this->_usernameSet = true;
-	sendMsg("irc_custom", "Welcome to our super nice IRC-Server, " + this->_nick + "! <3");
 	return (true);
 }
 
@@ -94,43 +129,63 @@ bool Client::handlePing(Message message)
 	return (true);
 }
 
+bool Client::handlePrivmsg(Message message)
+{
+	// PRIVMSG #chan :hallo
+	// currently segfaults because shitty pseudoparser
+	std::cout << "[DEBUG] PRIVMSG" << std::endl;
+
+	Channel *channel = _server->getChannel(message.params[1]); // channel name can only be 4 chars -> better extract everything up to colon
+	std::cout << "[DEBUG] channel name " << message.params[1] << std::endl;
+	if (channel)
+		std::cout << "[DEBUG] exists" << message.params[1] << std::endl;
+	channel->broadcast(message.params[2], this);
+
+	return (true);
+}
 
 Message Client::parser(std::string rawMessage)
 {
 	Message message;
 
-	std::cout << YELLOW << "DEBUG [PARSER]: " << std::endl;
+	std::cout << YELLOW << "DEBUG [PARSER]: " << RESET << std::endl;
 	message.splitMessage(rawMessage);
 
-	// std::cout << "Command: " << message.command << std::endl;
-	// for (auto it = message.params.begin(); it != message.params.end(); ++it)
-	// {
-	// 	std::cout << YELLOW << *it << RESET << std::endl;
-	// }
-
-	// do try and catch here
-
-	if (message.command == "CAP")
-		handleCap(message);
-	else if (message.command == "JOIN")
-		handleJoin(message);
-	else if (message.command == "PASS")
-		handlePass(message);
-	else if (message.command == "NICK")
-		handleNick(message);
-	else if (message.command == "USER")
-		handleUser(message);
-	else if (message.command == "MODE")
-		handleMode(message);
-	else if (message.command == "WHOIS")
-		handleWhois(message);
-	else if (message.command == "PING")
-		handlePing(message);
+	try
+	{
+		if (message.command == "CAP")
+			handleCap(message);
+		else if (message.command == "JOIN")
+			handleJoin(message);
+		else if (message.command == "PASS")
+			handlePass(message);
+		else if (message.command == "NICK")
+			handleNick(message);
+		else if (message.command == "USER")
+			handleUser(message);
+		else if (message.command == "MODE")
+			handleMode(message);
+		else if (message.command == "WHOIS")
+			handleWhois(message);
+		else if (message.command == "PING")
+			handlePing(message);
+		else if (message.command == "PRIVMSG")
+			handlePrivmsg(message);
 
 		// and other commands...
 
-	else
-		std::cout << "We dont handle this command: " << message.command << "!" << std::endl;
+		else
+			std::cout << RED << "We dont handle this command: " << message.command << "!" << RESET << std::endl;
+			// throw (Errors(ErrorCode::E_PSSWRD));
+			//send this message to client
+	}
+	catch(const std::exception& e)
+	{
+		Errors::handleErrors(e);
+	}
+
+
+
 
 	return (message);	//probably other return type would make more sense
 }

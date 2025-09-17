@@ -86,6 +86,7 @@ class Client
 	bool handleMode(Message message);
 	bool handleWhois(Message message);
 	bool handlePing(Message message);
+	bool handlePrivmsg(Message message);
 };
 
 #endif

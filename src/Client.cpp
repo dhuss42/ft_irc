@@ -195,6 +195,22 @@ void	Client::sendMsg(std::string name, std::string reply)
 	}
 }
 
+/*------------------------------------------------------------------*/
+/* sends error replies to client									*/
+/*	- replies are patched together for the correct format for irssi */
+/*		- every msg sent must end in \r\n							*/
+/*------------------------------------------------------------------*/
+void	Client::sendError(std::string name, int code, std::string reply)
+{
+	reply = ":" + name + " " + std::to_string(code) + " " + getNick() + " :" + reply + "\r\n";
+	std::cout << "[DEBUG] current error reply: " << name << std::endl;
+	std::cout << "[DEBUG] sendMsg to " << getNick() << " socket=" << _socket << " msg=" << reply << std::endl;
+	if (send(_socket, reply.c_str(), reply.size(), 0) <= 0) // uncertain about the zero at the moment
+	{
+		throw (Errors(ErrorCode::E_SND)); // uncertain about wether it bubbles up correctly to the next catch
+	}
+}
+
 bool	Client::getRegistered(void)
 {
 	return (_registered);

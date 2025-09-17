@@ -55,6 +55,7 @@
     - set username -> USER <user> <mode> <unused> <realname>
     - join a channel -> JOIN <channel>
     - send private messages -> PRIVMSG <user> :<message-content> --- but in irssi: "/msg <user> private <message-content>"
+        -> but on server it arrives as PRIVMSG
 
 ## ====== Day 4 == 11.09.2025 ======
 - what is a service?
@@ -76,7 +77,7 @@
 - Prio:
     CAP LS 302
     JOIN
-    MSG
+    PRIVMSG
 
 ## ====== Day 5 == 12.09.2025 ======
 - Read authentication file: https://modern.ircdocs.horse/#connection-registration
@@ -88,10 +89,11 @@
     - JOIN : (client asks if this command exists)-> server acknowledges or rejects
     - CAP END
     ## --- authentication phase ---
-    - PASS <password> -> server accepts or rejects
+    - PASS <password> -> server accepts or rejects (accept: setflag=true)
     ## --- registration phase ---
-    - NICK <nickname> -> error if nickname in use, otherwise accept
-    - USER <username> <hostname> <servername> :<realname> -> server: sends welcome message
+    - NICK <nickname> -> error if nickname in use, otherwise accept (accept: setflag=true)
+    - USER <username> <hostname> <servername> :<realname> -> server: sends welcome message (is done in authentication function if all 3 flags are set)
+    - https://datatracker.ietf.org/doc/html/rfc1459#section-4.1.3
     ## --- post registration phase ---
     - MODE <nickname> +i -> server: confirms mode change
     - WHOIS <nickname> (Requests information about users matching nickname) -> server: Send WHO replies
@@ -153,7 +155,7 @@ todo:
 
 - starting with most important handlerfunctions to make it possible to connect
 
-- problem: parser prototype seems to not connect properly
+- problem: parser prototype seems to not connect properly -> david found bug: in handlePass set _registered=true
 
 - to do:
     - make run the parser prototype (compare with pseudoparser and test)
@@ -164,6 +166,22 @@ todo:
     - (?) -> handler functions directly in server??
     - improve handler functions with exceptions instead of errormessages and mor functionalities
     - maybe write operator overload function << for message to print the whole message for debugging
+
+## ====== Day 8 == 17.09.2025 ======
+- improving handler functions
+
+- issue /msg : segfault in Channel::broadcast, std::cout << "[DEBUG] _users.size(): " << _users.size() << std::endl;
+
+- how to handle errors and replies correctly?
+-> :server 462 nickname :You may not reregister
+    - :server - The server prefix (required)
+    - 462 - The three-digit numeric code
+    - nickname - The target nickname
+    - :You may not reregister - The message text (colon-prefixed)
+    -->sendMessage(servername, errorcode + nickname + ":" + errormessage)
+
+- idea: make IRCError file and do enum class IRCErrorCode
+
 ## ==== QUESTIONS ====
 - Parser job:
     - if command does not exist or not enough parameters -> is handled already by irssi
@@ -187,4 +205,39 @@ todo:
 
 - at registration phase: MODE <nickname> +i -> at nickname the first letter isnt included
 
-- (???) my parser does not keep the conenction to server, why??
+[x] (???) my parser does not keep the conenction to server, why??
+    - David solved it! in handlePass: this->_registered = true
+
+----- questions for david ------
+- get functions in client for password (handlePass) and server name (sendMsg)
+- sendErrormessage in client
+
+- actually all handlers should be in server?
+
+- CAP * LS -> Capabilities supported: -> do I list it in an extra sendMsg?
+
+- PRIVMSG: segfault in Channel::broadcast, std::cout << "[DEBUG] _users.size(): " << _users.size() << std::endl;
+
+- Abgabe wann anpeilen?
+
+- how to avoid git conflicts? -> https://stackoverflow.com/questions/70153247/branching-strategy-to-avoid-conflicts-on-two-branches
+
+//First, before starting the work, make sure you're starting from an up to date main branch like this:
+- git checkout main
+- git pull
+- git checkout branchName
+//Then do the changes on your branch called branchName, and make a commit there:
+// Do your code changes
+- git add .
+- git commit -m "Fix Code"
+//Let's say, meanwhile someone updated the main branch.
+//So, you'll need to rebase your code before pushing.
+//Do the following:
+- git checkout main
+- git pull
+- git checkout branchName
+- git rebase main
+//Now you have up-to-date code on your branch as well.
+//Feel free to push:
+- git push origin branchName
+//Now you can create a pull request and merge it to the main as usual.
