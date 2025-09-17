@@ -27,33 +27,9 @@ bool Client::handleCap(Message message)
 bool Client::handleJoin(Message message)
 {
 	std::cout << "[DEBUG] JOIN: " << std::endl;
-
-
-<<<<<<< HEAD
 		Channel* channel = _server->createChannel(message.params[1], this);
 		if (channel)
 			channel->addUser(this, message.params[2]);
-
-=======
-	std::size_t pos = message.params[1].find('#');
-	if (pos == std::string::npos)
-	{
-		
-	}
-	else
-	{
-		if (_server->isChannel(message.params[1]))
-			std::cout << "channel exists already" << std::endl;
-		Channel *channel = _server->getChannel(message.params[1]);
-		if (!channel)
-		{
-			std::cout << "[DEBUG] adding channel with name " << message.params[1] << std::endl;
-			channel = new Channel(message.params[1]);
-			_server->addChannel(channel);
-		}
-		channel->addUser(this);
-	}
->>>>>>> e4b0d4f914bf57b26ecfc5ea5fdfcb9fe6f1ffe1
 	return (true);
 }
 

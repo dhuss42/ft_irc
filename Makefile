@@ -11,7 +11,6 @@ CPPFILES = \
 	Errors.cpp \
 	Message.cpp \
 	Parser.cpp \
-	tmp.cpp \
 	utils.cpp
 
 SRCS = $(addprefix $(SRC_DIR)/, $(CPPFILES))
