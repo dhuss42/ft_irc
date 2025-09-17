@@ -172,6 +172,15 @@ todo:
 
 - issue /msg : segfault in Channel::broadcast, std::cout << "[DEBUG] _users.size(): " << _users.size() << std::endl;
 
+- how to handle errors and replies correctly?
+-> :server 462 nickname :You may not reregister
+    - :server - The server prefix (required)
+    - 462 - The three-digit numeric code
+    - nickname - The target nickname
+    - :You may not reregister - The message text (colon-prefixed)
+    -->sendMessage(servername, errorcode + nickname + ":" + errormessage)
+
+- idea: make IRCError file and do enum class IRCErrorCode
 
 ## ==== QUESTIONS ====
 - Parser job:
@@ -201,6 +210,34 @@ todo:
 
 ----- questions for david ------
 - get functions in client for password (handlePass) and server name (sendMsg)
+- sendErrormessage in client
+
+- actually all handlers should be in server?
+
 - CAP * LS -> Capabilities supported: -> do I list it in an extra sendMsg?
+
 - PRIVMSG: segfault in Channel::broadcast, std::cout << "[DEBUG] _users.size(): " << _users.size() << std::endl;
 
+- Abgabe wann anpeilen?
+
+- how to avoid git conflicts? -> https://stackoverflow.com/questions/70153247/branching-strategy-to-avoid-conflicts-on-two-branches
+
+//First, before starting the work, make sure you're starting from an up to date main branch like this:
+- git checkout main
+- git pull
+- git checkout branchName
+//Then do the changes on your branch called branchName, and make a commit there:
+// Do your code changes
+- git add .
+- git commit -m "Fix Code"
+//Let's say, meanwhile someone updated the main branch.
+//So, you'll need to rebase your code before pushing.
+//Do the following:
+- git checkout main
+- git pull
+- git checkout branchName
+- git rebase main
+//Now you have up-to-date code on your branch as well.
+//Feel free to push:
+- git push origin branchName
+//Now you can create a pull request and merge it to the main as usual.

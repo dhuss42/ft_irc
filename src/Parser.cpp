@@ -26,7 +26,7 @@ bool Client::handleCap(Message message)
 
 bool Client::handleJoin(Message message)
 {
-		std::cout << "[DEBUG] JOIN: " << std::endl;
+	std::cout << "[DEBUG] JOIN: " << std::endl;
 
 	// if (message.params[1].empty())
 	// {
@@ -37,7 +37,7 @@ bool Client::handleJoin(Message message)
 	std::size_t pos = message.params[1].find('#');
 	if (pos == std::string::npos)
 	{
-
+		
 	}
 	else
 	{
@@ -60,6 +60,7 @@ bool Client::handlePass(Message message)
 	std::cout << "[DEBUG] PASS: " << std::endl;
 	if (message.params[1].empty() || message.params[1] != "123") //change 123 to getPassword
 	{
+
 		sendMsg("irc_custom", "wrong password! Refused!");
 		return (false);	//do not connect
 	}
@@ -148,38 +149,41 @@ Message Client::parser(std::string rawMessage)
 	std::cout << YELLOW << "DEBUG [PARSER]: " << RESET << std::endl;
 	message.splitMessage(rawMessage);
 
-	// std::cout << "Command: " << message.command << std::endl;
-	// for (auto it = message.params.begin(); it != message.params.end(); ++it)
-	// {
-	// 	std::cout << YELLOW << *it << RESET << std::endl;
-	// }
-
-	// do try and catch here
-
-	if (message.command == "CAP")
-		handleCap(message);
-	else if (message.command == "JOIN")
-		handleJoin(message);
-	else if (message.command == "PASS")
-		handlePass(message);
-	else if (message.command == "NICK")
-		handleNick(message);
-	else if (message.command == "USER")
-		handleUser(message);
-	else if (message.command == "MODE")
-		handleMode(message);
-	else if (message.command == "WHOIS")
-		handleWhois(message);
-	else if (message.command == "PING")
-		handlePing(message);
-	else if (message.command == "PRIVMSG")
-		handlePrivmsg(message);
+	try
+	{
+		if (message.command == "CAP")
+			handleCap(message);
+		else if (message.command == "JOIN")
+			handleJoin(message);
+		else if (message.command == "PASS")
+			handlePass(message);
+		else if (message.command == "NICK")
+			handleNick(message);
+		else if (message.command == "USER")
+			handleUser(message);
+		else if (message.command == "MODE")
+			handleMode(message);
+		else if (message.command == "WHOIS")
+			handleWhois(message);
+		else if (message.command == "PING")
+			handlePing(message);
+		else if (message.command == "PRIVMSG")
+			handlePrivmsg(message);
 
 		// and other commands...
 
-	else
-		std::cout << RED << "We dont handle this command: " << message.command << "!" << RESET << std::endl;
-		//send this message to client
+		else
+			std::cout << RED << "We dont handle this command: " << message.command << "!" << RESET << std::endl;
+			// throw (Errors(ErrorCode::E_PSSWRD));
+			//send this message to client
+	}
+	catch(const std::exception& e)
+	{
+		Errors::handleErrors(e);
+	}
+
+
+
 
 	return (message);	//probably other return type would make more sense
 }
