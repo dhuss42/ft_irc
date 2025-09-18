@@ -246,5 +246,6 @@ const std::string getIrcErrorReply(IrcErrorCode code)
 		case IrcErrorCode::ERR_NOOPERHOST: return "No O-line for your host";
 		case IrcErrorCode::ERR_UMODEUNKNOWNFLAG: return "Unknown MODE flag";
 		case IrcErrorCode::ERR_USERSDONTMATCH: return "Cannot change or set mode for other";
+		default: return "Default error";
 	}
 }

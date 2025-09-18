@@ -166,7 +166,7 @@ int	Client::receiveMsg()
 		{
 			_buffer = fullBuffer.substr(0, pos);
 			std::cout << BOLDCYAN << "[DEBUG] buffer: " << _buffer << RESET << std::endl;
-			parser(_buffer);
+			parseHandler(_buffer, *this, *_server);
 			// pseudoParser(_buffer);
 			fullBuffer = fullBuffer.substr(pos + 2);;
 		}
