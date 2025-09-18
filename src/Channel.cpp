@@ -47,6 +47,9 @@ void	Channel::broadcast(const std::string& msg, Client* sender)
 }
 
 //================ Channel Operations ================//
+
+//<<<<<<<<<<<<<<<TOPIC>>>>>>>>>>>>//
+// the return value can be changed to adjust to the parsing logic
 void	Channel::changeTopic(const std::string& topic, const Client* client)
 {
 	if (_topicOp && !isOperator(client))
@@ -56,13 +59,12 @@ void	Channel::changeTopic(const std::string& topic, const Client* client)
 	}
 	else
 		setTopic(topic);
-	// check if only operator can change topic
-	// if so check if the client wanting to change the topic is an operator
-	// if so change the topic
 }
 
 //================ Adding & Removing clients ================//
 
+//<<<<<<<<<<<<<<<JOIN>>>>>>>>>>>>//
+// the return value can be changed to adjust to the parsing logic
 void	Channel::addUser(Client* client, const std::string& password)
 {
 	if (client)
@@ -87,8 +89,8 @@ void	Channel::addUser(Client* client, const std::string& password)
 			std::cout << "[DEBUG] Client added !" << client->getNick() << " to " << this->getName() << std::endl;
 			_users[client->getNick()] = client;
 			client->sendMsg("irc_custom", "available commands: JOIN, MODE, KICK, PART, QUIT, PRIVMSG/NOTICE"); // use  irssi client as a reference
-			if (_invOnly)
-				removeInvUsers(client); // check if inv is toggled on
+			if (_invOnly) // not sure if needed, becuase if invited but toggle is off the user won't be removed from list
+				removeInvUsers(client); // check if inv is toggled on or check if user is in list of invited users
 		}
 		else
 			std::cout << "[DEBUG] Client is already part of the Channel!" << std::endl;
