@@ -297,17 +297,41 @@ Casemapping
 	[x] add to channel user list
 		-> but something is buggy here / maybe it's privmsg though
 	[x] get topic
-	[] getJoined users
+	[x] getJoined users
 	[] check mode section
 	[] special parameter for PARTING all channels at once
 
-[] handle PART COMMAND
-	[] remove Client from Channel container
+[x] handle PART COMMAND
+	[x] remove Client from Channel container
+		-> Channel::removeUser(Client* client)
+	[x] check: if client was operator and Parts and rejoins is he still operator?
+		-> no
 	[] check if channel has 0 members if so delete channel object
+		-> do inside the handler
 
-[] handle KICK
+[x] handle KICK
+	[x] check if user is operator
+		-> void	Channel::kickUser(Client* kicker, std::string kicked)
+	[x] remove User from Channel
+	[] optional kick limit
+
 [] handle INVITE
+	[x] nickname to be invited and channel to be invited
+	[] check if the user exists on server
+	[x] check wether the inviting user is part of channel
+	[x] check wether the inviting user is an operator
+	[x] check wether the invited user is already part of the channel
 
 [x] handle TOPIC COMMAND
 	-> changeTopic() in Channel.cpp
+
 [] handle MODE
+	[] check wether target exists on network
+	[] check wether target is user or Channel
+	[] Don't understand: If <target> is a different nick than the user who sent the command, the ERR_USERSDONTMATCH (502) numeric is returned.
+	[] if target is channel, user sending command musst have appropriate channel priviledges
+
+[] handle PRIVMSG
+
+// GENERAL THING TO DO!
+	- ALL METHODS isClient, addInvUsers etc. work without passing the client pointer as arg and can be done with strings

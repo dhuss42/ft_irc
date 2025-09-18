@@ -61,6 +61,22 @@ void	Channel::changeTopic(const std::string& topic, const Client* client)
 		setTopic(topic);
 }
 
+//<<<<<<<<<<<<<<<JOIN>>>>>>>>>>>>//
+// gets List of all the Users that are part of the Channel and returns a string to be further processed
+const std::string Channel::getJoinedUsers(void) const
+{
+	std::string userList;
+	for (auto it = _users.rbegin(); it != _users.rend(); it++)
+	{
+		if (isOperator(it->second))
+			userList += "@";
+		userList += it->first + " ";
+	}
+	if (!userList.empty())
+		userList.pop_back();
+	return (userList);
+}
+
 //================ Adding & Removing clients ================//
 
 //<<<<<<<<<<<<<<<JOIN>>>>>>>>>>>>//
@@ -84,20 +100,20 @@ void	Channel::addUser(Client* client, const std::string& password)
 			std::cout << "[DEBUG] password is set and wrong password!" << std::endl;
 			return ;
 		}
-		if (auto it = _users.find(client->getNick()) == _users.end())
+		auto it = _users.find(client->getNick());
+		if (it == _users.end())
 		{
-			std::cout << "[DEBUG] Client added !" << client->getNick() << " to " << this->getName() << std::endl;
+			std::cout << "[DEBUG] Client added ! " << client->getNick() << " to " << this->getName() << std::endl;
 			_users[client->getNick()] = client;
-			client->sendMsg("irc_custom", "available commands: JOIN, MODE, KICK, PART, QUIT, PRIVMSG/NOTICE"); // use  irssi client as a reference
-			if (_invOnly) // not sure if needed, becuase if invited but toggle is off the user won't be removed from list
-				removeInvUsers(client); // check if inv is toggled on or check if user is in list of invited users
+			if (_invOnly) 
+				removeInvUsers(client);
+			client->sendMsg("irc_custom", "available commands: JOIN, MODE, KICK, PART, QUIT, PRIVMSG/NOTICE"); // not correct format and more needs to be sent maybe outside the method
 		}
 		else
 			std::cout << "[DEBUG] Client is already part of the Channel!" << std::endl;
-		printUsers();
+		std::cout << "[DEBUG] " << getJoinedUsers() << std::endl;
 	}
-	// if the client exists
-	// add to map
+
 	// sends information about available commands
 	// if successfull
 	// user receives join message
@@ -105,13 +121,59 @@ void	Channel::addUser(Client* client, const std::string& password)
 	// user receives list of users who are on the channel including the user joining
 }
 
-void	Channel::printUsers(void)
+void	Channel::printUsers(void) // depricated
 {
 	int i = 1;
 	for (auto it = _users.begin(); it != _users.end(); it++)
 		std::cout << GREEN "[DEBUG] [" << i++ << "] " << it->first << WHITE << std::endl;
 }
 
+//<<<<<<<<<<<<<<<INVITE>>>>>>>>>>>>//
+// the return value can be changed to adjust to the parsing logic
+void	Channel::inviteUser(Client* inviter, Client* invited)
+{
+	if (!isOperator(inviter))
+	{
+		std::cout << GREEN "[DEBUG] " << inviter->getNick() << "[inviter] is not a channel operator"  WHITE << std::endl;
+		return ;
+	}
+	if (!isUser(inviter))
+	{
+		std::cout << GREEN "[DEBUG] " << inviter->getNick() << "[inviter] is not in the channel"  WHITE << std::endl;
+		return ;
+	}
+	// need Client method to access the list of Clients on the server
+	auto it = _users.find(invited->getNick());
+	if (it == _users.end())
+	{
+		std::cout << GREEN "[DEBUG] " << invited << " is not in channel. Inviting now..." WHITE << std::endl;
+		addInvUsers(invited);
+	}
+}
+
+//<<<<<<<<<<<<<<<KICK>>>>>>>>>>>>//
+// the return value can be changed to adjust to the parsing logic
+void	Channel::kickUser(Client* kicker, const std::string& kicked)
+{
+	auto it = _users.find(kicked);
+	if (it == _users.end())
+	{
+		std::cout << GREEN "[DEBUG] " << kicked << " is not in channel " << std::endl;
+		return ;
+	}
+	if (!isOperator(kicker))
+	{
+		std::cout << GREEN "[DEBUG] " << kicker->getNick() << " is not an operator" << std::endl;
+		return ;
+	}
+	else
+	{
+		std::cout << GREEN "[DEBUG] " << kicker->getNick() << " is kicking " << kicked << std::endl;
+		removeUser(_users[kicked]);
+	}
+}
+
+//<<<<<<<<<<<<<<<PART & JOIN & KICK>>>>>>>>>>>>//
 void	Channel::removeUser(Client* client)
 {
 	if (client)
@@ -121,6 +183,8 @@ void	Channel::removeUser(Client* client)
 		if (_operators.find(client->getNick()) != _operators.end())
 			_operators.erase(client->getNick());
 	}
+	// check outside if Channel has 0 members now
+	// if so delete the channel object
 }
 
 void	Channel::addOperator(Client* client)
@@ -168,7 +232,7 @@ void	Channel::removeInvUsers(Client *client)
 }
 
 //================ verify Clients ================//
-bool	Channel::isOperator(const Client* client)
+bool	Channel::isOperator(const Client* client) const
 {
 	if (client)
 	{
@@ -178,7 +242,7 @@ bool	Channel::isOperator(const Client* client)
 	return (false);
 }
 
-bool	Channel::isUser(const Client* client)
+bool	Channel::isUser(const Client* client) const
 {
 	if (client)
 	{
@@ -188,7 +252,7 @@ bool	Channel::isUser(const Client* client)
 	return (false);
 }
 
-bool	Channel::isInvited(const Client* client)
+bool	Channel::isInvited(const Client* client) const
 {
 	if (client)
 	{

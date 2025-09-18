@@ -24,7 +24,7 @@ class Channel
 		std::size_t _userLimit;
 
 		std::string _creator; // uncertain if needed
-		std::unordered_map <std::string, Client*> _users;
+		std::map <std::string, Client*> _users;
 		std::unordered_map <std::string, Client*> _invitedUsers;
 		std::unordered_map <std::string, Client*> _operators;
 
@@ -37,6 +37,9 @@ class Channel
 		void	addOperator(Client* client);
 		void	addInvUsers(Client* client);
 
+		void	inviteUser(Client* inviter, Client* invited);
+		void	kickUser(Client* kicker, const std::string& kicked);
+
 		void	removeUser(Client* client);
 		void	removeOperator(Client* client);
 		void	removeInvUsers(Client* client);
@@ -47,15 +50,17 @@ class Channel
 		void	changeTopic(const std::string& topic, const Client* client);
 
 		// ======= verify Clients =======//
-		bool	isOperator(const Client* client);
-		bool	isUser(const Client* client);
-		bool	isInvited(const Client* client);
+		bool	isOperator(const Client* client) const;
+		bool	isUser(const Client* client) const;
+		bool	isInvited(const Client* client) const;
 
 		// ======= setters & getters =======//
 		std::string	getName(void);
 		std::string	getTopic(void);
 		std::string	getPassword(void);
 		std::size_t	getUserLimit(void);
+
+		const std::string getJoinedUsers(void) const;
 
 		void		setName(std::string name); // might not need this as channel names are fixed
 		void		setTopic(std::string topic);
