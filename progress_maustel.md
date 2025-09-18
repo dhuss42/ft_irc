@@ -194,6 +194,16 @@ todo:
         -> david (später)
     - Abgabe wann anpeilen? -> Mo entscheiden ob 4/5 oder 11/12
 
+- new structure for parsing / handler:
+    - MessageHandler Class that has attributes client, server and message
+
+- changed almost all exisiting handler functions to MessageHandler::handlerFunction
+
+- todo:
+    - MessageHandler::handleUser
+    - MessageHandler::handlePrivmsg
+    - improve all handler functions
+
 
 ## ==== QUESTIONS ====
 - Parser job:

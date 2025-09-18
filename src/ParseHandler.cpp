@@ -61,7 +61,7 @@ void parseHandler(std::string rawMessage, Client &client, Server &server)
 {
 	Message message;
 
-	std::cout << YELLOW << "DEBUG [PARSER]: " << RESET << std::endl;
+	// std::cout << YELLOW << "DEBUG [PARSER]: " << RESET << std::endl;
 	message.splitMessage(rawMessage);
 	MessageHandler handler(client, message, server);
 
