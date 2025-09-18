@@ -45,7 +45,8 @@ class Client
 
 	Message parser(std::string rawMessage);
 	void	pseudoParser(std::string message);
-	void	sendMsg(std::string name, IrcResponseCode code, std::string reply);
+	void	sendResponse(std::string name, IrcResponseCode code, std::string reply);
+	void	sendMsg(std::string name, std::string reply);
 	void	sendError(std::string name, IrcErrorCode code, std::string reply);
 	int		authentication();
 	int		receiveMsg();

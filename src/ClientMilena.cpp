@@ -38,7 +38,7 @@ void	Client::sendError(std::string name, IrcErrorCode code, std::string reply)
 /*		- :server 001 nickname :Welcome to IRC Server				*/
 /*																	*/
 /*------------------------------------------------------------------*/
-void	Client::sendMsg(std::string name, IrcResponseCode code, std::string reply)
+void	Client::sendResponse(std::string name, IrcResponseCode code, std::string reply)
 {
 	reply = ":" + name + " " + getIrcResponseCodeString(code) + " " + getNick() + " :" + reply + "\r\n";
 	std::cout << "[DEBUG] current reply: " << name << std::endl;
