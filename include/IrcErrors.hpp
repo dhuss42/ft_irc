@@ -71,7 +71,7 @@ enum class IrcErrorCode
 	ERR_USERSDONTMATCH,	// Cannot change or set mode for other
 };
 
-const char* getIrcErrorCodeString(IrcResponseCode code);
+const char* getIrcErrorCodeString(IrcErrorCode code);
 
 #endif
 

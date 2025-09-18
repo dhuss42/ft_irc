@@ -13,8 +13,11 @@
 #include "IrcErrors.hpp"
 #include "IrcResponses.hpp"
 
+/*
 // Helper function to get the string representation of error code
-const char* getIrcErrorCodeString(IrcResponseCode code)
+// Call them like this: getIrcErrorCodeString(IrcErrorCode::ERR_USERSDONTMATCH)
+*/
+const char* getIrcErrorCodeString(IrcErrorCode code)
 {
     switch (code)
 	{
