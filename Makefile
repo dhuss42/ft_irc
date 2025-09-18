@@ -12,7 +12,9 @@ CPPFILES = \
 	Message.cpp \
 	Parser.cpp \
 	ServerDavid.cpp \
-	utils.cpp
+	utils.cpp \
+	ClientMilena.cpp \
+	IrcCodeGetters.cpp
 
 SRCS = $(addprefix $(SRC_DIR)/, $(CPPFILES))
 OBJS = $(addprefix $(OBJ_DIR)/, $(CPPFILES:.cpp=.o))

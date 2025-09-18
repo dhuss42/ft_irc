@@ -89,7 +89,7 @@
     - JOIN : (client asks if this command exists)-> server acknowledges or rejects
     - CAP END
     ## --- authentication phase ---
-    - PASS <password> -> server accepts or rejects (accept: setflag=true)
+    - PASS <password> -> server accepts or rejects (accept: setflag=true) -> david ändert aurhent logik später
     ## --- registration phase ---
     - NICK <nickname> -> error if nickname in use, otherwise accept (accept: setflag=true)
     - USER <username> <hostname> <servername> :<realname> -> server: sends welcome message (is done in authentication function if all 3 flags are set)
@@ -209,16 +209,17 @@ todo:
     - David solved it! in handlePass: this->_registered = true
 
 ----- questions for david ------
-- get functions in client for password (handlePass) and server name (sendMsg)
-- sendErrormessage in client
+- get functions in client for password (handlePass) and server name (sendMsg) -> david
+- sendErrormessage in client --> ja
 
-- actually all handlers should be in server?
+- actually all handlers should be in server? -> message
 
-- CAP * LS -> Capabilities supported: -> do I list it in an extra sendMsg?
+- CAP * LS -> Capabilities supported: -> do I list it in an extra sendMsg? -> später
 
 - PRIVMSG: segfault in Channel::broadcast, std::cout << "[DEBUG] _users.size(): " << _users.size() << std::endl;
+    -> david (später)
 
-- Abgabe wann anpeilen?
+- Abgabe wann anpeilen? -> Mo entscheiden ob 4/5 oder 11/12
 
 - how to avoid git conflicts? -> https://stackoverflow.com/questions/70153247/branching-strategy-to-avoid-conflicts-on-two-branches
 

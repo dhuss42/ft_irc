@@ -120,6 +120,7 @@ bool Client::handlePrivmsg(Message message)
 	return (true);
 }
 
+//client pointer wird mitgeschickt, damit ich auf client und server methods zugreifen kann
 Message Client::parser(std::string rawMessage)
 {
 	Message message;

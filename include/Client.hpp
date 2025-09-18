@@ -5,6 +5,8 @@
 #include "Channel.hpp"
 #include "Server.hpp"	//put class includes in the end of file(?)
 #include "Message.hpp"	//put class includes in the end of file(?)
+#include "IrcErrors.hpp"
+#include "IrcResponses.hpp"
 
 class Server;
 class Message;
@@ -43,7 +45,8 @@ class Client
 
 	Message parser(std::string rawMessage);
 	void	pseudoParser(std::string message);
-	void	sendMsg(std::string name, std::string reply);
+	void	sendMsg(std::string name, IrcResponseCode code, std::string reply);
+	void	sendError(std::string name, IrcErrorCode code, std::string reply);
 	int		authentication();
 	int		receiveMsg();
 
