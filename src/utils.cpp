@@ -15,6 +15,8 @@ void toLower(std::string& str)
 // - channel Member Prefixes: "~", "+q", "&", "+a", "@", "+o", "%", "+h", "+", "+v"
 // - no '.'
 
+//==================NICK==================//
+
 bool	verifyNickName(const std::string& name)
 {
 	if (name.empty() || name.size() > 15)
@@ -34,6 +36,8 @@ bool	verifyNickName(const std::string& name)
 		return (false);
 	return (true);
 }
+
+//==================JOIN==================//
 
 bool	verifyChannelName(const std::string& name)
 {

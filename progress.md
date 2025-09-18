@@ -258,3 +258,7 @@ Casemapping
 	- done for channels
 
 - currently server can send some messages back and forth but seems to hang after some messages and sometimes the server segfaults
+
+## ====== Day 18 == 18.09 ====== ()
+- though about file separation and simplest solution is to make Parsing a separate class with it's own files
+	- should take a client n constructor

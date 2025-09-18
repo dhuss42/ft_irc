@@ -1,5 +1,7 @@
 #include "Server.hpp"
 
+//==================JOIN==================//
+
 /*------------------------------------------------------------------*/
 /* Creates a new Channel											*/
 /*	- checks if the channel already exists (case insensitive)		*/
