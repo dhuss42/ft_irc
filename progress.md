@@ -289,3 +289,25 @@ Casemapping
 	[] verify realname
 		- may contain SPACE char and is prefixed with colon by irssi
 		- may be empty
+	[] getters and setters for username/hostname/realname
+
+[] handle JOIN COMMAND
+	[x] getKey/password
+	[x] check if joining is possible (inv/pw/usrlimit)
+	[x] add to channel user list
+		-> but something is buggy here / maybe it's privmsg though
+	[x] get topic
+	[] getJoined users
+	[] check mode section
+	[] special parameter for PARTING all channels at once
+
+[] handle PART COMMAND
+	[] remove Client from Channel container
+	[] check if channel has 0 members if so delete channel object
+
+[] handle KICK
+[] handle INVITE
+
+[x] handle TOPIC COMMAND
+	-> changeTopic() in Channel.cpp
+[] handle MODE
