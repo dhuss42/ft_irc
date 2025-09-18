@@ -18,7 +18,7 @@ bool Client::handleCap(Message message)
 	//change server to -> getServerName?
 	if (message.params[1] == "LS" && message.params[2] == "302")
 	{
-		sendMsg("irc_custom", "CAP * LS :");
+		sendMsg("irc_custom", IrcResponseCode::DEFAULT, "CAP * LS :");
 		// sendMsg("irc_custom", "FARTING\nPIPI\nKAKA"); //change to available commands
 	}
 	return (true);
@@ -39,7 +39,7 @@ bool Client::handlePass(Message message)
 	if (message.params[1].empty() || message.params[1] != "123") //change 123 to getPassword
 	{
 
-		sendMsg("irc_custom", "wrong password! Refused!");
+		sendError("irc_custom", IrcErrorCode::ERR_PASSWDMISMATCH, "wrong password! Refused!");
 		return (false);	//do not connect
 	}
 	this->_registered = true;
@@ -101,7 +101,7 @@ bool Client::handlePing(Message message)
 	std::cout << "[DEBUG] PING: " << std::endl;
 	if (message.params[1].empty())
 		return false;	//throw exception
-	sendMsg("irc_custom", "PONG " + message.params[1]);
+	sendMsg("irc_custom", IrcResponseCode::DEFAULT, "PONG " + message.params[1]);
 	return (true);
 }
 

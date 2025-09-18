@@ -69,6 +69,7 @@ enum class IrcErrorCode
 	ERR_NOOPERHOST,		// No O-line for your host
 	ERR_UMODEUNKNOWNFLAG,// Unknown MODE flag
 	ERR_USERSDONTMATCH,	// Cannot change or set mode for other
+	DEFAULT
 };
 
 const char* getIrcErrorCodeString(IrcErrorCode code);

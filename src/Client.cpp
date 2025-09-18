@@ -122,7 +122,7 @@ int	Client::authentication()
 		if (receiveMsg() == -1)
 			return (-1);
 	}
-	sendMsg("irc_custom", "001 " + _nick + " :Welcome to the IRC server"); // server replies need to be handled more gracefully
+	sendMsg("irc_custom", IrcResponseCode::RPL_WELCOME, "Welcome to the IRC server"); // server replies need to be handled more gracefully
 	return (1);
 }
 

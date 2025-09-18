@@ -116,6 +116,7 @@ enum class IrcResponseCode
 	RPL_USERS,
 	RPL_ENDOFUSERS,
 	RPL_NOUSERS,
+	DEFAULT
 };
 
 const char* getIrcResponseCodeString(IrcResponseCode code);
