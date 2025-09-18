@@ -1,26 +1,6 @@
 #include "Server.hpp"
 
-
-//==================PASS==================//
-const std::string& Server::getPassword() const
-{
-	return (_password);
-}
-
-//==================NICK==================//
-
-/*------------------------------------------------------------------*/
-/* Checks if the passed nick already exists on the server			*/
-/*	- case insensitive (Dan, dan)									*/
-/*------------------------------------------------------------------*/
-bool	Server::isNick(const std::string& nick) const
-{
-	std::string lowerNick = nick;
-	toLower(lowerNick);
-	return (_clientList.find(lowerNick) != _clientList.end())
-}
-
-//==================JOIN==================//
+//<<<<<<<<<<<<<<<JOIN>>>>>>>>>>>>//
 
 /*------------------------------------------------------------------*/
 /* Creates a new Channel											*/
@@ -32,21 +12,21 @@ bool	Server::isNick(const std::string& nick) const
 /*------------------------------------------------------------------*/
 Channel*	Server::createChannel(std::string& name, Client *client) // can be altered to return values for sending replies or adding users afterwards
 {
-	toLower(name);
-	if (isChannel(name))
+	std::string lcName = toLower(name);
+	if (isChannel(lcName))
 	{
-		std::cout << "[DEBUG] " << name << " exists already, not creating a new channel" << std::endl;
-		return (getChannel(name)); // more of a patch at the moment
+		std::cout << "[DEBUG] " << lcName << " exists already, not creating a new channel" << std::endl;
+		return (getChannel(lcName)); // more of a patch at the moment
 	}
-	else if (!verifyChannelName(name))
+	else if (!verifyChannelName(lcName))
 	{
 		std::cout << "[DEBUG] " << "invalid Channel name" << std::endl;
 		return nullptr;
 	}
 	else
 	{
-		Channel* channel = new Channel(name);
-		std::cout << "[DEBUG] " << " adding channel with name " << name << std::endl;
+		Channel* channel = new Channel(lcName);
+		std::cout << "[DEBUG] " << " adding channel with name " << lcName << std::endl;
 		addChannel(channel);
 		channel->addOperator(client);
 		return (channel);

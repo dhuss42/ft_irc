@@ -262,18 +262,18 @@ Casemapping
 ## ====== Day 18 == 18.09 ====== ()
 - though about file separation and simplest solution is to make Parsing a separate class with it's own files
 	- should take a client n constructor
-[]	handle NICK Command
+[x]	handle NICK Command
 	[x] checking the string for legal chars
 		-> utils.cpp
 	[x] check if the nick is already in use
-		-> ServerDavid.cpp
-	[] store the nick in lowercase inside the container when a new client is registered
+		-> Server.cpp
+	[x] store the nick in lowercase inside the container when a new client is registered
 		-> change in Server.cpp
 
 [] handle PASS Command
 	[x] getPassword for server
-		-> ServerDavid.cpp
-	[] consider storing password in class as const as it may not be changed
+		-> Server.cpp
+	[x] consider storing password in class as const as it may not be changed
 		-> change in Server.hpp
 	[] close connection
 		-> currenty authentification Method is not sufficient

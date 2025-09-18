@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:30 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/17 13:09:45 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/18 12:11:30 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,8 @@ class Server
 		void	newClient();
 
 		//======= verify =======//
-		bool	isChannel(const std::string& name);
-		bool	isClient(const std::string& name);
+		bool	isChannel(const std::string& name) const;
+		bool	isClient(const std::string& name) const;
 
 		//======= Add Channels and Clients =======//
 		void	addChannel(Channel* channel);
@@ -81,7 +81,8 @@ class Server
 		Client*	getClient(void); // not sure if needed
 
 		//======= getters & setters =======//
-		std::string& getName(void);
+		const std::string& getName(void) const;
+		const std::string& getPassword(void) const;
 	};
 
 

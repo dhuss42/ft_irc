@@ -48,7 +48,7 @@
 
 /*=================== utils ==================*/
 bool	verifyChannelName(const std::string& name);
-void toLower(std::string& str);
+std::string	toLower(const std::string& str);
 
 
 #endif

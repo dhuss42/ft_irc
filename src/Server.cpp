@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/17 16:56:53 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/18 12:10:53 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -229,7 +229,7 @@ void	Server::newClient()
 	{
 		std::cout << GREEN "[DEBUGG] created accepted Socket" WHITE << std::endl;
 		Client* client = new Client(newConnection.fd, this);
-		if (client->authentication() == -1)
+		if (client->authentication() == -1) // this has to go once JOIN PASS NICK USER are ready
 		{
 			std::cout << "IT GOES INSIDE HERE THE IF ALWAYS WHEN NEW CLIENT" << std::endl;
 			delete client;
@@ -238,7 +238,7 @@ void	Server::newClient()
 		{
 			std::cout << "IT GOES INSIDE THE CORRECT ONE" << std::endl;
 			_clientfd[newConnection.fd] = client;
-			_clientList[client->getNick()] = client;
+			_clientList[toLower(client->getNick())] = client;
 			_sockets.push_back(newConnection);
 		}
 		// handle properly successfull connection and unsuccessfull connection
@@ -368,19 +368,25 @@ void	Server::setupSignalHandler()
 //================ getters & setters ================//
 
 //================ verify ================//
-bool	Server::isChannel(const std::string& name)
+bool	Server::isChannel(const std::string& name) const
 {
-	return (_channelList.find(name) != _channelList.end());
+	std::string lcName = toLower(name);
+	return (_channelList.find(lcName) != _channelList.end());
 }
 
-bool	Server::isClient(const std::string& name)
+
+//<<<<<<<<<<<<<<<NICK>>>>>>>>>>>>//
+/*------------------------------------------------------------------*/
+/* Checks if the passed nick already exists on the server			*/
+/*	- case insensitive (Dan, dan)									*/
+/*------------------------------------------------------------------*/
+bool	Server::isClient(const std::string& name) const
 {
-	return (_clientList.find(name) != _clientList.end());
+	std::string lcName = toLower(name);
+	return (_clientList.find(lcName) != _clientList.end());
 }
 
 //================ add Channels and Clients ================//
-
-
 
 void	Server::addChannel(Channel* channel)
 {
@@ -427,7 +433,13 @@ void	Server::removeClient(Client* client)
 
 // }
 
-std::string& Server::getName(void)
+const std::string& Server::getName(void) const
 {
 	return (_name);
+}
+
+//<<<<<<<<<<<<<<<PASS>>>>>>>>>>>>//
+const std::string& Server::getPassword() const
+{
+	return (_password);
 }

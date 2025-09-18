@@ -1,10 +1,12 @@
 
 #include "ft_irc.hpp"
 
-void toLower(std::string& str)
+std::string toLower(const std::string& str)
 {
+	std::string lowerCase = str;
 	for (unsigned long i = 0; i < str.length(); i++)
-		str[i] = std::tolower(str[i]);
+		lowerCase[i] = std::tolower(str[i]);
+	return (lowerCase);
 }
 
 //==================NICK==================//
