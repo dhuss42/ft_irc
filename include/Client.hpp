@@ -7,6 +7,7 @@
 #include "Message.hpp"	//put class includes in the end of file(?)
 #include "IrcErrors.hpp"
 #include "IrcResponses.hpp"
+#include "MessageHandler.hpp"
 
 class Server;
 class Message;
@@ -43,7 +44,6 @@ class Client
 		Client(int fd, Server* server);
 		~Client();
 
-	Message parser(std::string rawMessage);
 	void	pseudoParser(std::string message);
 	void	sendResponse(std::string name, IrcResponseCode code, std::string reply);
 	void	sendMsg(std::string name, std::string reply);
@@ -85,15 +85,17 @@ class Client
 
 	//handler functions
 	// not sure if bool or void
-	bool handleCap(Message message);
-	bool handleJoin(Message message);
-	bool handlePass(Message message);
-	bool handleNick(Message message);
+	// bool handleCap(Message message);
+	// bool handleJoin(Message message);
+	// bool handlePass(Message message);
+	// bool handleNick(Message message);
+	// bool handleMode(Message message);
+	// bool handleWhois(Message message);
+	// bool handlePing(Message message);
 	bool handleUser(Message message);
-	bool handleMode(Message message);
-	bool handleWhois(Message message);
-	bool handlePing(Message message);
 	bool handlePrivmsg(Message message);
 };
+
+void	parseHandler(std::string rawMessage, Client &client, Server &server);
 
 #endif

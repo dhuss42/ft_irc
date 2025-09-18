@@ -182,6 +182,19 @@ todo:
 
 - idea: make IRCError file and do enum class IRCErrorCode
 
+## ====== Day 9 == 18.09.2025 ======
+- made ircerror and irc response files and finished sendError and sendResponse
+
+- call with david
+    - get functions in client for password (handlePass) and server name (sendMsg) -> david
+    - sendErrormessage in client --> ja
+    - actually all handlers should be in server? -> message/parser class
+    - CAP * LS -> Capabilities supported: -> do I list it in an extra sendMsg? -> später
+    - PRIVMSG: segfault in Channel::broadcast, std::cout << "[DEBUG] _users.size(): " << _users.size() << std::endl;
+        -> david (später)
+    - Abgabe wann anpeilen? -> Mo entscheiden ob 4/5 oder 11/12
+
+
 ## ==== QUESTIONS ====
 - Parser job:
     - if command does not exist or not enough parameters -> is handled already by irssi
@@ -203,25 +216,12 @@ todo:
 	}
     -> yes it works, it gets translated as "Capabilities supported:"
 
-- at registration phase: MODE <nickname> +i -> at nickname the first letter isnt included
+[x] at registration phase: MODE <nickname> +i -> at nickname the first letter isnt included
 
 [x] (???) my parser does not keep the conenction to server, why??
     - David solved it! in handlePass: this->_registered = true
 
------ questions for david ------
-- get functions in client for password (handlePass) and server name (sendMsg) -> david
-- sendErrormessage in client --> ja
-
-- actually all handlers should be in server? -> message
-
-- CAP * LS -> Capabilities supported: -> do I list it in an extra sendMsg? -> später
-
-- PRIVMSG: segfault in Channel::broadcast, std::cout << "[DEBUG] _users.size(): " << _users.size() << std::endl;
-    -> david (später)
-
-- Abgabe wann anpeilen? -> Mo entscheiden ob 4/5 oder 11/12
-
-- how to avoid git conflicts? -> https://stackoverflow.com/questions/70153247/branching-strategy-to-avoid-conflicts-on-two-branches
+[x] how to avoid git conflicts? -> https://stackoverflow.com/questions/70153247/branching-strategy-to-avoid-conflicts-on-two-branches
 
 //First, before starting the work, make sure you're starting from an up to date main branch like this:
 - git checkout main
@@ -242,3 +242,6 @@ todo:
 //Feel free to push:
 - git push origin branchName
 //Now you can create a pull request and merge it to the main as usual.
+
+----- questions for david ------
+- look for transcendence partner?

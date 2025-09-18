@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Client.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/19 14:00:24 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/19 14:35:52 by dhuss            ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Client.hpp"
 
 
@@ -179,8 +167,8 @@ int	Client::receiveMsg()
 		while ((pos = fullBuffer.find("\r\n")) != std::string::npos)
 		{
 			_buffer = fullBuffer.substr(0, pos);
-			// std::cout << BOLDCYAN << "[DEBUG] buffer: " << _buffer << RESET << std::endl;
-			parser(_buffer);
+			std::cout << BOLDCYAN << "[DEBUG] buffer: " << _buffer << RESET << std::endl;
+			parseHandler(_buffer, *this, *_server);
 			// pseudoParser(_buffer);
 			fullBuffer = fullBuffer.substr(pos + 2);;
 		}
