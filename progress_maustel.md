@@ -194,16 +194,6 @@ todo:
         -> david (später)
     - Abgabe wann anpeilen? -> Mo entscheiden ob 4/5 oder 11/12
 
-- new structure for parsing / handler:
-    - MessageHandler Class that has attributes client, server and message
-
-- changed almost all exisiting handler functions to MessageHandler::handlerFunction
-
-- todo:
-    - MessageHandler::handleUser
-    - MessageHandler::handlePrivmsg
-    - improve all handler functions
-
 
 ## ==== QUESTIONS ====
 - Parser job:
@@ -227,10 +217,12 @@ todo:
     -> yes it works, it gets translated as "Capabilities supported:"
 
 [x] at registration phase: MODE <nickname> +i -> at nickname the first letter isnt included
+[x] at registration phase: MODE <nickname> +i -> at nickname the first letter isnt included
 
 [x] (???) my parser does not keep the conenction to server, why??
     - David solved it! in handlePass: this->_registered = true
 
+[x] how to avoid git conflicts? -> https://stackoverflow.com/questions/70153247/branching-strategy-to-avoid-conflicts-on-two-branches
 [x] how to avoid git conflicts? -> https://stackoverflow.com/questions/70153247/branching-strategy-to-avoid-conflicts-on-two-branches
 
 //First, before starting the work, make sure you're starting from an up to date main branch like this:
@@ -252,6 +244,9 @@ todo:
 //Feel free to push:
 - git push origin branchName
 //Now you can create a pull request and merge it to the main as usual.
+
+----- questions for david ------
+- look for transcendence partner?
 
 ----- questions for david ------
 - look for transcendence partner?
