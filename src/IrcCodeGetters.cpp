@@ -183,3 +183,68 @@ const char* getIrcResponseCodeString(IrcResponseCode code) {
 		default: return "999"; // Unknown code
 	}
 }
+
+/*
+getter function to get reply of errorcode
+maybe not useful because of added paramters like:
+amselchannel: No such channel
+Unknown command: kaka
+*/
+const std::string getIrcErrorReply(IrcErrorCode code)
+{
+	switch (code)
+	{
+		case IrcErrorCode::ERR_NOSUCHNICK: return "No such nick/channel";
+		case IrcErrorCode::ERR_NOSUCHSERVER: return "No such server";
+		case IrcErrorCode::ERR_NOSUCHCHANNEL: return "No such channel";
+		case IrcErrorCode::ERR_CANNOTSENDTOCHAN: return "Cannot send to channel";
+		case IrcErrorCode::ERR_TOOMANYCHANNELS: return "Too many channels";
+		case IrcErrorCode::ERR_WASNOSUCHNICK: return "There was no such nick";
+		case IrcErrorCode::ERR_TOOMANYTARGETS: return "Too many targets";
+		case IrcErrorCode::ERR_NOORIGIN: return "No origin specified";
+		case IrcErrorCode::ERR_INVALIDCAPCMD: return "Invalid or missing CAP subcommand";
+		case IrcErrorCode::ERR_NORECIPIENT: return "No recipient given";
+		case IrcErrorCode::ERR_NOTEXTTOSEND: return "No text to send";
+		case IrcErrorCode::ERR_NOTOPLEVEL: return "No top level domain";
+		case IrcErrorCode::ERR_WILDTOPLEVEL: return "Wild card top level domain";
+		case IrcErrorCode::ERR_BADMASK: return "Invalid mask";
+		case IrcErrorCode::ERR_UNKNOWNCOMMAND: return "Unknown command";
+		case IrcErrorCode::ERR_NOMOTD: return "MOTD file missing";
+		case IrcErrorCode::ERR_NOADMININFO: return "No admin information available";
+		case IrcErrorCode::ERR_FILEERROR: return "File error";
+		case IrcErrorCode::ERR_NONICKNAMEGIVEN: return "No nickname given";
+		case IrcErrorCode::ERR_ERRONEUSNICKNAME: return "Erroneous nickname";
+		case IrcErrorCode::ERR_NICKNAMEINUSE: return "Nickname is already in use";
+		case IrcErrorCode::ERR_NICKCOLLISION: return "Nickname collision";
+		case IrcErrorCode::ERR_UNAVAILRESOURCE: return "Nick/channel is temporarily unavailable";
+		case IrcErrorCode::ERR_USERNOTINCHANNEL: return "They aren't on that channel";
+		case IrcErrorCode::ERR_NOTONCHANNEL: return "You're not on that channel";
+		case IrcErrorCode::ERR_USERONCHANNEL: return "User is already on channel";
+		case IrcErrorCode::ERR_NOLOGIN: return "User not logged in";
+		case IrcErrorCode::ERR_SUMMONDISABLED: return "SUMMON command disabled";
+		case IrcErrorCode::ERR_USERSDISABLED: return "USERS command disabled";
+		case IrcErrorCode::ERR_NOTREGISTERED: return "You have not registered";
+		case IrcErrorCode::ERR_NEEDMOREPARAMS: return "Not enough parameters --";
+		case IrcErrorCode::ERR_ALREADYREGISTRED: return "Already registered";
+		case IrcErrorCode::ERR_NOPERMFORHOST: return "No permission for operation";
+		case IrcErrorCode::ERR_PASSWDMISMATCH: return "Password mismatch";
+		case IrcErrorCode::ERR_YOUREBANNEDCREEP: return "You're banned";
+		case IrcErrorCode::ERR_KEYSET: return "Channel key already set";
+		case IrcErrorCode::ERR_CHANNELISFULL: return "Channel is full";
+		case IrcErrorCode::ERR_UNKNOWNMODE: return "Unknown mode";
+		case IrcErrorCode::ERR_INVITEONLYCHAN: return "Invite-only channel";
+		case IrcErrorCode::ERR_BANNEDFROMCHAN: return "Banned from channel";
+		case IrcErrorCode::ERR_BADCHANNELKEY: return "Bad channel key";
+		case IrcErrorCode::ERR_BADCHANMASK: return "Bad channel mask";
+		case IrcErrorCode::ERR_NOCHANMODES: return "Channel modes can't be changed";
+		case IrcErrorCode::ERR_BANLISTFULL: return "Ban list is full";
+		case IrcErrorCode::ERR_NOPRIVILEGES: return "No privileges";
+		case IrcErrorCode::ERR_CHANOPRIVSNEEDED: return "You're not channel operator";
+		case IrcErrorCode::ERR_CANTKILLSERVER: return "Can't kill server";
+		case IrcErrorCode::ERR_RESTRICTED: return "Restricted command";
+		case IrcErrorCode::ERR_UNIQOPPRIVSNEEDED: return "You need uniqop privileges";
+		case IrcErrorCode::ERR_NOOPERHOST: return "No O-line for your host";
+		case IrcErrorCode::ERR_UMODEUNKNOWNFLAG: return "Unknown MODE flag";
+		case IrcErrorCode::ERR_USERSDONTMATCH: return "Cannot change or set mode for other";
+	}
+}
