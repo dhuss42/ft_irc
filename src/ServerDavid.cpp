@@ -1,5 +1,25 @@
 #include "Server.hpp"
 
+
+//==================PASS==================//
+const std::string& Server::getPassword() const
+{
+	return (_password);
+}
+
+//==================NICK==================//
+
+/*------------------------------------------------------------------*/
+/* Checks if the passed nick already exists on the server			*/
+/*	- case insensitive (Dan, dan)									*/
+/*------------------------------------------------------------------*/
+bool	Server::isNick(const std::string& nick) const
+{
+	std::string lowerNick = nick;
+	toLower(lowerNick);
+	return (_clientList.find(lowerNick) != _clientList.end())
+}
+
 //==================JOIN==================//
 
 /*------------------------------------------------------------------*/

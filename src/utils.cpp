@@ -7,16 +7,14 @@ void toLower(std::string& str)
 		str[i] = std::tolower(str[i]);
 }
 
-// Method for veryifing correct nick adhering to the following rules
-// - not empty
-// - no " ", ",", "!", "*", "?", "@"
-// - cannot start with $ or :
-// - cannot start with char #&!+
-// - channel Member Prefixes: "~", "+q", "&", "+a", "@", "+o", "%", "+h", "+", "+v"
-// - no '.'
-
 //==================NICK==================//
 
+/*------------------------------------------------------------------*/
+/*	used for NICK command to verify name							*/
+/*		- checks if empty or too long								*/
+/*		- checks for invalid first chars like channel prefix		*/
+/*		- check's if all chars in name are valid					*/
+/*------------------------------------------------------------------*/
 bool	verifyNickName(const std::string& name)
 {
 	if (name.empty() || name.size() > 15)
@@ -24,16 +22,24 @@ bool	verifyNickName(const std::string& name)
 	char first = name[0];
 	if (first == '$' || first == '|' || first == '#' || first == '&' || first == '+' || first == '%' || first == '~' || std::isdigit(first))
 		return (false);
-	// check if all chars are alnum
-	if (name.find(' ') != std::string::npos ||
-		name.find(',') != std::string::npos ||
-		name.find('!') != std::string::npos ||
-		name.find('*') != std::string::npos ||
-		name.find('?') != std::string::npos ||
-		name.find('@') != std::string::npos ||
-		name.find('.') != std::string::npos)
-		// use switch case and iterationr ather than find for all of them
-		return (false);
+	for (const char &c : name)
+	{
+		switch (c)
+		{
+			if (std::isalnum(static_cast<unsigned char> (c)))
+				continue;
+			case ('['):
+			case (']'):
+			case ('{'):
+			case ('}'):
+			case ('\\'):
+			case ('|'):
+				continue;
+
+		default:
+			return (false);
+		}
+	}
 	return (true);
 }
 

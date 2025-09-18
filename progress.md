@@ -262,3 +262,30 @@ Casemapping
 ## ====== Day 18 == 18.09 ====== ()
 - though about file separation and simplest solution is to make Parsing a separate class with it's own files
 	- should take a client n constructor
+[]	handle NICK Command
+	[x] checking the string for legal chars
+		-> utils.cpp
+	[x] check if the nick is already in use
+		-> ServerDavid.cpp
+	[] store the nick in lowercase inside the container when a new client is registered
+		-> change in Server.cpp
+
+[] handle PASS Command
+	[x] getPassword for server
+		-> ServerDavid.cpp
+	[] consider storing password in class as const as it may not be changed
+		-> change in Server.hpp
+	[] close connection
+		-> currenty authentification Method is not sufficient
+			- it is waiting on the booleans to turn true but it should only check once respectively wether NICK, PASS, USER were successfull otherwise it will not delete the client object
+			- results in not properly closing the connection when pass is incorrect
+			- solution is to non-block authentication during newClient. The Client should be simply incldued in the list and the complete registration should only happen when all three commands are parsed and handled
+
+[] handle USER Command
+	[] verify username
+		- musst not be empty
+		- printable non-whitespace chars
+		- exclude @
+	[] verify realname
+		- may contain SPACE char and is prefixed with colon by irssi
+		- may be empty
