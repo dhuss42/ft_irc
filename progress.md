@@ -1,35 +1,12 @@
 # File to track progress for inception project and to list the next to dos
 
 ## To dos
-[x] read through subject and take notes of all the new concepts
-[] define unknown concepts and gather information
-	[x] new functions
-	[] create short test programms to understand new external functions
-	[] new concepts
-		[] video on TCP https://www.youtube.com/watch?v=F27PLin3TV0
-[] reread subject with new information
-[x] look up RFC 2810–2813 (updated IRC protocol specifications)
-[x] IRC architecture
-	- https://www.rfc-editor.org/rfc/rfc2810.html
-[x] IRC Server Protocol
-	- https://www.rfc-editor.org/rfc/rfc2813
-[x] IRC client Protocol
-	- https://www.rfc-editor.org/rfc/rfc2812
-[x] Channel Management
-	- https://www.rfc-editor.org/rfc/rfc2811
-[] install client and connect to an IRC server and play around
-	- decided to use irssi
-	- https://modern.ircdocs.horse/#connection-registration
-		[] read this documentation for the correct protocol between the server and irssi
-[x] create a general structure
-[x] divide project
-	- for two people
-		1. Handle Server, Clients and Channel state
-		2. Parse commands and carry out commands -> affect Channel state
-	- for three people
-		1. Handle, Server
-		2. parsing
-		3. Channel State
+[] update authentication process
+	- currently it is waiting on the booleans to turn true but it should only check once respectively wether NICK, PASS, USER were successfull otherwise it will not delete the client object
+		- results in not properly closing the connection when pass is incorrect
+	- solution is to non-block authentication during newClient. The Client should be simply incldued in the list and the complete registration should only happen when all three commands are parsed and handled
+		- PASS, NICK, USER should send a return value that indicated wether the command sent during registration was successfull. if one of them fails the user has to be disconected
+[] could be that more bugs occur where names have not been changed to lowercase resulting in segfaults
 
 ## ====== Day 1 == 25.06 ======
 - started reading subject (30min)
@@ -281,6 +258,7 @@ Casemapping
 			- it is waiting on the booleans to turn true but it should only check once respectively wether NICK, PASS, USER were successfull otherwise it will not delete the client object
 			- results in not properly closing the connection when pass is incorrect
 			- solution is to non-block authentication during newClient. The Client should be simply incldued in the list and the complete registration should only happen when all three commands are parsed and handled
+			- PASS, NICK, USER should send a return value that indicated wether the command sent during registration was successfull. if one of them fails the user has to be disconected
 
 [] handle USER Command
 	[] verify username
@@ -344,8 +322,13 @@ Casemapping
 		- Type D
 			i and t -> toggles
 
-[] handle PRIVMSG
-
 ## ====== Day 19 == 19.09 ====== ()
 [x] created getters and setters for Server related stuff
 [x] wrote some basic functions for commands (all ready except privmessage)
+[] handle PRIVMSG
+[x] fixed bug inside PRIVMSG where capital letter cannels where searched wrong inside getChannel
+[] fix authentication process or make a method that can be implemented as soon as the necessary cmds are handle by parser
+[x] tested sending larger messages without all the Debug information and server does not freez
+- server is a bit slow when responding
+	[x] fixed some delay because poll had a sleep of 1 second -> not 100ms
+	-> getting pull error now when pressing SIGINT

@@ -142,7 +142,7 @@ int	Client::authentication()
 /*--------------------------------------------------------------------------*/
 int	Client::receiveMsg()
 {
-	std::cout << MAGENTA "[DEBUGG] ===== receiveMsg ======= " WHITE << std::endl;
+	// std::cout << MAGENTA "[DEBUGG] ===== receiveMsg ======= " WHITE << std::endl;
 	char	tmp[512] = {0};
 	int		received = recv(_socket, tmp, sizeof(tmp), 0);
 
@@ -167,14 +167,14 @@ int	Client::receiveMsg()
 		while ((pos = fullBuffer.find("\r\n")) != std::string::npos)
 		{
 			_buffer = fullBuffer.substr(0, pos);
-			std::cout << BOLDCYAN << "[DEBUG] buffer: " << _buffer << RESET << std::endl;
+			// std::cout << BOLDCYAN << "[DEBUG] buffer: " << _buffer << RESET << std::endl;
 			parser(_buffer);
 			// pseudoParser(_buffer);
 			fullBuffer = fullBuffer.substr(pos + 2);;
 		}
 		_remainder = fullBuffer;
-		if (!fullBuffer.empty())
-			std::cout << BOLDCYAN << "[DEBUG] remainder: " << _remainder << RESET << std::endl;
+		// if (!fullBuffer.empty())
+			// std::cout << BOLDCYAN << "[DEBUG] remainder: " << _remainder << RESET << std::endl;
 	}
 	std::cout << GREEN << "[" << _nick << "]" << " received: " << _buffer << WHITE << std::endl;
 	_buffer.clear();
@@ -190,8 +190,8 @@ int	Client::receiveMsg()
 void	Client::sendMsg(std::string name, std::string reply)
 {
 	reply = ":" + name + " " + reply + "\r\n";
-	std::cout << "[DEBUG] current reply: " << name << std::endl;
-	std::cout << "[DEBUG] sendMsg to " << getNick() << " socket=" << _socket << " msg=" << reply << std::endl;
+	// std::cout << "[DEBUG] current reply: " << name << std::endl;
+	// std::cout << "[DEBUG] sendMsg to " << getNick() << " socket=" << _socket << " msg=" << reply << std::endl;
 	if (send(_socket, reply.c_str(), reply.size(), 0) <= 0) // uncertain about the zero at the moment
 	{
 		throw (Errors(ErrorCode::E_SND)); // uncertain about wether it bubbles up correctly to the next catch
