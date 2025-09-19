@@ -25,15 +25,55 @@ MessageHandler::MessageHandler(Client& client, Message& message, Server& server)
 instead of _message.params[].empty() -> check for params size < x
 */
 
+/*
+	Builds a CAP ACK response message by combining the requested capabilities
+
+ 	constructs the server's response to a client's capability request by:
+ 	1. Starting with the base CAP ACK command
+ 	2. Iterating through all requested capabilities (starting from index 2)
+ 	3. Concatenating each capability to build the complete response
+
+ 	The response maintains the exact order and values of requested capabilities,
+ 	following the IRC specification for capability negotiation.
+
+	CAP LS (302): Announces supported capabilities to the client
+	CAP ACK: Processes accepted capabilities from the server
+	CAP NAK: Handles rejected capabilities gracefully
+	CAP END: Completes negotiation and proceeds with registration
+
+	- multi-prefix: Enables enhanced user prefix handling, allowing servers to send all user
+	prefixes in order of rank (e.g., @+user instead of just @user)
+	- sasl: Supports Secure Authentication and Login (SASL) for secure user authentication
+	- message-tags: Enables message metadata support for features like message IDs and batch tags
+*/
 void MessageHandler::handleCap(void)
 {
 	std::cout << "[DEBUG] CAP: " << std::endl;
-	//change server to -> getServerName?
-	if (_message.params[1] == "LS" && _message.params[2] == "302")
+
+	if (_message.params[1] == "LS")
 	{
-		_client.sendMsg("irc_custom", "CAP * LS :");
-		// sendMsg("irc_custom", "FARTING\nPIPI\nKAKA"); //change to available commands
+		std::cout << "[DEBUG] LS: " << std::endl;
+		_client.sendMsg(_server.getName(), "CAP * LS :multi-prefix sasl message-tags");
 	}
+	else if (_message.params[1] == "REQ")
+	{
+		std::cout << "[DEBUG] REQ: " << std::endl;
+		std::string reply = "CAP * ACK ";
+		bool hasMultiPrefix = false;
+		for (size_t i = 2; i < _message.params.size(); i++)
+		{
+			if (_message.params[i] == "multi-prefix") hasMultiPrefix = true;
+				reply += _message.params[i] + " ";
+		}
+		_client.sendMsg(_server.getName(), reply);
+	}
+	else if (_message.params[1] == "END")
+	{
+		std::cout << "[DEBUG] Capability negotiation completed" << std::endl;
+		return ;
+	}
+	else
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_INVALIDCAPCMD, _message.params[1] + ":Invalid or missing CAP subcommand" );
 }
 
 void MessageHandler::handleJoin(void)
