@@ -64,6 +64,32 @@ void MessageHandler::handleNick(void)
 	_client.setNickSet(true);
 }
 
+/*
+	- USER <username> <hostname> <servername> :<realname>
+		-> server: sends welcome message when all flags are set
+	ERR_NEEDMOREPARAMS
+	ERR_ALREADYREGISTRED: If the client tries to send another USER message after registration
+		-> "You may not reregister"
+*/
+void MessageHandler::handleUser()
+{
+	std::cout << "[DEBUG] USER: " << std::endl;
+	if (_message.params[1].empty())
+		return ;	//send Errormessage
+
+	if (_message.params.size() == 5)
+	{
+		_client.setUsername(_message.params[1]);
+		_client.setHostname(_message.params[2]);
+		_client.setRealname(_message.params[4]);
+
+		std::cout << "[DEBUG] username: " << _client.getUsername() << std::endl;
+		std::cout << "[DEBUG] hostname: " << _client.getHostname() << std::endl; // not sure if better to have servername here or IP Address, this seems slower than doing it constructor
+		std::cout << "[DEBUG] realname: " << _client.getRealname() << std::endl;
+
+		_client.setUsernameSet(true);
+	}
+}
 
 void MessageHandler::handleMode()
 {
@@ -83,4 +109,17 @@ void MessageHandler::handlePing()
 	if (_message.params[1].empty())
 		return ;	//Send error message
 	_client.sendMsg("irc_custom", "PONG " + _message.params[1]);
+}
+
+void MessageHandler::handlePrivmsg()
+{
+	// PRIVMSG #chan :hallo
+	// currently segfaults because shitty pseudoparser
+	std::cout << "[DEBUG] PRIVMSG" << std::endl;
+
+	Channel *channel = _server.getChannel(_message.params[1]); // channel name can only be 4 chars -> better extract everything up to colon
+	std::cout << "[DEBUG] channel name " << _message.params[1] << std::endl;
+	if (channel)
+		std::cout << "[DEBUG] exists" << _message.params[1] << std::endl;
+	channel->broadcast(_message.params[2], &_client);
 }
