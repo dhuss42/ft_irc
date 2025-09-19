@@ -364,7 +364,7 @@ void	Server::setupSignalHandler()
 	sa.sa_flags = 0;
 	sigaction(SIGINT, &sa, nullptr);
 	sigaction(SIGTERM, &sa, nullptr);
-	sigaction(SIGQUIT, nullptr, nullptr);
+	sigaction(SIGQUIT, &sa, nullptr);
 	// sigstop ctrl + z
 	// sigcont
 	// add more signals here with sigaction
