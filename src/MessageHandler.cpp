@@ -25,23 +25,131 @@ MessageHandler::MessageHandler(Client& client, Message& message, Server& server)
 instead of _message.params[].empty() -> check for params size < x
 */
 
+/*
+	Builds a CAP ACK response message by combining the requested capabilities
+
+ 	constructs the server's response to a client's capability request by:
+ 	1. Starting with the base CAP ACK command
+ 	2. Iterating through all requested capabilities (starting from index 2)
+ 	3. Concatenating each capability to build the complete response
+
+ 	The response maintains the exact order and values of requested capabilities,
+ 	following the IRC specification for capability negotiation.
+
+	CAP LS (302): Announces supported capabilities to the client
+	CAP ACK: Processes accepted capabilities from the server
+	CAP NAK: Handles rejected capabilities gracefully
+	CAP END: Completes negotiation and proceeds with registration
+
+	- multi-prefix: Enables enhanced user prefix handling, allowing servers to send all user
+	prefixes in order of rank (e.g., @+user instead of just @user)
+	- sasl: Supports Secure Authentication and Login (SASL) for secure user authentication
+	- message-tags: Enables message metadata support for features like message IDs and batch tags
+*/
 void MessageHandler::handleCap(void)
 {
 	std::cout << "[DEBUG] CAP: " << std::endl;
-	//change server to -> getServerName?
-	if (_message.params[1] == "LS" && _message.params[2] == "302")
+
+	if (_message.params[1] == "LS")
 	{
-		_client.sendMsg("irc_custom", "CAP * LS :");
-		// sendMsg("irc_custom", "FARTING\nPIPI\nKAKA"); //change to available commands
+		std::cout << "[DEBUG] LS: " << std::endl;
+		_client.sendMsg(_server.getName(), "CAP * LS :multi-prefix sasl message-tags");
 	}
+	else if (_message.params[1] == "REQ")
+	{
+		std::cout << "[DEBUG] REQ: " << std::endl;
+		std::string reply = "CAP * ACK ";
+		bool hasMultiPrefix = false;
+		for (size_t i = 2; i < _message.params.size(); i++)
+		{
+			if (_message.params[i] == "multi-prefix") hasMultiPrefix = true;
+				reply += _message.params[i] + " ";
+		}
+		_client.sendMsg(_server.getName(), reply);
+	}
+	else if (_message.params[1] == "END")
+	{
+		std::cout << "[DEBUG] Capability negotiation completed" << std::endl;
+		return ;
+	}
+	else
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_INVALIDCAPCMD, _message.params[1] + ":Invalid or missing CAP subcommand" );
 }
 
 void MessageHandler::handleJoin(void)
 {
 	std::cout << "[DEBUG] JOIN: " << std::endl;
-		Channel* channel = _server.createChannel(_message.params[1], &_client);
-		if (channel)
-			channel->addUser(&_client, _message.params[2]);
+	// Channel* channel = _server.createChannel(_message.params[1], &_client);
+	// if (channel)
+	// 	channel->addUser(&_client, _message.params[2]);
+
+	//leaving channels
+	if (_message.params[1][0] == '0')
+	{
+		// Remove client from all channels
+		// for (auto& channel : _server.getChannels())	//still to do
+		// {
+		// 	channel.removeUser(&_client);
+		// }
+		return;
+	}
+
+	// Create or get the channel
+	Channel* channel = _server.createChannel(_message.params[1], &_client);
+	if (!channel)
+	{
+		// Handle channel creation failure
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL,
+						"No such channel");
+		return;
+	}
+
+	// Get channel password if set
+	std::string password = channel->getPassword();
+	if (!password.empty() && _message.params[2] != password)
+	{
+		// Handle wrong password
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_BADCHANNELKEY,
+					 "Bad channel key");
+		return;
+	}
+
+	// Add user to channel
+	channel->addUser(&_client, _message.params[2]);
+	// Send JOIN message to channel
+	std::string joinMsg = ":" + _client.getNick() + "!~" +
+						_client.getUsername() + "@" + _client.getHostname() +
+						" JOIN :" + _message.params[1] + "\n";
+	channel->broadcast(joinMsg, &_client);
+
+	// Send channel user list to client
+	std::string users = channel->getJoinedUsers();
+	if (!users.empty())
+	{
+		_client.sendResponse(_server.getName(), IrcResponseCode::RPL_NAMREPLY,
+							"= " + _message.params[1] + " :" + users);
+		_client.sendResponse(_server.getName(), IrcResponseCode::RPL_ENDOFNAMES,
+							_message.params[1] + " :End of /NAMES list.");
+	}
+
+	// if (channel->addUser(&_client, _message.params[2]))
+	// {
+	// 	// Send JOIN message to channel
+	// 	std::string joinMsg = ":" + _client.getNick() + "!~" +
+	// 						_client.getUser() + "@" + _client.getHost() +
+	// 						" JOIN :" + _message.params[1] + "\n";
+	// 	channel->broadcast(joinMsg, &_client);
+
+	// 	// Send channel user list to client
+	// 	std::string users = channel->getJoinedUsers();
+	// 	if (!users.empty())
+	// 	{
+	// 		_client.sendResponse(_server.getName(), IrcResponseCode::RPL_NAMREPLY,
+	// 							"= " + _message.params[1] + " :" + users);
+	// 		_client.sendResponse(_server.getName(), IrcResponseCode::RPL_ENDOFNAMES,
+	// 							_message.params[1] + " :End of /NAMES list.");
+	// 	}
+	// }
 }
 
 void MessageHandler::handlePass(void)
@@ -64,6 +172,32 @@ void MessageHandler::handleNick(void)
 	_client.setNickSet(true);
 }
 
+/*
+	- USER <username> <hostname> <servername> :<realname>
+		-> server: sends welcome message when all flags are set
+	ERR_NEEDMOREPARAMS
+	ERR_ALREADYREGISTRED: If the client tries to send another USER message after registration
+		-> "You may not reregister"
+*/
+void MessageHandler::handleUser()
+{
+	std::cout << "[DEBUG] USER: " << std::endl;
+	if (_message.params[1].empty())
+		return ;	//send Errormessage
+
+	if (_message.params.size() == 5)
+	{
+		_client.setUsername(_message.params[1]);
+		_client.setHostname(_message.params[2]);
+		_client.setRealname(_message.params[4]);
+
+		std::cout << "[DEBUG] username: " << _client.getUsername() << std::endl;
+		std::cout << "[DEBUG] hostname: " << _client.getHostname() << std::endl; // not sure if better to have servername here or IP Address, this seems slower than doing it constructor
+		std::cout << "[DEBUG] realname: " << _client.getRealname() << std::endl;
+
+		_client.setUsernameSet(true);
+	}
+}
 
 void MessageHandler::handleMode()
 {
@@ -83,4 +217,17 @@ void MessageHandler::handlePing()
 	if (_message.params[1].empty())
 		return ;	//Send error message
 	_client.sendMsg("irc_custom", "PONG " + _message.params[1]);
+}
+
+void MessageHandler::handlePrivmsg()
+{
+	// PRIVMSG #chan :hallo
+	// currently segfaults because shitty pseudoparser
+	std::cout << "[DEBUG] PRIVMSG" << std::endl;
+
+	Channel *channel = _server.getChannel(_message.params[1]); // channel name can only be 4 chars -> better extract everything up to colon
+	std::cout << "[DEBUG] channel name " << _message.params[1] << std::endl;
+	if (channel)
+		std::cout << "[DEBUG] exists" << _message.params[1] << std::endl;
+	channel->broadcast(_message.params[2], &_client);
 }

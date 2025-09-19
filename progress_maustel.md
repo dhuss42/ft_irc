@@ -75,9 +75,9 @@
     https://modern.ircdocs.horse/#connection-registration
 - we need more commands as the subject requires, because of authetification
 - Prio:
-    CAP LS 302
-    JOIN
-    PRIVMSG
+    [x] CAP LS 302
+    [] JOIN
+    [] PRIVMSG
 
 ## ====== Day 5 == 12.09.2025 ======
 - Read authentication file: https://modern.ircdocs.horse/#connection-registration
@@ -195,6 +195,18 @@ todo:
     - Abgabe wann anpeilen? -> Mo entscheiden ob 4/5 oder 11/12
 
 
+## ====== Day 10 == 19.09.2025 ======
+- finished handleCap
+
+- handleJoin:
+    - I need getChannels(): Returns all channels as a vector
+    - addUser should be boolean
+
+- todo:
+    - finish handleJoin
+    - think about it if it makes sense
+    - test it
+
 ## ==== QUESTIONS ====
 - Parser job:
     - if command does not exist or not enough parameters -> is handled already by irssi
@@ -217,10 +229,12 @@ todo:
     -> yes it works, it gets translated as "Capabilities supported:"
 
 [x] at registration phase: MODE <nickname> +i -> at nickname the first letter isnt included
+[x] at registration phase: MODE <nickname> +i -> at nickname the first letter isnt included
 
 [x] (???) my parser does not keep the conenction to server, why??
     - David solved it! in handlePass: this->_registered = true
 
+[x] how to avoid git conflicts? -> https://stackoverflow.com/questions/70153247/branching-strategy-to-avoid-conflicts-on-two-branches
 [x] how to avoid git conflicts? -> https://stackoverflow.com/questions/70153247/branching-strategy-to-avoid-conflicts-on-two-branches
 
 //First, before starting the work, make sure you're starting from an up to date main branch like this:
@@ -242,6 +256,9 @@ todo:
 //Feel free to push:
 - git push origin branchName
 //Now you can create a pull request and merge it to the main as usual.
+
+----- questions for david ------
+- look for transcendence partner?
 
 ----- questions for david ------
 - look for transcendence partner?
