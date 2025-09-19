@@ -21,7 +21,7 @@ Channel*	Server::createChannel(std::string& name, Client *client) // can be alte
 	else if (!verifyChannelName(lcName))
 	{
 		std::cout << "[DEBUG] " << "invalid Channel name" << std::endl;
-		return nullptr;
+		return (nullptr);
 	}
 	else
 	{

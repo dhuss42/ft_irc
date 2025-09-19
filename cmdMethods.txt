@@ -47,6 +47,7 @@ MODE
 		std::string	Channel::getActiveChannelModes(void)
 	Return creation time of channel as int representation (converted by irssi apparently)
 		const time_t Channel::getCreationTime(void) const
+		-> irssi doesn't display it :/
 	Check if Client is Operator
 		bool	isOperator(const Client* client) const;
 	Set Modes
@@ -60,3 +61,10 @@ MODE
 		bool	getPasswordToggle(void);
 		bool	getUserLimitToggle(void);
 
+PRIVMSG
+	check if target is a client
+		bool	Server::isClient(const std::string& name) const
+	check if target is a channel
+		bool	Server::isChannel(const std::string& name) const
+	check who is operator to send only to operators of channel X // not sure if overkill
+		bool	Channel::isOperator(const Client* client) const
