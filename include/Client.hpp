@@ -81,6 +81,8 @@ class Client
 	void	setRemainder(std::string str);
 	std::string getRemainder(void);
 
+	Server* getServer(void);
+
 	//handler functions
 	// not sure if bool or void
 	// bool handleCap(Message message);

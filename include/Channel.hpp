@@ -78,7 +78,6 @@ class Channel
 		void	setPasswordToggle(bool value);
 		void	setUserLimitToggle(bool value);
 
-
 		void	printUsers(void);
 
 	};

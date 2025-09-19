@@ -137,16 +137,20 @@ void	Channel::inviteUser(Client* inviter, Client* invited)
 		std::cout << GREEN "[DEBUG] " << inviter->getNick() << "[inviter] is not a channel operator"  WHITE << std::endl;
 		return ;
 	}
-	if (!isUser(inviter))
+	if (!inviter->getServer()->isClient(invited->getNick()))
 	{
-		std::cout << GREEN "[DEBUG] " << inviter->getNick() << "[inviter] is not in the channel"  WHITE << std::endl;
+		std::cout << GREEN "[DEBUG] " << invited->getNick() << "[invited] is not on the server"  WHITE << std::endl;
 		return ;
 	}
-	// need Client method to access the list of Clients on the server
+	if (!isUser(inviter))
+	{
+		std::cout << GREEN "[DEBUG] " << invited->getNick() << "[invited] is not in the channel"  WHITE << std::endl;
+		return ;
+	}
 	auto it = _users.find(invited->getNick());
 	if (it == _users.end())
 	{
-		std::cout << GREEN "[DEBUG] " << invited << " is not in channel. Inviting now..." WHITE << std::endl;
+		std::cout << GREEN "[DEBUG] " << invited->getNick() << " is not in channel. Inviting now..." WHITE << std::endl;
 		addInvUsers(invited);
 	}
 }
