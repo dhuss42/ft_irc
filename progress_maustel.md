@@ -195,6 +195,9 @@ todo:
     - Abgabe wann anpeilen? -> Mo entscheiden ob 4/5 oder 11/12
 
 
+## ====== Day 10 == 19.09.2025 ======
+
+
 ## ==== QUESTIONS ====
 - Parser job:
     - if command does not exist or not enough parameters -> is handled already by irssi
