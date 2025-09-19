@@ -8,6 +8,9 @@ NICK
 PASS
 	get Password Server
 		const std::string& Server::getPassword() const
+	close connection
+		void	Server::closedConnection(std::vector<pollfd>::iterator &it)
+	For closing connection to work properly the authentication logic has to be changed
 
 JOIN
 	get Password Channel

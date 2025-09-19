@@ -19,29 +19,29 @@ Channel::~Channel()
 /*------------------------------------------------------*/
 void	Channel::broadcast(const std::string& msg, Client* sender)
 {
-	std::cout << MAGENTA << "===========boradcast==========" WHITE << std::endl;
-	std::cout << "[DEBUG] before nullptr check" << std::endl;
-	std::cout << "[DEBUG] msg " << msg << std::endl;
+	// std::cout << MAGENTA << "===========boradcast==========" WHITE << std::endl;
+	// std::cout << "[DEBUG] before nullptr check" << std::endl;
+	// std::cout << "[DEBUG] msg " << msg << std::endl;
 	if (sender)
 	{
-		int counter = 0;
-		std::cout << "[DEBUG] inside if(sender)" << std::endl;
-		std::cout << "[DEBUG] sender is: " << sender->getNick() << std::endl;
-		std::cout << "[DEBUG] _users.size(): " << _users.size() << std::endl;
+		// int counter = 0;
+		// std::cout << "[DEBUG] inside if(sender)" << std::endl;
+		// std::cout << "[DEBUG] sender is: " << sender->getNick() << std::endl;
+		// std::cout << "[DEBUG] _users.size(): " << _users.size() << std::endl;
 
 		for (auto it = _users.begin(); it != _users.end(); it++)
 		{
-			std::cout << "[DEBUG] users: " << it->second->getNick() << std::endl;
-			std::cout << "[DEBUG] run: " << counter++ << std::endl;
-			std::cout << "[DEBUG] sender ptr: " << sender << std::endl;
-			std::cout << "[DEBUG] sender socket: " << sender->getSocket() << std::endl;
-			std::cout << "[DEBUG] user ptr:   " << it->second << std::endl;
-			std::cout << "[DEBUG] user socket:   " << it->second->getSocket() << std::endl;
+			// std::cout << "[DEBUG] users: " << it->second->getNick() << std::endl;
+			// std::cout << "[DEBUG] run: " << counter++ << std::endl;
+			// std::cout << "[DEBUG] sender ptr: " << sender << std::endl;
+			// std::cout << "[DEBUG] sender socket: " << sender->getSocket() << std::endl;
+			// std::cout << "[DEBUG] user ptr:   " << it->second << std::endl;
+			// std::cout << "[DEBUG] user socket:   " << it->second->getSocket() << std::endl;
 			if (it->second != sender)
 			{
-				std::cout << "[DEBUG]" << "_user is not equal to sender" << std::endl;
+				// std::cout << "[DEBUG]" << "_user is not equal to sender" << std::endl;
 				std::string prefix = sender->getNick() + "!" + sender->getUsername() + "@" + sender->getHostname() + " PRIVMSG " + getName() + " :";
-				std::cout << "[DEBUG] prefix: " << prefix << std::endl;
+				// std::cout << "[DEBUG] prefix: " << prefix << std::endl;
 				it->second->sendMsg(prefix, msg);
 			}
 		}

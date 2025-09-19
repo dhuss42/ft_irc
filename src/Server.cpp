@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maustel <maustel@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/18 12:36:27 by maustel          ###   ########.fr       */
+/*   Updated: 2025/09/19 13:19:14 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,7 +219,7 @@ void	Server::closedConnection(std::vector<pollfd>::iterator &it)
 /*------------------------------------------------------------------*/
 void	Server::newClient()
 {
-	std::cout << "[DEBUGG] listening socket has revents & POLLIN" << std::endl;
+	// std::cout << "[DEBUGG] listening socket has revents & POLLIN" << std::endl;
 	pollfd newConnection = createPollfd();
 
 	newConnection.fd = accept(_sockets[0].fd, NULL, NULL); // not sure here with NULL NULL
@@ -227,23 +227,21 @@ void	Server::newClient()
 		throw (Errors(ErrorCode::E_ACCPT));
 	else
 	{
-		std::cout << GREEN "[DEBUGG] created accepted Socket" WHITE << std::endl;
+		// std::cout << GREEN "[DEBUGG] created accepted Socket" WHITE << std::endl;
 		Client* client = new Client(newConnection.fd, this);
 		if (client->authentication() == -1) // this has to go once JOIN PASS NICK USER are ready
 		{
-			std::cout << "IT GOES INSIDE HERE THE IF ALWAYS WHEN NEW CLIENT" << std::endl;
 			delete client;
 		}
 		else
 		{
-			std::cout << "IT GOES INSIDE THE CORRECT ONE" << std::endl;
 			_clientfd[newConnection.fd] = client;
 			_clientList[toLower(client->getNick())] = client;
 			_sockets.push_back(newConnection);
 		}
 		// handle properly successfull connection and unsuccessfull connection
 	}
-	std::cout << YELLOW "[DEBUGG] exiting newClient()" WHITE << std::endl;
+	// std::cout << YELLOW "[DEBUGG] exiting newClient()" WHITE << std::endl;
 }
 
 /*----------------------------------------------------------------------------------*/
@@ -263,10 +261,10 @@ void	Server::handlePollRevents()
 		newClient();
 	else
 	{
-		std::cout << YELLOW "[DEBUGG] entered else in handlePollRevents()" WHITE << std::endl;
+		// std::cout << YELLOW "[DEBUGG] entered else in handlePollRevents()" WHITE << std::endl;
 		for (auto it = _sockets.begin(); it != _sockets.end();)
 		{
-			std::cout << YELLOW "[DEBUGG] entered for in handlePollRevents()" WHITE << std::endl;
+			// std::cout << YELLOW "[DEBUGG] entered for in handlePollRevents()" WHITE << std::endl;
 			if (it->revents & POLL_IN)
 			{
 				if (_clientfd[it->fd]->receiveMsg() != -1)
@@ -306,14 +304,14 @@ void	Server::serverLoop()
 		try {
 			if (!_sockets.empty())
 			{
-				ret = poll(_sockets.data(), _sockets.size(), 0);
+				ret = poll(_sockets.data(), _sockets.size(), 100);
 				if (ret == -1)
 					throw (Errors(ErrorCode::E_PLL));
-				else if (ret == 0)
-					sleep(1);
+				// else if (ret == 0)
+				// 	continue ;
 				else
 				{
-					std::cout << MAGENTA "[DEBUGG] poll() has returned a positive value" WHITE << std::endl;
+					// std::cout << MAGENTA "[DEBUGG] poll() has returned a positive value" WHITE << std::endl;
 					handlePollRevents();
 				}
 			}
@@ -405,7 +403,7 @@ void	Server::removeChannel(Channel* channel)
 
 Channel*	Server::getChannel(std::string name)
 {
-	auto it = _channelList.find(name);
+	auto it = _channelList.find(toLower(name));
 	if (it != _channelList.end())
 		return (it->second);
 	return (nullptr);
