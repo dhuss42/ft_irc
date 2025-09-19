@@ -63,8 +63,8 @@ class Channel
 		std::size_t	getUserLimit(void);
 
 		const std::string	getJoinedUsers(void) const;
-		const time_t	getCreationTime(void) const;
-		const size_t	getNbrUsers(void) const; // not sure if needed
+		time_t	getCreationTime(void) const;
+		size_t	getNbrUsers(void) const; // not sure if needed
 		bool		isEmpty(void) const;
 
 		void		setName(std::string name); // might not need this as channel names are fixed
