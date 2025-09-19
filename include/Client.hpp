@@ -51,21 +51,22 @@ class Client
 	int		authentication();
 	int		receiveMsg();
 
-	bool	getRegistered(void);
 	void	setRegistered(bool state);
-
-	bool	getNickSet(void);
 	void	setNickSet(bool state);
-
-	bool	getUsernameSet(void);
 	void	setUsernameSet(bool state);
-
 	void	setSocket(int socket);
+	
+	bool	getRegistered(void);
+	bool	getNickSet(void);
+	bool	getUsernameSet(void);
 	int		getSocket(void);
 
-	std::string getNick() const;
+	void	setRealname(std::string str);
+	void	setHostname(std::string str);
+	void	setUsername(std::string str);
 	void	setNick(std::string str);
-
+	
+	std::string getNick() const;
 	std::string	getUsername();
 	std::string getHostname();
 	std::string getRealname();

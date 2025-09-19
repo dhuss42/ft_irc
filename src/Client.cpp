@@ -126,6 +126,8 @@ int	Client::authentication()
 	return (1);
 }
 
+//==============Messaging==============//
+
 /*--------------------------------------------------------------------------*/
 /* receives messages from client											*/
 /*	- recv stores msg in tmp buffer 										s*/
@@ -194,6 +196,23 @@ void	Client::sendMsg(std::string name, std::string reply)
 	{
 		throw (Errors(ErrorCode::E_SND)); // uncertain about wether it bubbles up correctly to the next catch
 	}
+}
+
+//==============getters and setters==============//
+
+void	Client::setRealname(std::string str)
+{
+	_realname = str;
+}
+
+void	Client::setHostname(std::string str)
+{
+	_hostname = str;
+}
+
+void	Client::setUsername(std::string str)
+{
+	_username = str;
 }
 
 bool	Client::getRegistered(void)
