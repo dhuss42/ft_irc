@@ -255,11 +255,12 @@ Messaging
 
 Casemapping
 - when new clients and channels are registered check wether the name exists already (Dan, dan)
-	- done for channels
+	[x] done for channels
+	[] currently not sure if correctly done for clients
 
 - currently server can send some messages back and forth but seems to hang after some messages and sometimes the server segfaults
 
-## ====== Day 18 == 18.09 ====== ()
+## ====== Day 18 == 18.09 ====== (6h)
 - though about file separation and simplest solution is to make Parsing a separate class with it's own files
 	- should take a client n constructor
 [x]	handle NICK Command
@@ -315,9 +316,9 @@ Casemapping
 	[x] remove User from Channel
 	[] optional kick limit
 
-[] handle INVITE
+[x] handle INVITE
 	[x] nickname to be invited and channel to be invited
-	[] check if the user exists on server
+	[x] check if the user exists on server
 	[x] check wether the inviting user is part of channel
 	[x] check wether the inviting user is an operator
 	[x] check wether the invited user is already part of the channel
@@ -335,3 +336,7 @@ Casemapping
 
 // GENERAL THING TO DO!
 	- ALL METHODS isClient, addInvUsers etc. work without passing the client pointer as arg and can be done with strings
+
+## ====== Day 19 == 19.09 ====== ()
+[] change Client Objects into nicks for most methods
+[] 

@@ -316,6 +316,11 @@ std::string	Client::getRealname()
 	return (_realname);
 }
 
+Server* Client::getServer(void)
+{
+	return (_server);
+}
+
 // Constructor
 // if a client makes a connection create Client object
 // instantiate attributes
