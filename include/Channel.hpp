@@ -23,6 +23,8 @@ class Channel
 		std::string _password; // if k is active
 		std::size_t _userLimit;
 
+		time_t	_creationTime;
+
 		std::string _creator; // uncertain if needed
 		std::map <std::string, Client*> _users;
 		std::unordered_map <std::string, Client*> _invitedUsers;
@@ -60,7 +62,10 @@ class Channel
 		std::string	getPassword(void);
 		std::size_t	getUserLimit(void);
 
-		const std::string getJoinedUsers(void) const;
+		const std::string	getJoinedUsers(void) const;
+		const time_t	getCreationTime(void) const;
+		const size_t	getNbrUsers(void) const; // not sure if needed
+		bool		isEmpty(void) const;
 
 		void		setName(std::string name); // might not need this as channel names are fixed
 		void		setTopic(std::string topic);
@@ -78,8 +83,7 @@ class Channel
 		void	setPasswordToggle(bool value);
 		void	setUserLimitToggle(bool value);
 
-		void	printUsers(void);
-
+		std::string	getActiveChannelModes(void) const;
 	};
 
 

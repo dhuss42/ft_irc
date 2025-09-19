@@ -2,8 +2,10 @@
 
 //================ Orthodox Form ================//
 
-Channel::Channel(std::string name) : _name(name), _invOnly(false), _topicOp(true), _pswrdTgle(false), _usrLmtTgl(false)
+Channel::Channel(std::string name) : _name(name), _invOnly(false), _topicOp(true), _pswrdTgle(false), _usrLmtTgl(false), _creationTime(time(nullptr))
 {
+	std::cout << "[DEBUG] creation time: " << _creationTime << std::endl;
+	std::cout << "[DEBUG] human readable: " << ctime(&_creationTime) << std::endl;
 }
 
 Channel::~Channel()
@@ -48,6 +50,31 @@ void	Channel::broadcast(const std::string& msg, Client* sender)
 
 //================ Channel Operations ================//
 
+// Creation time
+
+//<<<<<<<<<<<<<<<MODE>>>>>>>>>>>>//
+std::string	Channel::getActiveChannelModes(void) const
+{
+	std::string activeModes = "+";
+	if (_invOnly)
+		activeModes += "i";
+	if (_pswrdTgle)
+		activeModes += "k";
+	if (_usrLmtTgl)
+		activeModes += "l";
+	if (_topicOp)
+		activeModes += "t";
+	if (activeModes.length() == 1)
+		return ("");
+	return (activeModes);
+}
+
+//<<<<<<<<<<<<<<<MODE>>>>>>>>>>>>//
+const time_t Channel::getCreationTime(void) const
+{
+	return (_creationTime);
+}
+
 //<<<<<<<<<<<<<<<TOPIC>>>>>>>>>>>>//
 // the return value can be changed to adjust to the parsing logic
 void	Channel::changeTopic(const std::string& topic, const Client* client)
@@ -75,6 +102,20 @@ const std::string Channel::getJoinedUsers(void) const
 	if (!userList.empty())
 		userList.pop_back();
 	return (userList);
+}
+
+//<<<<<<<<<<<<<<<PART>>>>>>>>>>>>//
+bool	Channel::isEmpty(void) const
+{
+	return (_users.empty());
+}
+
+
+//<<<<<<<<<<<<<<<NOT SURE IF NEEDED>>>>>>>>>>>>//
+
+const	size_t Channel::getNbrUsers(void) const
+{
+	return (_users.size());
 }
 
 //================ Adding & Removing clients ================//
@@ -105,7 +146,7 @@ void	Channel::addUser(Client* client, const std::string& password)
 		{
 			std::cout << "[DEBUG] Client added ! " << client->getNick() << " to " << this->getName() << std::endl;
 			_users[client->getNick()] = client;
-			if (_invOnly) 
+			if (_invOnly)
 				removeInvUsers(client);
 			client->sendMsg("irc_custom", "available commands: JOIN, MODE, KICK, PART, QUIT, PRIVMSG/NOTICE"); // not correct format and more needs to be sent maybe outside the method
 		}
@@ -119,13 +160,6 @@ void	Channel::addUser(Client* client, const std::string& password)
 	// user receives join message
 	// user receives channel topic
 	// user receives list of users who are on the channel including the user joining
-}
-
-void	Channel::printUsers(void) // depricated
-{
-	int i = 1;
-	for (auto it = _users.begin(); it != _users.end(); it++)
-		std::cout << GREEN "[DEBUG] [" << i++ << "] " << it->first << WHITE << std::endl;
 }
 
 //<<<<<<<<<<<<<<<INVITE>>>>>>>>>>>>//

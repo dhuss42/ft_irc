@@ -290,7 +290,7 @@ Casemapping
 	[] verify realname
 		- may contain SPACE char and is prefixed with colon by irssi
 		- may be empty
-	[] getters and setters for username/hostname/realname
+	[x] getters and setters for username/hostname/realname
 
 [] handle JOIN COMMAND
 	[x] getKey/password
@@ -299,15 +299,15 @@ Casemapping
 		-> but something is buggy here / maybe it's privmsg though
 	[x] get topic
 	[x] getJoined users
-	[] check mode section
-	[] special parameter for PARTING all channels at once
+	[x] check mode section
+	[x] special parameter for PARTING all channels at once
 
 [x] handle PART COMMAND
 	[x] remove Client from Channel container
 		-> Channel::removeUser(Client* client)
 	[x] check: if client was operator and Parts and rejoins is he still operator?
 		-> no
-	[] check if channel has 0 members if so delete channel object
+	[x] check if channel has 0 members if so delete channel object
 		-> do inside the handler
 
 [x] handle KICK
@@ -326,17 +326,26 @@ Casemapping
 [x] handle TOPIC COMMAND
 	-> changeTopic() in Channel.cpp
 
-[] handle MODE
-	[] check wether target exists on network
-	[] check wether target is user or Channel
-	[] Don't understand: If <target> is a different nick than the user who sent the command, the ERR_USERSDONTMATCH (502) numeric is returned.
-	[] if target is channel, user sending command musst have appropriate channel priviledges
+[x] handle MODE (only channel modes)
+	[x] check if channel exists on network
+	[x] when no string is given returns current channel modes
+		-> test this with irssi
+	[x] returns creation time of the channel
+		-> const time_t Channel::getCreationTime(void) const
+	[x] if target is channel, user sending command musst have appropriate channel priviledges
+	[x] check Types
+		- Type A
+		- Type B
+			k	-> password
+			o	-> nick
+		- Type C
+			+l needs parameter
+			-l not
+		- Type D
+			i and t -> toggles
 
 [] handle PRIVMSG
 
-// GENERAL THING TO DO!
-	- ALL METHODS isClient, addInvUsers etc. work without passing the client pointer as arg and can be done with strings
-
 ## ====== Day 19 == 19.09 ====== ()
-[] change Client Objects into nicks for most methods
-[] 
+[x] created getters and setters for Server related stuff
+[x] wrote some basic functions for commands (all ready except privmessage)
