@@ -50,8 +50,6 @@ void	Channel::broadcast(const std::string& msg, Client* sender)
 
 //================ Channel Operations ================//
 
-// Creation time
-
 //<<<<<<<<<<<<<<<MODE>>>>>>>>>>>>//
 std::string	Channel::getActiveChannelModes(void) const
 {
@@ -70,7 +68,7 @@ std::string	Channel::getActiveChannelModes(void) const
 }
 
 //<<<<<<<<<<<<<<<MODE>>>>>>>>>>>>//
-const time_t Channel::getCreationTime(void) const
+time_t Channel::getCreationTime(void) const
 {
 	return (_creationTime);
 }
@@ -113,7 +111,7 @@ bool	Channel::isEmpty(void) const
 
 //<<<<<<<<<<<<<<<NOT SURE IF NEEDED>>>>>>>>>>>>//
 
-const	size_t Channel::getNbrUsers(void) const
+size_t Channel::getNbrUsers(void) const
 {
 	return (_users.size());
 }
