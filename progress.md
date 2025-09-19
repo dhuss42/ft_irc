@@ -6,7 +6,9 @@
 		- results in not properly closing the connection when pass is incorrect
 	- solution is to non-block authentication during newClient. The Client should be simply incldued in the list and the complete registration should only happen when all three commands are parsed and handled
 		- PASS, NICK, USER should send a return value that indicated wether the command sent during registration was successfull. if one of them fails the user has to be disconected
+		- send welcome message when connected
 [] could be that more bugs occur where names have not been changed to lowercase resulting in segfaults
+[] add @ for operator inside chat
 
 ## ====== Day 1 == 25.06 ======
 - started reading subject (30min)
@@ -325,10 +327,20 @@ Casemapping
 ## ====== Day 19 == 19.09 ====== ()
 [x] created getters and setters for Server related stuff
 [x] wrote some basic functions for commands (all ready except privmessage)
-[] handle PRIVMSG
+[x] handle PRIVMSG
+	[x] between users
+	[x] message to channel
+		[] if target is a channel then it is possible to send only to certained prefixed members
+			-> in our case only operators
+	[] when starts with $ the message is sent to all clients on the server
 [x] fixed bug inside PRIVMSG where capital letter cannels where searched wrong inside getChannel
-[] fix authentication process or make a method that can be implemented as soon as the necessary cmds are handle by parser
+[x] though about logic how to fix authentication process or make a method that can be implemented as soon as the necessary cmds are handle by parser
 [x] tested sending larger messages without all the Debug information and server does not freez
 - server is a bit slow when responding
 	[x] fixed some delay because poll had a sleep of 1 second -> not 100ms
 	-> getting pull error now when pressing SIGINT
+[x] verified a few things irssi does: no creationTime and empty mode command is displayed as "+"
+	-> noticed that irssi itself is also a bit laggy
+[x] -> checking core DUMP (ctrl + \)
+	-> quits the server now
+[] ctrl + z results in chaos

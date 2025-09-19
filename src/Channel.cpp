@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Channel.cpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/19 14:00:35 by dhuss             #+#    #+#             */
+/*   Updated: 2025/09/19 14:00:36 by dhuss            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Channel.hpp"
 
 //================ Orthodox Form ================//
@@ -51,6 +63,7 @@ void	Channel::broadcast(const std::string& msg, Client* sender)
 //================ Channel Operations ================//
 
 //<<<<<<<<<<<<<<<MODE>>>>>>>>>>>>//
+// in irssi a plus is returned when no mode active
 std::string	Channel::getActiveChannelModes(void) const
 {
 	std::string activeModes = "+";
@@ -62,8 +75,6 @@ std::string	Channel::getActiveChannelModes(void) const
 		activeModes += "l";
 	if (_topicOp)
 		activeModes += "t";
-	if (activeModes.length() == 1)
-		return ("");
 	return (activeModes);
 }
 
@@ -95,6 +106,8 @@ const std::string Channel::getJoinedUsers(void) const
 	{
 		if (isOperator(it->second))
 			userList += "@";
+		else
+			userList += " ";
 		userList += it->first + " ";
 	}
 	if (!userList.empty())

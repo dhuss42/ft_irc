@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/19 13:19:14 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/19 15:04:39 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -341,6 +341,10 @@ void	Server::handleSignal(int sig)
 		std::cout << BLUE << "received SIGTERM" << WHITE << std::endl;
 		shouldExit = 1;
 		break;
+	case SIGQUIT:
+		std::cout << BLUE << "received SIGQUIT" << WHITE << std::endl;
+		shouldExit = 1;
+		break;
 	default:
 		std::cout << BLUE << "unhandled Signal: " << sig << WHITE << std::endl;
 		break;
@@ -360,6 +364,9 @@ void	Server::setupSignalHandler()
 	sa.sa_flags = 0;
 	sigaction(SIGINT, &sa, nullptr);
 	sigaction(SIGTERM, &sa, nullptr);
+	sigaction(SIGQUIT, nullptr, nullptr);
+	// sigstop ctrl + z
+	// sigcont
 	// add more signals here with sigaction
 }
 
