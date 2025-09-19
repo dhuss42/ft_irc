@@ -79,9 +79,77 @@ void MessageHandler::handleCap(void)
 void MessageHandler::handleJoin(void)
 {
 	std::cout << "[DEBUG] JOIN: " << std::endl;
-		Channel* channel = _server.createChannel(_message.params[1], &_client);
-		if (channel)
-			channel->addUser(&_client, _message.params[2]);
+	// Channel* channel = _server.createChannel(_message.params[1], &_client);
+	// if (channel)
+	// 	channel->addUser(&_client, _message.params[2]);
+
+	//leaving channels
+	if (_message.params[1][0] == '0')
+	{
+		// Remove client from all channels
+		// for (auto& channel : _server.getChannels())	//still to do
+		// {
+		// 	channel.removeUser(&_client);
+		// }
+		return;
+	}
+
+	// Create or get the channel
+	Channel* channel = _server.createChannel(_message.params[1], &_client);
+	if (!channel)
+	{
+		// Handle channel creation failure
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL,
+						"No such channel");
+		return;
+	}
+
+	// Get channel password if set
+	std::string password = channel->getPassword();
+	if (!password.empty() && _message.params[2] != password)
+	{
+		// Handle wrong password
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_BADCHANNELKEY,
+					 "Bad channel key");
+		return;
+	}
+
+	// Add user to channel
+	channel->addUser(&_client, _message.params[2]);
+	// Send JOIN message to channel
+	std::string joinMsg = ":" + _client.getNick() + "!~" +
+						_client.getUsername() + "@" + _client.getHostname() +
+						" JOIN :" + _message.params[1] + "\n";
+	channel->broadcast(joinMsg, &_client);
+
+	// Send channel user list to client
+	std::string users = channel->getJoinedUsers();
+	if (!users.empty())
+	{
+		_client.sendResponse(_server.getName(), IrcResponseCode::RPL_NAMREPLY,
+							"= " + _message.params[1] + " :" + users);
+		_client.sendResponse(_server.getName(), IrcResponseCode::RPL_ENDOFNAMES,
+							_message.params[1] + " :End of /NAMES list.");
+	}
+
+	// if (channel->addUser(&_client, _message.params[2]))
+	// {
+	// 	// Send JOIN message to channel
+	// 	std::string joinMsg = ":" + _client.getNick() + "!~" +
+	// 						_client.getUser() + "@" + _client.getHost() +
+	// 						" JOIN :" + _message.params[1] + "\n";
+	// 	channel->broadcast(joinMsg, &_client);
+
+	// 	// Send channel user list to client
+	// 	std::string users = channel->getJoinedUsers();
+	// 	if (!users.empty())
+	// 	{
+	// 		_client.sendResponse(_server.getName(), IrcResponseCode::RPL_NAMREPLY,
+	// 							"= " + _message.params[1] + " :" + users);
+	// 		_client.sendResponse(_server.getName(), IrcResponseCode::RPL_ENDOFNAMES,
+	// 							_message.params[1] + " :End of /NAMES list.");
+	// 	}
+	// }
 }
 
 void MessageHandler::handlePass(void)

@@ -75,9 +75,9 @@
     https://modern.ircdocs.horse/#connection-registration
 - we need more commands as the subject requires, because of authetification
 - Prio:
-    CAP LS 302
-    JOIN
-    PRIVMSG
+    [x] CAP LS 302
+    [] JOIN
+    [] PRIVMSG
 
 ## ====== Day 5 == 12.09.2025 ======
 - Read authentication file: https://modern.ircdocs.horse/#connection-registration
@@ -196,7 +196,11 @@ todo:
 
 
 ## ====== Day 10 == 19.09.2025 ======
+- finished handleCap
 
+- handleJoin:
+    - I need getChannels(): Returns all channels as a vector
+    - addUser should be boolean
 
 ## ==== QUESTIONS ====
 - Parser job:
