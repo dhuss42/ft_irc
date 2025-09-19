@@ -23,6 +23,7 @@
 #include <string>
 #include <cstring>
 #include <sstream>
+#include <ctime>
 
 #include "Errors.hpp"
 /*=================== Colours ==================*/

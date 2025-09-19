@@ -1,0 +1,59 @@
+
+NICK
+	check if the nick is already in use
+		bool	Server::isClient(const std::string& name) const
+	check the string for legal chars
+		bool	verifyNickName(const std::string& name) -> utils.cpp
+
+PASS
+	get Password Server
+		const std::string& Server::getPassword() const
+
+JOIN
+	get Password Channel
+		std::string Channel::getPassword(void)
+	add User to Channel with all Checks
+		void	Channel::addUser(Client* client, const std::string& password)
+	get List of all users as a string for sending in msg
+		const std::string Channel::getJoinedUsers(void) const
+	Remove Client for special JOIN parameter
+		void	Channel::removeUser(Client* client)
+
+PART
+	remove Client from Channel container for Users and Operators
+		void	Channel::removeUser(Client* client)
+	check if Channel is empty for deleting object when empty
+		bool	Channel::isEmpty(void) const
+
+KICK
+	kick user from Channel and check if kicker has priviledges to do so
+		void	Channel::kickUser(Client* kicker, std::string kicked)
+
+INVITE
+	invite user to Channel and check if inviter has priviledges to do so
+		void	Channel::inviteUser(Client* inviter, Client* invited)
+
+TOPIC
+	check if only Operator can change Topic and then check if Client is operator, then set topic
+		void	Channel::changeTopic(const std::string& topic, const Client* client)
+
+MODE
+	check if channel exists on network
+		bool	Server::isChannel(const std::string& name) const
+	Return active channel modes as a string
+		std::string	Channel::getActiveChannelModes(void)
+	Return creation time of channel as int representation (converted by irssi apparently)
+		const time_t Channel::getCreationTime(void) const
+	Check if Client is Operator
+		bool	isOperator(const Client* client) const;
+	Set Modes
+		void	setInvOnly(bool value);
+		void	setTopicOp(bool value);
+		void	setPasswordToggle(bool value);
+		void	setUserLimitToggle(bool value);
+	Get Modes
+		bool	getInvOnly(void);
+		bool	getTopicOp(void);
+		bool	getPasswordToggle(void);
+		bool	getUserLimitToggle(void);
+
