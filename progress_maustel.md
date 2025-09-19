@@ -202,6 +202,11 @@ todo:
     - I need getChannels(): Returns all channels as a vector
     - addUser should be boolean
 
+- todo:
+    - finish handleJoin
+    - think about it if it makes sense
+    - test it
+
 ## ==== QUESTIONS ====
 - Parser job:
     - if command does not exist or not enough parameters -> is handled already by irssi
