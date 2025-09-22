@@ -9,6 +9,11 @@
 		- send welcome message when connected
 [] could be that more bugs occur where names have not been changed to lowercase resulting in segfaults
 [] add @ for operator inside chat
+[] server is slow at times
+	- could be because of authentication loop
+[] when two users in the same channel have the same nick they are treated as the same, one client receives two messages and the other does not receive any
+	- currently server is not handling two cliebnts with same nick. Either not allow it or suffixs "_" to the nick
+
 
 ## ====== Day 1 == 25.06 ======
 - started reading subject (30min)
@@ -345,7 +350,7 @@ Casemapping
 	-> quits the server now
 [] ctrl + z results in chaos
 
-## ====== Day 20 == 22.09 ====== ()
+## ====== Day 20 == 22.09 ====== (4h)
 [x] handle ctrl + z and fg properlys
 [x] handle ctrl + z and starting another server properly
 	[x] handle the new bind error now

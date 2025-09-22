@@ -167,7 +167,7 @@ int	Client::receiveMsg()
 		while ((pos = fullBuffer.find("\r\n")) != std::string::npos)
 		{
 			_buffer = fullBuffer.substr(0, pos);
-			std::cout << BOLDCYAN << "[DEBUG] buffer: " << _buffer << RESET << std::endl;
+			// std::cout << BOLDCYAN << "[DEBUG] buffer: " << _buffer << RESET << std::endl;
 			parseHandler(_buffer, *this, *_server);
 			// pseudoParser(_buffer);
 			fullBuffer = fullBuffer.substr(pos + 2);;

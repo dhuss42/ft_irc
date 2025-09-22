@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/19 14:00:35 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/19 14:00:36 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/22 14:12:03 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,10 @@ void	Channel::broadcast(const std::string& msg, Client* sender)
 			if (it->second != sender)
 			{
 				// std::cout << "[DEBUG]" << "_user is not equal to sender" << std::endl;
-				std::string prefix = sender->getNick() + "!" + sender->getUsername() + "@" + sender->getHostname() + " PRIVMSG " + getName() + " :";
+				std::string prefix;
+				if (isOperator(sender))
+					prefix = "@";
+				prefix += sender->getNick() + "!" + sender->getUsername() + "@" + sender->getHostname() + " PRIVMSG " + getName() + " :";
 				// std::cout << "[DEBUG] prefix: " << prefix << std::endl;
 				it->second->sendMsg(prefix, msg);
 			}

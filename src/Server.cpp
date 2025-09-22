@@ -6,13 +6,14 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/22 12:51:35 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/22 14:22:01 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
 static volatile sig_atomic_t shouldExit = 0;
+// maybe better with a bool inside class and a server pointer here
 
 //================ Orthodox Form ================//
 
@@ -65,7 +66,7 @@ Server::~Server()
 /*	- convert to network byte order with htons							*/
 /*		- done so that all machines understand the data consistantly	*/
 /*----------------------------------------------------------------------*/
-void	Server::parseArgs(std::string portNbr, std::string password)
+void	Server::parseArgs(const std::string& portNbr, const std::string& password)
 {
 	try {
 		if (all_of(portNbr.begin(), portNbr.end(), ::isdigit))

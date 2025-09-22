@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:30 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/22 12:10:35 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/22 14:05:06 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,21 +29,15 @@ class Channel;
 class Server
 {
 	private:
-		std::string _name = "irc_custom";
+		const std::string	_name = "irc_custom";
+		std::string	_password;
+
 		sockaddr_in	_addr;
 
 		// uint16_t	_portNbr;
-		std::string	_password;
 
-		// store client objects inside a map
 		std::unordered_map <std::string, Client* > _clientList;
-		// store channel objects inside a map or unorded map because faster
 		std::unordered_map <std::string, Channel* > _channelList;
-
-		// for receiving incoming messages
-		char _buffer[512]; // don't need should be in client
-
-		// store pollfd structs inside a vector
 		std::vector <pollfd> _sockets;
 		// map pollfd.fd to client object
 		std::unordered_map <int, Client* > _clientfd;
@@ -60,7 +54,7 @@ class Server
 		void	closedConnection(std::vector<pollfd>::iterator &it);
 
 		// make as much private / const / static as possible for clean code
-		void	parseArgs(std::string portNbr, std::string password);
+		void	parseArgs(const std::string& portNbr, const std::string& password);
 		void	initServer();
 		void	serverLoop();
 		void	handlePollRevents();
