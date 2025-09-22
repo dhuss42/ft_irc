@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maustel <maustel@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:23 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/08 17:35:45 by maustel          ###   ########.fr       */
+/*   Updated: 2025/09/22 11:11:42 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	main(int argc, char*argv[])
 			throw (Errors(ErrorCode::E_ARGNBR));
 	}
 	catch (const std::exception& e) {
-		Errors::handleErrors(e);
+		Errors::handleErrors(e, nullptr);
 	}
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:30 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/18 12:11:30 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/22 12:10:35 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "ft_irc.hpp"
 #include "Client.hpp"
 #include "Channel.hpp"
+#include "Errors.hpp"
 
 // subject talks about optional config file
 //	currently I am assuming the server object reads the file and
@@ -69,6 +70,8 @@ class Server
 		bool	isChannel(const std::string& name) const;
 		bool	isClient(const std::string& name) const;
 
+		pollfd	createPollfd();
+
 		//======= Add Channels and Clients =======//
 		void	addChannel(Channel* channel);
 		void	removeChannel(Channel* channel);
@@ -82,8 +85,11 @@ class Server
 		Client*	getClient(void); // not sure if needed
 
 		//======= getters & setters =======//
-		const std::string& getName(void) const;
-		const std::string& getPassword(void) const;
+		const	std::string& getName(void) const;
+		const	std::string& getPassword(void) const;
+
+		void	setShouldExit(void);
+		bool	getShouldExit(void);
 	};
 
 

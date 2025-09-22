@@ -23,9 +23,8 @@
 #include <string>
 #include <cstring>
 #include <sstream>
-#include <ctime>
+#include <ctime> // forgot to check if we can use time
 
-#include "Errors.hpp"
 /*=================== Colours ==================*/
 
 #define RESET   "\033[0m"

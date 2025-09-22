@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:34 by dhuss             #+#    #+#             */
-/*   Updated: 2025/07/07 16:02:57 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/22 12:39:00 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 # define ERRORS_HPP
 
 #include "ft_irc.hpp"
+#include "Server.hpp"
+
+class Server;
 
 enum class ErrorCode
 {
@@ -42,7 +45,8 @@ class Errors : public std::runtime_error
 		Errors(ErrorCode code);
 		~Errors();
 
-		static void	handleErrors(const std::exception& e);
+		static void	handleErrors(const std::exception& e, Server* server);
+		static void	fatal(const std::string& msg, Server* server);
 		// ErrorCode getErrorCode() const noexcept;
 };
 

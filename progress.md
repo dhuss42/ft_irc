@@ -345,8 +345,15 @@ Casemapping
 	-> quits the server now
 [] ctrl + z results in chaos
 
-## ====== Day 19 == 19.09 ====== ()
-[] handle ctrl + z and fg properly
-[] fix bug with pull error when pressing ctrl + c/q 
+## ====== Day 20 == 22.09 ====== ()
+[x] handle ctrl + z and fg properlys
+[x] handle ctrl + z and starting another server properly
+	[x] handle the new bind error now
+[x] fix bug with poll error when pressing ctrl + c/q 
 [x] getChannels -> returns all channels as a vector
 [x] addUser as a boolean
+[x] fixed circular include bug
+[x] improve error handlings, fatal and non-fatal errors
+	[x] getter and setter for should Exit
+	[x] pass pointer to server when Error is called
+	-> is better but not optimal

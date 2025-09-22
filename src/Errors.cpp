@@ -6,12 +6,12 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:41 by dhuss             #+#    #+#             */
-/*   Updated: 2025/07/07 16:02:55 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/22 12:46:06 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // should slipt into errors critical for server infrastructure
-// which should result in closing the program 
+// which should result in closing the program
 // and errors that should simple be handled gracefully without a shutdown
 
 #include "Errors.hpp"
@@ -47,7 +47,7 @@ std::string Errors::make_message(ErrorCode code)
 		case ErrorCode::E_LSTN:
 			return ("listen error");
 		case ErrorCode::E_PLL:
-			return ("pull error");
+			return ("poll error");
 		case ErrorCode::E_ACCPT:
 			return ("accept error");
 		case ErrorCode::E_SCKEMPTY:
@@ -61,6 +61,15 @@ std::string Errors::make_message(ErrorCode code)
 	}
 }
 
+void	Errors::fatal(const std::string& msg, Server* server)
+{
+	if (server)
+	{
+		std::cerr << msg << BOLDCYAN "\n\tFatal: shutting Server down" RESET << std::endl;
+		server->setShouldExit();
+	}
+}
+
 /*-----------------------------------------------------------------------*/
 /* Errors are caught as exception as Errors inherits from std::exception */
 /* dynamic_cast downcasts												 */
@@ -69,7 +78,7 @@ std::string Errors::make_message(ErrorCode code)
 /* else it returns a nullptr											 */
 /* -> Unexpected error caught											 */
 /*-----------------------------------------------------------------------*/
-void	Errors::handleErrors(const std::exception& e)
+void	Errors::handleErrors(const std::exception& e, Server* server)
 {
 	const Errors* customError = dynamic_cast<const Errors*>(&e);
 
@@ -78,18 +87,38 @@ void	Errors::handleErrors(const std::exception& e)
 		std::cerr << RED "Error: " << customError->what() << WHITE << std::endl;
 		switch (customError->_code)
 		{
+			// errors bevore server loop
 			case ErrorCode::E_ARGNBR:
 				std::cerr << BOLDCYAN "\tType ./ircserv \"portnumber\" \"password\"" RESET << std::endl;
 				break ;
+			// errors fatal
+
 			case ErrorCode::E_PRT:
-				std::cerr << BOLDCYAN "\tPort number may only consist of digits" RESET << std::endl;
+				fatal(BOLDCYAN "\tPort number may only consist of digits" RESET, server);
 				break ;
 			case ErrorCode::E_PRTNBR:
-				std::cerr << BOLDCYAN "\tUsable ports range from 1024 - 65535" RESET << std::endl;
+				fatal(BOLDCYAN "\tUsable ports range from 1024 - 65535" RESET, server);
 				break ;
 			case ErrorCode::E_PSSWRD:
-				std::cerr << BOLDCYAN "\tPassword may only be printable chars" RESET << std::endl;
+				fatal(BOLDCYAN "\tPassword may only be printable chars" RESET, server);
 				break ;
+			case ErrorCode::E_SCKFD:
+			case ErrorCode::E_FCNTL:
+			case ErrorCode::E_BND:
+			case ErrorCode::E_LSTN:
+			case ErrorCode::E_PLL:
+			case ErrorCode::E_SCKEMPTY:
+			if (server)
+			{
+				std::cerr << BOLDCYAN "\tFatal: shutting Server down..." RESET << std::endl;
+				server->setShouldExit();
+				break ;
+			}
+			// non fatal errors
+			case ErrorCode::E_RCV:
+			case ErrorCode::E_SND:
+			case ErrorCode::E_ACCPT:
+
 			default:
 				std::cerr << BOLDCYAN "\tDefault error" RESET << std::endl;
 				break ;

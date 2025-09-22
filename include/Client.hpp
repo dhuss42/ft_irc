@@ -2,15 +2,16 @@
 # define CLIENT_HPP
 
 #include "ft_irc.hpp"
-#include "Channel.hpp"
-#include "Server.hpp"	//put class includes in the end of file(?)
-#include "Message.hpp"	//put class includes in the end of file(?)
 #include "IrcErrors.hpp"
 #include "IrcResponses.hpp"
+#include "Server.hpp"	//put class includes in the end of file(?)
+#include "Channel.hpp"
+#include "Message.hpp"	//put class includes in the end of file(?)
 #include "MessageHandler.hpp"
 
 class Server;
 class Message;
+class Channel;
 
 class Client
 {
@@ -55,7 +56,7 @@ class Client
 	void	setNickSet(bool state);
 	void	setUsernameSet(bool state);
 	void	setSocket(int socket);
-	
+
 	bool	getRegistered(void);
 	bool	getNickSet(void);
 	bool	getUsernameSet(void);
@@ -65,7 +66,7 @@ class Client
 	void	setHostname(std::string str);
 	void	setUsername(std::string str);
 	void	setNick(std::string str);
-	
+
 	std::string getNick() const;
 	std::string	getUsername();
 	std::string getHostname();

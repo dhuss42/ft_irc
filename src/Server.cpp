@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/19 15:04:39 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/22 12:51:35 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void	Server::parseArgs(std::string portNbr, std::string password)
 			throw (Errors(ErrorCode::E_PSSWRD));
 	}
 	catch (const std::exception& e) {
-		Errors::handleErrors(e);
+		Errors::handleErrors(e, this);
 	}
 }
 
@@ -94,7 +94,7 @@ void	Server::parseArgs(std::string portNbr, std::string password)
 /*	- memset it to 0 so no trash		*/
 /*	- set to non-blocking				*/
 /*--------------------------------------*/
-pollfd	createPollfd()
+pollfd	Server::createPollfd()
 {
 	pollfd sock;
 
@@ -108,7 +108,7 @@ pollfd	createPollfd()
 		// std::cout << GREEN "set sock.fd to nonblocking" WHITE << std::endl;
 	}
 	catch(const std::exception& e) {
-		Errors::handleErrors(e);
+		Errors::handleErrors(e, this);
 	}
 
 	return (sock);
@@ -141,7 +141,7 @@ void	Server::initServer()
 		_sockets.push_back(sockfd);
 	}
 	catch(const std::exception& e) {
-		Errors::handleErrors(e);
+		Errors::handleErrors(e, this);
 	}
 }
 
@@ -306,9 +306,14 @@ void	Server::serverLoop()
 			{
 				ret = poll(_sockets.data(), _sockets.size(), 100);
 				if (ret == -1)
+				{
+					if (shouldExit)
+					{
+						setShouldExit();
+						return ;
+					}
 					throw (Errors(ErrorCode::E_PLL));
-				// else if (ret == 0)
-				// 	continue ;
+				}
 				else
 				{
 					// std::cout << MAGENTA "[DEBUGG] poll() has returned a positive value" WHITE << std::endl;
@@ -319,7 +324,7 @@ void	Server::serverLoop()
 				throw (Errors(ErrorCode::E_SCKEMPTY));
 		}
 		catch(const std::exception& e) {
-			Errors::handleErrors(e);
+			Errors::handleErrors(e, this);
 		}
 	}
 }
@@ -462,4 +467,14 @@ const std::string& Server::getName(void) const
 const std::string& Server::getPassword() const
 {
 	return (_password);
+}
+
+void	Server::setShouldExit(void)
+{
+	shouldExit = 1;
+}
+
+bool	Server::getShouldExit(void)
+{
+	return (shouldExit);
 }
