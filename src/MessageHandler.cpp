@@ -98,13 +98,18 @@ void MessageHandler::handleJoin(void)
 		return;
 	}
 
-	// Create or get the channel
-	std::cout << "[DEBUG]: entered createChannel" << std::endl;
 	Channel* channel = _server.createChannel(_message.params[1], &_client);
 	if (!channel)
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL,
 						"No such channel");
+		return;
+	}
+
+	if (_message.params.size() < 2)
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
+						"Not enough parameters");
 		return;
 	}
 
@@ -214,15 +219,53 @@ void MessageHandler::handlePing()
 	_client.sendMsg("irc_custom", "PONG " + _message.params[1]);
 }
 
+// void MessageHandler::handlePrivmsg()
+// {
+// 	if (_message.params.size() < 3)
+// 	{
+// 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
+// 						"Not enough parameters");
+// 		return;
+// 	}
+
+// 	// Extract target and message
+// 	const std::string& target = _message.params[1];
+// 	// const std::string& message = _message.params[2].substr(1); // Remove leading colon
+
+// 	// Determine message type
+// 	if (_server.isClient(target))
+// 	{
+// 		// Handle private message to client
+// 		Client* recipient = _server.getClient(target);
+// 		if (recipient)
+// 		{
+// 			recipient->receivePrivmsg(message, &_client);
+// 		}
+// 	}
+// 	else if (_server.isChannel(target))
+// 	{
+// 		// Handle channel message
+// 		Channel* channel = _server.getChannel(target);
+// 		if (channel)
+// 		{
+// 			channel->broadcast(message, &_client, true);
+// 		}
+// 	}
+// 	else
+// 	{
+// 		std::cout << "[ERROR] Invalid target: " << target << std::endl;
+// 	}
+// }
+
 void MessageHandler::handlePrivmsg()
 {
 	// PRIVMSG #chan :hallo
-	// currently segfaults because shitty pseudoparser
 	std::cout << "[DEBUG] PRIVMSG" << std::endl;
 
-	Channel *channel = _server.getChannel(_message.params[1]); // channel name can only be 4 chars -> better extract everything up to colon
+	Channel *channel = _server.getChannel(_message.params[1]);
 	std::cout << "[DEBUG] channel name " << _message.params[1] << std::endl;
 	if (channel)
 		std::cout << "[DEBUG] exists" << std::endl;
+	std::cout << "[DEBUG] before broadcast" << std::endl;
 	channel->broadcast(_message.params[2], &_client);
 }

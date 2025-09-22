@@ -76,7 +76,7 @@
 - we need more commands as the subject requires, because of authetification
 - Prio:
     [x] CAP LS 302
-    [] JOIN
+    [~] JOIN
     [] PRIVMSG
 
 ## ====== Day 5 == 12.09.2025 ======
@@ -239,8 +239,14 @@ todo:
     - Problems:
         [x] sendResponse and sendMsg will be printed in main window if irssi not in the channel window
             -> need prefix ("name" in sendMsg) like
-            std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel-> getName) + " :";
+            std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->(getName) + " :";
 
+- todo
+    - handleJoin:
+        - do extra function for sending messages to channel to make it more readable
+        - do loop to be able to handle more than one joinchannel
+    - handleMsg:
+        - read about it https://modern.ircdocs.horse/#privmsg-message
 
 ## ==== QUESTIONS ====
 - Parser job:
