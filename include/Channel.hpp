@@ -35,7 +35,7 @@ class Channel
 		~Channel();
 
 		// ======= Adding and Removing Clients =======//
-		void	addUser(Client* client, const std::string& password);
+		bool	addUser(Client* client, const std::string& password);
 		void	addOperator(Client* client);
 		void	addInvUsers(Client* client);
 

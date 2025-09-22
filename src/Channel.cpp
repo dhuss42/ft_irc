@@ -133,24 +133,24 @@ size_t Channel::getNbrUsers(void) const
 
 //<<<<<<<<<<<<<<<JOIN>>>>>>>>>>>>//
 // the return value can be changed to adjust to the parsing logic
-void	Channel::addUser(Client* client, const std::string& password)
+bool	Channel::addUser(Client* client, const std::string& password)
 {
 	if (client)
 	{
 		if (_usrLmtTgl && _users.size() >= _userLimit)
 		{
 			std::cout << "[DEBUG] user limit is set and userLimit " << _userLimit << " is reached!" << std::endl;
-			return ;
+			return (false);
 		}
 		if (_invOnly && !isInvited(client))
 		{
 			std::cout << "[DEBUG] invite Only is set and user is not invited!" << std::endl;
-			return ;
+			return (false);
 		}
 		if (_pswrdTgle && password != _password)
 		{
 			std::cout << "[DEBUG] password is set and wrong password!" << std::endl;
-			return ;
+			return (false);
 		}
 		auto it = _users.find(client->getNick());
 		if (it == _users.end())
@@ -165,7 +165,7 @@ void	Channel::addUser(Client* client, const std::string& password)
 			std::cout << "[DEBUG] Client is already part of the Channel!" << std::endl;
 		std::cout << "[DEBUG] " << getJoinedUsers() << std::endl;
 	}
-
+	return (true);
 	// sends information about available commands
 	// if successfull
 	// user receives join message

@@ -344,3 +344,9 @@ Casemapping
 [x] -> checking core DUMP (ctrl + \)
 	-> quits the server now
 [] ctrl + z results in chaos
+
+## ====== Day 19 == 19.09 ====== ()
+[] handle ctrl + z and fg properly
+[] fix bug with pull error when pressing ctrl + c/q 
+[x] getChannels -> returns all channels as a vector
+[x] addUser as a boolean

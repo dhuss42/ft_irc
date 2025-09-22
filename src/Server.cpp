@@ -416,6 +416,21 @@ Channel*	Server::getChannel(std::string name)
 	return (nullptr);
 }
 
+std::unordered_map<std::string, Channel*> Server::getChannelUnoMap(void)
+{
+	return (_channelList);
+}
+
+std::vector<std::string> Server::getChannelVector(void)
+{
+	std::vector<std::string> channelVec;
+	for (auto it = _channelList.begin(); it != _channelList.end(); it++)
+	{
+		channelVec.push_back(it->first);
+	}
+	return (channelVec);
+}
+
 // need to think more about how I want to run things for thins function
 void	Server::addClient(Client* client)
 {

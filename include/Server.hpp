@@ -74,7 +74,8 @@ class Server
 		void	removeChannel(Channel* channel);
 		Channel*	getChannel(std::string name);
 		Channel*	createChannel(std::string& name, Client *client);
-
+		std::unordered_map<std::string, Channel*> getChannelUnoMap(void);
+		std::vector<std::string> getChannelVector(void);
 
 		void	addClient(Client* client);
 		void	removeClient(Client* client);
