@@ -129,7 +129,7 @@ todo:
     - test commands in our server and check what happens so far
 
 ## ====== Day 6 == 13.09.2025 ======
-- reading about good practice for irc perser
+- reading about good practice for irc parser
     https://modern.ircdocs.horse/impl.html
 
 - decided how to structure parsing
@@ -207,6 +207,41 @@ todo:
     - think about it if it makes sense
     - test it
 
+## ====== Day 11 == 22.09.2025 ======
+- ???: /join 0 -> The server will process this command as though the client had sent a PART command for each channel they are a member of.
+    -> but irssi does not do so but opens a chatwindow called #0
+    -> when does this happen? How can I avoid?
+
+- removeUser(&_client) not sure if working -> david has to check it when join is done
+
+- join: https://modern.ircdocs.horse/#join-message
+    [x] client can join that channel? -> is done in Client::addUser
+        - key ok? - ERR_BADCHANNELKEY
+        - userlimit? - ERR_CHANNELISFULL
+        - invite only channel? - ERR_INVITEONLYCHAN
+    [notworking] /join 0 -> remove user from all channels
+    [todo] handle more than 1 channel and key -> seprataed by ','
+    [x] send messages to channel
+        [x] when entering
+        [x] when leaving
+    -( receive messages from PART, KICK, MODE)
+    [x] if join is successfull, server must send in this order:
+        1) A JOIN message with the client as the message <source> and the channel
+            they have joined as the first parameter of the message
+            ( <nickname> [~maustel@81.56.177.83] has joined <channelname>)
+        [totest] 2) The channel’s topic (with RPL_TOPIC (332) and optionally RPL_TOPICWHOTIME (333)),
+            and no message if the channel does not have a topic.
+        3) A list of users currently joined to the channel (with one or more RPL_NAMREPLY (353)
+            numerics followed by a single RPL_ENDOFNAMES (366) numeric).
+            These RPL_NAMREPLY messages sent by the server MUST include the requesting client
+            that has just joined the channel.
+
+    - Problems:
+        [x] sendResponse and sendMsg will be printed in main window if irssi not in the channel window
+            -> need prefix ("name" in sendMsg) like
+            std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel-> getName) + " :";
+
+
 ## ==== QUESTIONS ====
 - Parser job:
     - if command does not exist or not enough parameters -> is handled already by irssi
@@ -257,8 +292,16 @@ todo:
 - git push origin branchName
 //Now you can create a pull request and merge it to the main as usual.
 
------ questions for david ------
-- look for transcendence partner?
+- ???: /join 0 -> The server will process this command as though the client had sent a PART command for each channel they are a member of.
+    -> but irssi does not do so but opens a chatwindow called #0
+    -> when does this happen? How can I avoid?
+
 
 ----- questions for david ------
 - look for transcendence partner?
+
+
+## General Info
+- rebase vs merge
+    When you rebase your branch onto their branch, you tell Git to make it look as though you checked out their branch cleanly, then did all your work starting from there. That makes a clean, conceptually simple package of changes that someone can review. You can repeat this process again when there are new changes on their branch, and you will always end up with a clean set of changes "on the tip" of their branch.
+    When you merge their branch into your branch, you tie the two branch histories together at this point. If you do this again later with more changes, you begin to create an interleaved thread of histories: some of their changes, some of my changes, some of their changes. Some people find this messy or undesirable.
