@@ -269,9 +269,9 @@ todo:
 
 
 - MODE: -> special parsing would be useful (?)
-    - If <target> is a channel that does not exist on the network, the ERR_NOSUCHCHANNEL (403) numeric is returned
-    - If <modestring> is not given, the RPL_CHANNELMODEIS (324) numeric is returned -> message with the currently set modes
-    - check if user has channel operator priviliges, if not ERR_CHANOPRIVSNEEDED (482)
+    [x] If <target> is a channel that does not exist on the network, the ERR_NOSUCHCHANNEL (403) numeric is returned
+    [x] If <modestring> is not given, the RPL_CHANNELMODEIS (324) numeric is returned -> message with the currently set modes
+    [x] check if user has channel operator priviliges, if not ERR_CHANOPRIVSNEEDED (482)
     - if no '+' or '-' -> will be counted as '+'
     - must have parameter (check for valid parameter):
         - k -> channel key (without parameter will be ignored, with paramater will take the first word found)
@@ -283,7 +283,7 @@ todo:
     - must not have parameter:
         - i -> invite only channel
         - t -> restrictions of topic command to channel operators
-    - handle more than one mode change in a loop (also "+it" is possible instead of +i +t.
+    - handle more than one mode change (also "+it" is possible instead of +i +t.
         if mode needs parameter, the first parameter will be the one for the first modechange)
         +k it -> sets passkey to "it"
         +ki t -> sets passkey to t and sets also inviteOnly
