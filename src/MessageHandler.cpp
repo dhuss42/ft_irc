@@ -222,8 +222,6 @@ void MessageHandler::handlePing()
 void MessageHandler::handlePrivmsg()
 {
 	std::cout << "[DEBUG] PRIVMSG: " << std::endl;
-	std::cout << "target: " << _message.params[1] << std::endl;
-	std::cout << "message: " << _message.params[2] << std::endl;
 
 	if (_message.params.size() < 3)
 	{
@@ -232,28 +230,23 @@ void MessageHandler::handlePrivmsg()
 		return;
 	}
 
-	// Extract target and message
 	const std::string& target = _message.params[1];
 	const std::string& message = _message.params[2];
-
-	// Determine message type
 	if (_server.isClient(target))
 	{
-		// Handle private message to client
-		// Client* recipient = _server.getClient(target);	//getCLient needed
-		// if (recipient)
-		// {
-		// 	std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
-		// 	recipient->sendMsg(prefix, message);
-		// 	// recipient->receivePrivmsg(message, &_client);
-		// }
+		Client* recipient = _server.getClient(target);
+		if (recipient)
+		{
+			std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + recipient->getNick() + " :";
+			recipient->sendMsg(prefix, message);
+		}
 	}
 	else if (_server.isChannel(target))
 	{
-		// Handle channel message
 		Channel* channel = _server.getChannel(target);
 		if (channel)
 		{
+			//check if user is in channel, otherwise send eerror
 			channel->broadcast(message, &_client);
 		}
 	}
