@@ -248,20 +248,13 @@ void MessageHandler::handlePrivmsg()
 	else if (_server.isChannel(target))
 	{
 		Channel* channel = _server.getChannel(target);
-		if (channel)
+		if (channel && channel->getJoinedUsers().find(_client.getNick()) != std::string::npos)
 		{
-			//check if user is in channel, otherwise send eerror
-			if (channel->getJoinedUsers().find(_client.getNick()) != std::string::npos)
-			{
-				_client.sendError(_server.getName(), IrcErrorCode::ERR_CANNOTSENDTOCHAN,
-							target + " Cannot send to channel");
-			}
-			else
-				channel->broadcast(message, &_client);
+			channel->broadcast(message, &_client);
 		}
 		else
 			_client.sendError(_server.getName(), IrcErrorCode::ERR_CANNOTSENDTOCHAN,
-						"Cannot send to channel");
+							target + " Cannot send to channel");
 	}
 	else
 	{
