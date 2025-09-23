@@ -150,14 +150,16 @@ void MessageHandler::handleJoin(void)
 		_client.sendResponse(prefix, IrcResponseCode::RPL_ENDOFNAMES,
 							_message.params[1] + " :End of /NAMES list.");
 	}
+	//maybe send also creation time
 }
 
 void MessageHandler::handlePass(void)
 {
 	std::cout << "[DEBUG] PASS: " << std::endl;
-	if (_message.params[1].empty() || _message.params[1] != "123") //change 123 to getPassword
+	if (_message.params[1].empty() || _message.params[1] != _server.getPassword())
 	{
 		_client.sendError("irc_custom", IrcErrorCode::ERR_PASSWDMISMATCH, "wrong password! Refused!");
+		return ;
 	}
 	_client.setRegistered(true);
 }

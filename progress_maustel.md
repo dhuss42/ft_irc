@@ -245,7 +245,7 @@ todo:
     - handleJoin:
         - do extra function for sending messages to channel to make it more readable
         - do loop to be able to handle more than one joinchannel
-    - handleMsg:
+    [x] handleMsg:
         - read about it https://modern.ircdocs.horse/#privmsg-message
 
 ## ====== Day 12 == 23.09.2025 ======
@@ -254,18 +254,48 @@ todo:
         - user
             - If <target> is a user and that user has been set as away, the server may reply with
                 an RPL_AWAY (301) numeric and the command will continue.
-            - no such nick:  ERR_NOSUCHNICK (401) "<target>: No such nick/channel"
+            [x] no such nick:  ERR_NOSUCHNICK (401) "<target>: No such nick/channel"
         - channel
-            - If a message cannot be delivered to a channel, the server SHOULD respond with an ERR_CANNOTSENDTOCHAN (404)
+            [x] If a message cannot be delivered to a channel, the server SHOULD respond with an ERR_CANNOTSENDTOCHAN (404)
                 -> the user has to have joined the channel before
-            - no such channel:  ERR_NOSUCHNICK (401) "<target>: No such nick/channel"
-    - do we need to handle $ ?
+            [x] no such channel:  ERR_NOSUCHNICK (401) "<target>: No such nick/channel"
+    [?] do we need to handle $ ?
 
     [x] needed from David:
         - Client* Server::getClient(std::string name)
 
-    [?] if client not exists, irssi still opens new window, but also in existing servers
+    [x] if client not exists, irssi still opens new window, but also in existing servers
     -> just channel sends message not in new window
+
+
+- MODE: -> special parsing would be useful (?)
+    - If <target> is a channel that does not exist on the network, the ERR_NOSUCHCHANNEL (403) numeric is returned
+    - If <modestring> is not given, the RPL_CHANNELMODEIS (324) numeric is returned
+    - check if user has channel operator priviliges, if not ERR_CHANOPRIVSNEEDED (482)
+    - if no '+' or '-' -> will be counted as '+'
+    - must have parameter (check for valid parameter):
+        - k -> channel key (without parameter will be ignored, with paramater will take the first word found)
+            - (?) check for valid key? (for example invalid characters?)
+        - o -> operator privilege (Users with this mode may perform channel moderation task) -> user mode
+            - if not enough paramters, send error: MODE Not enough paramters
+        - l -> user limit of channel
+            - if not enough paramters, send error: MODE Not enough paramters
+    - must not have parameter:
+        - i -> invite only channel
+        - t -> restrictions of topic command to channel operators
+    - handle more than one mode change in a loop (also "+it" is possible instead of +i +t.
+        if mode needs parameter, the first parameter will be the one for the first modechange)
+        +k it -> sets passkey to "it"
+        +ki t -> sets passkey to t and sets also inviteOnly
+    - when changed mode, response  mode/#channel [+ki] by nickname to all members of the channel
+    - unknown mode character -> sendError
+    - think also of user mode -i at registration phase
+
+- mode parsing:
+    - /mode #channel modestring -> params[mode, channel, modestring]
+    - modestring: everything after target
+    - or just build string of params[2] until params[end]
+
 
 
 ## ==== QUESTIONS ====
@@ -325,6 +355,7 @@ todo:
 
 ----- questions for david ------
 - look for transcendence partner?
+- sendMsg and response/error should actually be server functions
 
 
 ## General Info
