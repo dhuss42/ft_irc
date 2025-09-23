@@ -261,8 +261,11 @@ todo:
             - no such channel:  ERR_NOSUCHNICK (401) "<target>: No such nick/channel"
     - do we need to handle $ ?
 
-    - needed from David:
+    [x] needed from David:
         - Client* Server::getClient(std::string name)
+
+    [?] if client not exists, irssi still opens new window, but also in existing servers
+    -> just channel sends message not in new window
 
 
 ## ==== QUESTIONS ====

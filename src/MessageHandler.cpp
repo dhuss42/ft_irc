@@ -237,9 +237,13 @@ void MessageHandler::handlePrivmsg()
 		Client* recipient = _server.getClient(target);
 		if (recipient)
 		{
-			std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + recipient->getNick() + " :";
+			std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@"
+						+ _client.getHostname() + " PRIVMSG " + recipient->getNick() + " :";
 			recipient->sendMsg(prefix, message);
 		}
+		else
+			_client.sendError(_server.getName(), IrcErrorCode::ERR_NORECIPIENT,
+						"No recipient given");
 	}
 	else if (_server.isChannel(target))
 	{
@@ -247,13 +251,21 @@ void MessageHandler::handlePrivmsg()
 		if (channel)
 		{
 			//check if user is in channel, otherwise send eerror
-			channel->broadcast(message, &_client);
+			if (channel->getJoinedUsers().find(_client.getNick()) != std::string::npos)
+			{
+				_client.sendError(_server.getName(), IrcErrorCode::ERR_CANNOTSENDTOCHAN,
+							target + " Cannot send to channel");
+			}
+			else
+				channel->broadcast(message, &_client);
 		}
+		else
+			_client.sendError(_server.getName(), IrcErrorCode::ERR_CANNOTSENDTOCHAN,
+						"Cannot send to channel");
 	}
 	else
 	{
-		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHNICK, " " + target);
-		//added empty space because otherwise irssi would open a new chat window with target
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHNICK, target);
 	}
 }
 
