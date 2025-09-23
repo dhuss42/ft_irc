@@ -83,20 +83,20 @@ void MessageHandler::handleJoin(void)
 	if (_message.params[1].empty())	//for capability negotiation phase
 			return ;
 
-	//leaving channels (problem: irssi still opens a chatwindow called #0)
-	if (_message.params[1][1] == '0')	//maybe just call PART
-	{
-		std::cout << "[DEBUG]: entered if condition 0" << std::endl;
-		std::unordered_map <std::string, Channel* > chanList = _server.getChannelUnoMap();
-		for (auto it = chanList.begin(); it != chanList.end(); it++)
-		{
-			it->second->removeUser(&_client);	//not working
-			std::string joinMsg = _client.getNick() + " [~" +
-						_client.getUsername() + "@" + _client.getHostname() +
-						"] has left " + _message.params[1] + "\n";
-		}
-		return;
-	}
+	// //leaving channels (problem: irssi still opens a chatwindow called #0)
+	// if (_message.params[1][1] == '0')	//irssi does not handle this
+	// {
+	// 	std::cout << "[DEBUG]: entered if condition 0" << std::endl;
+	// 	std::unordered_map <std::string, Channel* > chanList = _server.getChannelUnoMap();
+	// 	for (auto it = chanList.begin(); it != chanList.end(); it++)
+	// 	{
+	// 		it->second->removeUser(&_client);	//not working
+	// 		std::string joinMsg = _client.getNick() + " [~" +
+	// 					_client.getUsername() + "@" + _client.getHostname() +
+	// 					"] has left " + _message.params[1] + "\n";
+	// 	}
+	// 	return;
+	// }
 
 	Channel* channel = _server.createChannel(_message.params[1], &_client);
 	if (!channel)
@@ -126,13 +126,13 @@ void MessageHandler::handleJoin(void)
 						_client.getUsername() + "@" + _client.getHostname() +
 						"] has joined " + _message.params[1] + "\n";
 	channel->broadcast(joinMsg, &_client);
-	std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel-> getName() + " :";
+	std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
 	_client.sendMsg(prefix, joinMsg);
 
 	std::string topic = channel->getTopic();
 	if (!topic.empty())
 	{
-		std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel-> getName() + " :";
+		std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
 		_client.sendResponse(prefix, IrcResponseCode::RPL_TOPIC,
 							"Topic for " + _message.params[1] + " :" + topic);
 	}
@@ -219,53 +219,62 @@ void MessageHandler::handlePing()
 	_client.sendMsg("irc_custom", "PONG " + _message.params[1]);
 }
 
-// void MessageHandler::handlePrivmsg()
-// {
-// 	if (_message.params.size() < 3)
-// 	{
-// 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
-// 						"Not enough parameters");
-// 		return;
-// 	}
-
-// 	// Extract target and message
-// 	const std::string& target = _message.params[1];
-// 	// const std::string& message = _message.params[2].substr(1); // Remove leading colon
-
-// 	// Determine message type
-// 	if (_server.isClient(target))
-// 	{
-// 		// Handle private message to client
-// 		Client* recipient = _server.getClient(target);
-// 		if (recipient)
-// 		{
-// 			recipient->receivePrivmsg(message, &_client);
-// 		}
-// 	}
-// 	else if (_server.isChannel(target))
-// 	{
-// 		// Handle channel message
-// 		Channel* channel = _server.getChannel(target);
-// 		if (channel)
-// 		{
-// 			channel->broadcast(message, &_client, true);
-// 		}
-// 	}
-// 	else
-// 	{
-// 		std::cout << "[ERROR] Invalid target: " << target << std::endl;
-// 	}
-// }
-
 void MessageHandler::handlePrivmsg()
 {
-	// PRIVMSG #chan :hallo
-	std::cout << "[DEBUG] PRIVMSG" << std::endl;
+	std::cout << "[DEBUG] PRIVMSG: " << std::endl;
+	std::cout << "target: " << _message.params[1] << std::endl;
+	std::cout << "message: " << _message.params[2] << std::endl;
 
-	Channel *channel = _server.getChannel(_message.params[1]);
-	std::cout << "[DEBUG] channel name " << _message.params[1] << std::endl;
-	if (channel)
-		std::cout << "[DEBUG] exists" << std::endl;
-	std::cout << "[DEBUG] before broadcast" << std::endl;
-	channel->broadcast(_message.params[2], &_client);
+	if (_message.params.size() < 3)
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
+						"Not enough parameters");
+		return;
+	}
+
+	// Extract target and message
+	const std::string& target = _message.params[1];
+	const std::string& message = _message.params[2];
+
+	// Determine message type
+	if (_server.isClient(target))
+	{
+		// Handle private message to client
+		// Client* recipient = _server.getClient(target);	//getCLient needed
+		// if (recipient)
+		// {
+		// 	std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
+		// 	recipient->sendMsg(prefix, message);
+		// 	// recipient->receivePrivmsg(message, &_client);
+		// }
+	}
+	else if (_server.isChannel(target))
+	{
+		// Handle channel message
+		Channel* channel = _server.getChannel(target);
+		if (channel)
+		{
+			channel->broadcast(message, &_client);
+		}
+	}
+	else
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHNICK, " " + target);
+		//added empty space because otherwise irssi would open a new chat window with target
+	}
 }
+
+// void MessageHandler::handlePrivmsg()
+// {
+// 	// PRIVMSG #chan :hallo
+// 	std::cout << "[DEBUG] PRIVMSG" << std::endl;
+// 	std::cout << "[DEBUG] target: " << _message.params[1] << std::endl;
+// 	std::cout << "[DEBUG] message: " << _message.params[2] << std::endl;
+
+// 	Channel *channel = _server.getChannel(_message.params[1]);
+// 	std::cout << "[DEBUG] channel name " << _message.params[1] << std::endl;
+// 	if (channel)
+// 		std::cout << "[DEBUG] exists" << std::endl;
+// 	std::cout << "[DEBUG] before broadcast" << std::endl;
+// 	channel->broadcast(_message.params[2], &_client);
+// }

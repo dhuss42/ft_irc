@@ -219,8 +219,8 @@ todo:
         - key ok? - ERR_BADCHANNELKEY
         - userlimit? - ERR_CHANNELISFULL
         - invite only channel? - ERR_INVITEONLYCHAN
-    [notworking] /join 0 -> remove user from all channels
-    [todo] handle more than 1 channel and key -> seprataed by ','
+    [not-working] /join 0 -> remove user from all channels -> irssi does not handle this, so dont we
+    [to-do] handle more than 1 channel and key -> seprataed by ','
     [x] send messages to channel
         [x] when entering
         [x] when leaving
@@ -229,7 +229,7 @@ todo:
         1) A JOIN message with the client as the message <source> and the channel
             they have joined as the first parameter of the message
             ( <nickname> [~maustel@81.56.177.83] has joined <channelname>)
-        [totest] 2) The channel’s topic (with RPL_TOPIC (332) and optionally RPL_TOPICWHOTIME (333)),
+        [to-test] 2) The channel’s topic (with RPL_TOPIC (332) and optionally RPL_TOPICWHOTIME (333)),
             and no message if the channel does not have a topic.
         3) A list of users currently joined to the channel (with one or more RPL_NAMREPLY (353)
             numerics followed by a single RPL_ENDOFNAMES (366) numeric).
@@ -247,6 +247,23 @@ todo:
         - do loop to be able to handle more than one joinchannel
     - handleMsg:
         - read about it https://modern.ircdocs.horse/#privmsg-message
+
+## ====== Day 12 == 23.09.2025 ======
+- handleMsg: PRIVMSG <target> :<texr>
+    - target can be
+        - user
+            - If <target> is a user and that user has been set as away, the server may reply with
+                an RPL_AWAY (301) numeric and the command will continue.
+            - no such nick:  ERR_NOSUCHNICK (401) "<target>: No such nick/channel"
+        - channel
+            - If a message cannot be delivered to a channel, the server SHOULD respond with an ERR_CANNOTSENDTOCHAN (404)
+                -> the user has to have joined the channel before
+            - no such channel:  ERR_NOSUCHNICK (401) "<target>: No such nick/channel"
+    - do we need to handle $ ?
+
+    - needed from David:
+        - Client* Server::getClient(std::string name)
+
 
 ## ==== QUESTIONS ====
 - Parser job:
