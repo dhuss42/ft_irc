@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:30 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/22 14:05:06 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/23 11:27:45 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ class Server
 
 		void	addClient(Client* client);
 		void	removeClient(Client* client);
-		Client*	getClient(void); // not sure if needed
+		Client*	getClient(const std::string& nick);
 
 		//======= getters & setters =======//
 		const	std::string& getName(void) const;
