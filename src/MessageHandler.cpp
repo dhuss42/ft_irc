@@ -59,11 +59,12 @@ void MessageHandler::handleCap(void)
 	{
 		std::cout << "[DEBUG] REQ: " << std::endl;
 		std::string reply = "CAP * ACK ";
-		bool hasMultiPrefix = false;
+		bool hasMultiPrefix = false;	//do i need this??
 		for (size_t i = 2; i < _message.params.size(); i++)
 		{
-			if (_message.params[i] == "multi-prefix") hasMultiPrefix = true;
-				reply += _message.params[i] + " ";
+			if (_message.params[i] == "multi-prefix")
+				hasMultiPrefix = true;
+			reply += _message.params[i] + " ";
 		}
 		_client.sendMsg(_server.getName(), reply);
 	}
@@ -98,18 +99,18 @@ void MessageHandler::handleJoin(void)
 	// 	return;
 	// }
 
-	Channel* channel = _server.createChannel(_message.params[1], &_client);
-	if (!channel)
-	{
-		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL,
-						"No such channel");
-		return;
-	}
-
 	if (_message.params.size() < 2)
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
 						"Not enough parameters");
+		return;
+	}
+
+	Channel* channel = _server.createChannel(_message.params[1], &_client);
+	if (!channel)
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL,
+						_message.params[1]);
 		return;
 	}
 
@@ -146,7 +147,7 @@ void MessageHandler::handleJoin(void)
 		//docu says to use response codes, but not sure if it works as it should here
 		std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
 		_client.sendResponse(prefix, IrcResponseCode::RPL_NAMREPLY,
-							"Users " + _message.params[1] + ":\n" + users);
+							"Users " + _message.params[1] + ": " + users);
 		_client.sendResponse(prefix, IrcResponseCode::RPL_ENDOFNAMES,
 							_message.params[1] + " :End of /NAMES list.");
 	}
@@ -204,7 +205,36 @@ void MessageHandler::handleUser()
 void MessageHandler::handleMode()
 {
 	std::cout << "[DEBUG] MODE: " << std::endl;
-	//to do
+
+	if (_message.params.size() < 2)
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
+						"Not enough parameters");
+		return;
+	}
+	std::string target = _message.params[1];
+	if (!_server.isChannel(target))
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL,
+						target);
+		return;
+	}
+	Channel* channel = _server.getChannel(target);
+	if (_message.params.size() == 2)
+	{
+		std::string prefix = _client.getNick() + "!" + _client.getUsername()
+				+ "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
+		_client.sendResponse(prefix, IrcResponseCode::RPL_CHANNELMODEIS, "mode/" + channel->getName() + " [" + channel->getActiveChannelModes() + "]");
+		return ;
+	}
+	if (!channel->isOperator(&_client))
+	{
+		std::string prefix = _client.getNick() + "!" + _client.getUsername()
+				+ "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
+		_client.sendError(prefix, IrcErrorCode::ERR_CHANOPRIVSNEEDED,
+						channel->getName() + " You're not a channel operator");
+		return;
+	}
 }
 
 void MessageHandler::handleWhois()
@@ -264,17 +294,3 @@ void MessageHandler::handlePrivmsg()
 	}
 }
 
-// void MessageHandler::handlePrivmsg()
-// {
-// 	// PRIVMSG #chan :hallo
-// 	std::cout << "[DEBUG] PRIVMSG" << std::endl;
-// 	std::cout << "[DEBUG] target: " << _message.params[1] << std::endl;
-// 	std::cout << "[DEBUG] message: " << _message.params[2] << std::endl;
-
-// 	Channel *channel = _server.getChannel(_message.params[1]);
-// 	std::cout << "[DEBUG] channel name " << _message.params[1] << std::endl;
-// 	if (channel)
-// 		std::cout << "[DEBUG] exists" << std::endl;
-// 	std::cout << "[DEBUG] before broadcast" << std::endl;
-// 	channel->broadcast(_message.params[2], &_client);
-// }

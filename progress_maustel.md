@@ -270,7 +270,7 @@ todo:
 
 - MODE: -> special parsing would be useful (?)
     - If <target> is a channel that does not exist on the network, the ERR_NOSUCHCHANNEL (403) numeric is returned
-    - If <modestring> is not given, the RPL_CHANNELMODEIS (324) numeric is returned
+    - If <modestring> is not given, the RPL_CHANNELMODEIS (324) numeric is returned -> message with the currently set modes
     - check if user has channel operator priviliges, if not ERR_CHANOPRIVSNEEDED (482)
     - if no '+' or '-' -> will be counted as '+'
     - must have parameter (check for valid parameter):
@@ -355,7 +355,7 @@ todo:
 
 ----- questions for david ------
 - look for transcendence partner?
-- sendMsg and response/error should actually be server functions
+- sendMsg and response/error should actually be server functions or call it receiveMsg
 
 
 ## General Info
