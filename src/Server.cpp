@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/22 14:22:01 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/23 11:28:11 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -454,10 +454,10 @@ void	Server::removeClient(Client* client)
 	}
 }
 
-// Client*	Server::getClient(void)
-// {
-
-// }
+Client*	Server::getClient(const std::string& nick)
+{
+	return (_clientList[nick]);
+}
 
 const std::string& Server::getName(void) const
 {
