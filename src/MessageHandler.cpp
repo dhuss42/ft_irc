@@ -79,77 +79,72 @@ void MessageHandler::handleCap(void)
 void MessageHandler::handleJoin(void)
 {
 	std::cout << "[DEBUG] JOIN: " << std::endl;
-	// Channel* channel = _server.createChannel(_message.params[1], &_client);
-	// if (channel)
-	// 	channel->addUser(&_client, _message.params[2]);
 
-	//leaving channels
-	if (_message.params[1][0] == '0')
+	if (_message.params[1].empty())	//for capability negotiation phase
+			return ;
+
+	//leaving channels (problem: irssi still opens a chatwindow called #0)
+	if (_message.params[1][1] == '0')	//maybe just call PART
 	{
-		// Remove client from all channels
-		// for (auto& channel : _server.getChannels())	//still to do
-		// {
-		// 	channel.removeUser(&_client);
-		// }
+		std::cout << "[DEBUG]: entered if condition 0" << std::endl;
+		std::unordered_map <std::string, Channel* > chanList = _server.getChannelUnoMap();
+		for (auto it = chanList.begin(); it != chanList.end(); it++)
+		{
+			it->second->removeUser(&_client);	//not working
+			std::string joinMsg = _client.getNick() + " [~" +
+						_client.getUsername() + "@" + _client.getHostname() +
+						"] has left " + _message.params[1] + "\n";
+		}
 		return;
 	}
 
 	// Create or get the channel
+	std::cout << "[DEBUG]: entered createChannel" << std::endl;
 	Channel* channel = _server.createChannel(_message.params[1], &_client);
 	if (!channel)
 	{
-		// Handle channel creation failure
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL,
 						"No such channel");
 		return;
 	}
 
-	// Get channel password if set
-	std::string password = channel->getPassword();
-	if (!password.empty() && _message.params[2] != password)
-	{
-		// Handle wrong password
-		_client.sendError(_server.getName(), IrcErrorCode::ERR_BADCHANNELKEY,
-					 "Bad channel key");
-		return;
-	}
+	if (!channel->addUser(&_client, _message.params[2]))
+		return ;
+	// all checks if client may join (password, userlimit, inviteOnly) is done in addUSer
+	// but need to add:
+		// _client.sendError(_server.getName(), IrcErrorCode::ERR_BADCHANNELKEY, "Bad channel key");
+		// _client.sendError(_server.getName(), IrcErrorCode::ERR_CHANNELISFULL, "Channel is full");
+		// _client.sendError(_server.getName(), IrcErrorCode::ERR_INVITEONLYCHAN, "Invite-only channel");
 
-	// Add user to channel
-	channel->addUser(&_client, _message.params[2]);
-	// Send JOIN message to channel
-	std::string joinMsg = ":" + _client.getNick() + "!~" +
+	// Send message to channel that <nick> has joined
+	std::string joinMsg = _client.getNick() + " [~" +
 						_client.getUsername() + "@" + _client.getHostname() +
-						" JOIN :" + _message.params[1] + "\n";
+						"] has joined " + _message.params[1] + "\n";
 	channel->broadcast(joinMsg, &_client);
+	std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel-> getName() + " :";
+	_client.sendMsg(prefix, joinMsg);
+
+	std::string topic = channel->getTopic();
+	if (!topic.empty())
+	{
+		std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel-> getName() + " :";
+		_client.sendResponse(prefix, IrcResponseCode::RPL_TOPIC,
+							"Topic for " + _message.params[1] + " :" + topic);
+	}
 
 	// Send channel user list to client
 	std::string users = channel->getJoinedUsers();
+	std::cout << "[DEBUG]: get joined users:" << users.size() << " " << users << std::endl;
 	if (!users.empty())
 	{
-		_client.sendResponse(_server.getName(), IrcResponseCode::RPL_NAMREPLY,
-							"= " + _message.params[1] + " :" + users);
-		_client.sendResponse(_server.getName(), IrcResponseCode::RPL_ENDOFNAMES,
+		std::cout << "[DEBUG]: entered if condition !users.empty" << std::endl;
+		//docu says to use response codes, but not sure if it works as it should here
+		std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
+		_client.sendResponse(prefix, IrcResponseCode::RPL_NAMREPLY,
+							"Users " + _message.params[1] + ":\n" + users);
+		_client.sendResponse(prefix, IrcResponseCode::RPL_ENDOFNAMES,
 							_message.params[1] + " :End of /NAMES list.");
 	}
-
-	// if (channel->addUser(&_client, _message.params[2]))
-	// {
-	// 	// Send JOIN message to channel
-	// 	std::string joinMsg = ":" + _client.getNick() + "!~" +
-	// 						_client.getUser() + "@" + _client.getHost() +
-	// 						" JOIN :" + _message.params[1] + "\n";
-	// 	channel->broadcast(joinMsg, &_client);
-
-	// 	// Send channel user list to client
-	// 	std::string users = channel->getJoinedUsers();
-	// 	if (!users.empty())
-	// 	{
-	// 		_client.sendResponse(_server.getName(), IrcResponseCode::RPL_NAMREPLY,
-	// 							"= " + _message.params[1] + " :" + users);
-	// 		_client.sendResponse(_server.getName(), IrcResponseCode::RPL_ENDOFNAMES,
-	// 							_message.params[1] + " :End of /NAMES list.");
-	// 	}
-	// }
 }
 
 void MessageHandler::handlePass(void)
@@ -228,6 +223,6 @@ void MessageHandler::handlePrivmsg()
 	Channel *channel = _server.getChannel(_message.params[1]); // channel name can only be 4 chars -> better extract everything up to colon
 	std::cout << "[DEBUG] channel name " << _message.params[1] << std::endl;
 	if (channel)
-		std::cout << "[DEBUG] exists" << _message.params[1] << std::endl;
+		std::cout << "[DEBUG] exists" << std::endl;
 	channel->broadcast(_message.params[2], &_client);
 }

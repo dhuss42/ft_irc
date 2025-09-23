@@ -371,8 +371,6 @@ void	Server::setupSignalHandler()
 	sigaction(SIGINT, &sa, nullptr);
 	sigaction(SIGTERM, &sa, nullptr);
 	sigaction(SIGQUIT, &sa, nullptr);
-	// sigstop ctrl + z
-	// sigcont
 	// add more signals here with sigaction
 }
 
@@ -450,7 +448,7 @@ void	Server::removeClient(Client* client)
 {
 	if (client && isClient(client->getNick()))
 	{
-
+		// not implemented
 	}
 }
 

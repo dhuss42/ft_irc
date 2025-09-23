@@ -16,8 +16,8 @@
 
 Channel::Channel(std::string name) : _name(name), _invOnly(false), _topicOp(true), _pswrdTgle(false), _usrLmtTgl(false), _creationTime(time(nullptr))
 {
-	std::cout << "[DEBUG] creation time: " << _creationTime << std::endl;
-	std::cout << "[DEBUG] human readable: " << ctime(&_creationTime) << std::endl;
+	// std::cout << "[DEBUG] creation time: " << _creationTime << std::endl;
+	// std::cout << "[DEBUG] human readable: " << ctime(&_creationTime) << std::endl;
 }
 
 Channel::~Channel()
@@ -230,10 +230,18 @@ void	Channel::removeUser(Client* client)
 {
 	if (client)
 	{
+		std::cout << "[DEBUG] Removing client with nick: " << client->getNick() << std::endl;
+		std::cout << "[DEBUG] Before removing users_size: " << _users.size() << std::endl;
+		std::cout << "[DEBUG] Before removing operators_size: " << _operators.size() << std::endl;
 		if (_users.find(client->getNick()) != _users.end())
+		{
 			_users.erase(client->getNick());
+			std::cout << GREEN "[DEBUG] Removed client with nick: " RESET << client->getNick() << std::endl;
+		}
 		if (_operators.find(client->getNick()) != _operators.end())
 			_operators.erase(client->getNick());
+		std::cout << "[DEBUG] After removing users_size: " << _users.size() << std::endl;
+		std::cout << "[DEBUG] [DEBUG] After removing users_size: " << _operators.size() << std::endl;
 	}
 	// check outside if Channel has 0 members now
 	// if so delete the channel object
