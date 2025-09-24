@@ -9,10 +9,12 @@
 		- send welcome message when connected
 [] could be that more bugs occur where names have not been changed to lowercase resulting in segfaults
 [] add @ for operator inside chat
-[] server is slow at times
+[x] server is slow at times -> RESOLVED
 	- could be because of authentication loop
 [] when two users in the same channel have the same nick they are treated as the same, one client receives two messages and the other does not receive any
 	- currently server is not handling two cliebnts with same nick. Either not allow it or suffixs "_" to the nick
+[] test userlimit when set in channel
+[] 
 
 
 ## ====== Day 1 == 25.06 ======
@@ -362,3 +364,42 @@ Casemapping
 	[x] getter and setter for should Exit
 	[x] pass pointer to server when Error is called
 	-> is better but not optimal
+
+## ====== Day 21 == 22.09 ====== (6h)
+- worked on server speed
+
+## ====== Day 21 == 24.09 ====== ()
+- realised "laggy" speed comes from irssi not our server
+	- compare in eval
+- testing multiple Client connections to the server
+- User Connecting with Nick who has been part of the channel and then disconnected and connected again with same nick resulted in this:
+	[DEBUG] CAP: 
+	[DEBUG] Capability negotiation completed
+	[DEBUG] JOIN: 
+	[DEBUG] #test exists already, not creating a new channel
+	[DEBUG] Client is already part of the Channel!
+	Segmentation fault: 11
+	-> Need to handle situation in which Nick is already taken
+	[x] Need to handle removal out of all Channels to which user was connected -> RESOLVED
+
+- Connecting with 50 testusers in 1 Channel each sending a message every 5 seconds
+	[DEBUG] current reply: testnick14!tError: send error
+			Default error
+	Error: send error
+			Default error
+	Error: send error
+			Default error
+	Error: send error
+			Default error
+	Error: send error
+			Default error
+	Error: send error
+			Default error
+	Error: std::bad_alloc
+	Error: std::bad_alloc
+	Error: std::bad_alloc
+	Error: std::bad_alloc
+	Error: std::bad_alloc
+	Error: std::bad_alloc
+	Segmentation fault: 11
+		-> maybe make a sendBuffer for the client

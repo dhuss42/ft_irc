@@ -45,7 +45,9 @@ class Client
 		Client(int fd, Server* server);
 		~Client();
 
-	void	pseudoParser(std::string message);
+	void	addToJoinedChannels(Channel* channel);
+	void	removeFromJoinedCahnnels();
+
 	void	sendResponse(std::string name, IrcResponseCode code, std::string reply);
 	void	sendMsg(std::string name, std::string reply);
 	void	sendError(std::string name, IrcErrorCode code, std::string reply);

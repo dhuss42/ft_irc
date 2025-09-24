@@ -78,6 +78,8 @@ class Server
 		void	removeClient(Client* client);
 		Client*	getClient(const std::string& nick);
 
+		void	uniqueNick(std::string& nick);
+
 		//======= getters & setters =======//
 		const	std::string& getName(void) const;
 		const	std::string& getPassword(void) const;

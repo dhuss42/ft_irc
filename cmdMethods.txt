@@ -2,6 +2,8 @@
 NICK
 	check if the nick is already in use
 		bool	Server::isClient(const std::string& name) const
+	Change the nick if already in use (maybe don't need both)
+		void	Server::uniqueNick(std::string& nick)
 	check the string for legal chars
 		bool	verifyNickName(const std::string& name) -> utils.cpp
 

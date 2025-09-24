@@ -477,3 +477,9 @@ bool	Server::getShouldExit(void)
 {
 	return (shouldExit);
 }
+
+void	Server::uniqueNick(std::string& nick)
+{
+	while (_clientList.find(nick) != _clientList.end())
+		nick += "_";
+}

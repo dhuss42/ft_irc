@@ -160,6 +160,7 @@ bool	Channel::addUser(Client* client, const std::string& password)
 		{
 			std::cout << "[DEBUG] Client added ! " << client->getNick() << " to " << this->getName() << std::endl;
 			_users[client->getNick()] = client;
+			client->addToJoinedChannels(this);
 			if (_invOnly)
 				removeInvUsers(client);
 			client->sendMsg("irc_custom", "available commands: JOIN, MODE, KICK, PART, QUIT, PRIVMSG/NOTICE"); // not correct format and more needs to be sent maybe outside the method
