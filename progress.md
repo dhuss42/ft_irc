@@ -7,12 +7,12 @@
 	- solution is to non-block authentication during newClient. The Client should be simply incldued in the list and the complete registration should only happen when all three commands are parsed and handled
 		- PASS, NICK, USER should send a return value that indicated wether the command sent during registration was successfull. if one of them fails the user has to be disconected
 		- send welcome message when connected
-	[] check how to handle disconnectClient from Server method
+	[x] check how to handle disconnectClient from Server method
 [] could be that more bugs occur where names have not been changed to lowercase resulting in segfaults
 [] add @ for operator inside chat
 	- the clients who are not operator see the @ but since the broadcast message does not send to the original sender his nick is displayed without @ in his chat
 	- means that the operator needs a change in nick for that channel so it can be displayed in irssi
-	-> operators are stored in two containers 
+	-> operators are stored in two containers
 		-> channel users
 		-> channel operators
 		-> when doing something channel specific check operators containers
@@ -24,20 +24,27 @@
 [] test userlimit when set in channel
 [] test userLimit on Server
 	[] think about implementing a cap for users to Join since the server is not allowed to shutdown
+[] How Many Channels can 1 user join?
+	- consider enforcing a limit for Channels
 [] check for leaks again
-	[] free all channels when server stops
-	[] also Make methods for cleaning up clients and closing sockets and callthem in destructor instead of doing it all in destructor
+	[x] free all channels when server stops
+	[x] also Make methods for cleaning up clients and closing sockets and callthem in destructor instead of doing it all in destructor
 [x] register on intra
 [] test on Linux
 [] eval Point
 [] clean up
 	[] make some sort of order in files
 	[] look for functions that are not used
-	[] add 42 header everywhere
+	[x] add 42 header everywhere
 	[] method descriptions
 	[] non-member methods like in utils.cpp look up ruling in 42
 	[] consier what to display during server run (not a lot since std::cout hinders performance)
+	[] delete Architecture branch
 [] test strange printf input with nc -> segfaulted
+[] maybe implement clientSendBuffer because if segfault
+	- try to replicate segfault first
+[] check for signals
+[] default constructor
 
 
 ## ====== Day 1 == 25.06 ======
@@ -391,15 +398,15 @@ Casemapping
 ## ====== Day 21 == 22.09 ====== (6h)
 - worked on server speed
 
-## ====== Day 21 == 24.09 ====== ()
+## ====== Day 21 == 24.09 ====== (4h)
 [x] realised "laggy" speed comes from irssi not our server
 	- compare in eval to normal networks with irssi
 [x] testing multiple Client connections to the server
 	- issues when chatting with 50 people in one channel
 [x] User Connecting with Nick who has been part of the channel and then disconnected and connected again with same nick resulted in this: ----> RESOLVED
-	[DEBUG] CAP: 
+	[DEBUG] CAP:
 	[DEBUG] Capability negotiation completed
-	[DEBUG] JOIN: 
+	[DEBUG] JOIN:
 	[DEBUG] #test exists already, not creating a new channel
 	[DEBUG] Client is already part of the Channel!
 	Segmentation fault: 11
@@ -427,3 +434,36 @@ Casemapping
 	Error: std::bad_alloc
 	Segmentation fault: 11
 		-> maybe make a sendBuffer for every client
+
+## ====== Day 20 == 25.09 ====== (5h)
+[x] deleted ServerDavid.cpp & tmp.cpp
+[x] free all channels when server stops
+[x] also Make methods for cleaning up clients and closing sockets and callthem in destructor instead of doing it all in destructor
+[x] check how to handle disconnectClient from Server method
+[x] add 42 header everywhere
+
+[] clean up
+	[] make some sort of order in files
+		-> did in Server.cpp and Server.hpp
+		-> did in Client.cpp and Client.hpp
+		-> started in Channel.cpp and Channel.hpp
+
+	[] look for functions that are not used
+		-> did in Server.cpp and Server.hpp
+		-> did in Client.cpp and Client.hpp
+		-> started in Channel.cpp and Channel.hpp
+	[x] add 42 header everywhere
+	[] method descriptions
+		-> did in Server.cpp
+		-> did in Client.cpp
+		-> started in Channel.cpp and Channel.hpp
+
+For leak check at School start Dockerfile in directory
+- docker build -t valgrind .
+- docker run -p 6667:6667 -it --rm -v /Users/dhuss/Projects/circle_5/ft_irc:/app valgrind
+- valgrind --leak-check=full ./ircserv 6667 123
+- run ConnectionTest.sh in separate Terminal with port 6667 and pass 123
+--> currently no leaks for 15 users connectin to one Channel and writing messages
+--> couldn't find any leaks
+--> invalid read for USER and PASS with invalid arguments but is related to them not being handeld yet
+

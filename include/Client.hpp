@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Client.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/25 14:42:38 by dhuss             #+#    #+#             */
+/*   Updated: 2025/09/25 16:44:49 by dhuss            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
@@ -28,61 +40,52 @@ class Client
 		std::string	_remainder;
 		//  write buffer ?
 
-		//	modes
-
-		std::unordered_map<std::string, Channel*> _joinedChannels;
-
 		// registration state
 		bool	_registered = false;
 		bool	_nickSet = false;
 		bool	_usernameSet = false;
 
-		// optional considerations
-		// 		away message
-		//		last activity timestamp
+		bool	_registrationFailed = false;
+
+		std::unordered_map<std::string, Channel*> _joinedChannels;
 
 	public:
 		Client(int fd, Server* server);
 		~Client();
 
 	void	addToJoinedChannels(Channel* channel);
-	void	removeFromJoinedCahnnels();
+	// void	removeFromJoinedChannels(Channel* channel);
+	void	removeFromAllJoinedChannels();
 
 	void	sendResponse(std::string name, IrcResponseCode code, std::string reply);
 	void	sendMsg(std::string name, std::string reply);
 	void	sendError(std::string name, IrcErrorCode code, std::string reply);
-	int		authentication();
+	int		authentication(); // can be deleted once authentication is updated
 	int		receiveMsg();
 
+	//------------can be deleted once authentication is updated------------//
 	void	setRegistered(bool state);
 	void	setNickSet(bool state);
 	void	setUsernameSet(bool state);
-	void	setSocket(int socket);
-
 	bool	getRegistered(void);
 	bool	getNickSet(void);
 	bool	getUsernameSet(void);
-	int		getSocket(void);
+	//---------------------------------------------------------------------//
 
-	void	setRealname(std::string str);
-	void	setHostname(std::string str);
-	void	setUsername(std::string str);
-	void	setNick(std::string str);
+	int		getSocket(void); // [DEBUGGING]
+
+	void	setRealname(const std::string& str);
+	void	setHostname(const std::string& str);
+	void	setUsername(const std::string& str);
+	void	setNick(const std::string& str);
 
 	std::string getNick() const;
 	std::string	getUsername();
 	std::string getHostname();
 	std::string getRealname();
 
-
-	char*	getBufferPtr(void);
-	size_t	getBufferSize(void);
-	std::string& getBuffer(void);
-	void	setBuffer(std::string str);
-	void	setBufferToValue(uint8_t ascii, size_t len);
-
-	void	setRemainder(std::string str);
-	std::string getRemainder(void);
+	void	setRegisFailed(bool value);
+	bool	getRegisFailed(void);
 
 	Server* getServer(void);
 

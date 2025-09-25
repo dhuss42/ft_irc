@@ -1,10 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Channel.hpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/25 14:42:44 by dhuss             #+#    #+#             */
+/*   Updated: 2025/09/25 16:56:20 by dhuss            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CHANNEL_HPP
 # define CHANNEL_HPP
 
 #include "ft_irc.hpp"
 #include "Client.hpp"
-
-// maybe inheritance for safe channel and standard channel ?
 
 class Client;
 
@@ -14,18 +24,16 @@ class Channel
 		std::string _name;
 		std::string _topic;
 
-		// modes
-		bool	_invOnly; // i(inv only),
-		bool	_topicOp; // t(topic settable only by operator),
-		bool	_pswrdTgle; // k (password),
-		bool	_usrLmtTgl; // l (userlimit)
+		bool	_invOnly = false;
+		bool	_topicOp = true;
+		bool	_pswrdTgle = false;
+		bool	_usrLmtTgl = false;
 
-		std::string _password; // if k is active
+		std::string _password;
 		std::size_t _userLimit;
 
-		time_t	_creationTime;
-
 		std::string _creator; // uncertain if needed
+
 		std::map <std::string, Client*> _users;
 		std::unordered_map <std::string, Client*> _invitedUsers;
 		std::unordered_map <std::string, Client*> _operators;
@@ -63,7 +71,6 @@ class Channel
 		std::size_t	getUserLimit(void);
 
 		const std::string	getJoinedUsers(void) const;
-		time_t	getCreationTime(void) const;
 		size_t	getNbrUsers(void) const; // not sure if needed
 		bool		isEmpty(void) const;
 

@@ -1,48 +1,86 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Client.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/25 14:42:13 by dhuss             #+#    #+#             */
+/*   Updated: 2025/09/25 16:46:14 by dhuss            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Client.hpp"
 
+//================================> Orthodox Form <================================//
 
 // it might make sense to pass pollfd, this would save me from having two unorderedmaps with clients
 // I could just have the clients nick and a pointer to the client
 // instead of having to containers I could also extract the value I need
+
+/*----------------------*/
+/* Constructor			*/
+/*----------------------*/
 Client::Client(int fd, Server* server) : _nick("default"), _username("default"), _realname("default"), _hostname(server->getName()), _server(server), _socket(fd)
 {
-	(void) _server;
 }
 
+/*----------------------*/
+/* Copy Constructor		*/
+/*----------------------*/
+
+/*----------------------*/
+/* Assignment Overload	*/
+/*----------------------*/
+
+/*----------------------*/
+/* Destructor			*/
+/*----------------------*/
 Client::~Client()
 {
-	removeFromJoinedCahnnels();
+	removeFromAllJoinedChannels();
 	if (_socket >= 0)
 		close(_socket);
 	std::cout << CYAN << "[" << _nick << "]: disconnected" WHITE << std::endl;
 }
 
+
+//============== Channel Data ==============//
+
+/*------------------------------------------------------------------------------*/
+/* add the Channel to the container storing all the Channels user is part of	*/
+/*------------------------------------------------------------------------------*/
 void	Client::addToJoinedChannels(Channel* channel)
 {
 	if (channel)
 		_joinedChannels.emplace(channel->getName(), channel);
 }
 
-void	Client::removeFromJoinedCahnnels()
+// RESULTED IN SEGFAULTS BECAUSE I CODED WHEN I SHOULD HAVE STOPPED ALREADY
+// /*----------------------------------------------------------------------------------*/
+// /* remove the Channel from the container storing all the Channels user is part of	*/
+// /*----------------------------------------------------------------------------------*/
+// void	Client::removeFromJoinedChannels(Channel* channel)
+// {
+// 	if (channel)
+// 	{
+// 		if (_joinedChannels.find(channel->getName()) != _joinedChannels.end())
+// 			_joinedChannels.erase(channel->getName());
+// 	}
+// }
+
+/*----------------------------------------------------------------------------------*/
+/* remove User from all Channels he has joined										*/
+/* remove all Channels from container storing all the Channels user is part of		*/
+/*----------------------------------------------------------------------------------*/
+void	Client::removeFromAllJoinedChannels()
 {
 	for (auto it = _joinedChannels.begin(); it != _joinedChannels.end(); ++it)
 		it->second->removeUser(this);
 	_joinedChannels.clear();
 }
 
-// Needs adjustment after proper Parser handling
-int	Client::authentication()
-{
-	while(!(_nickSet && _usernameSet && _registered))
-	{
-		if (receiveMsg() == -1)
-			return (-1);
-	}
-	sendMsg("irc_custom", "001 " + _nick + " :Welcome to the IRC server"); // server replies need to be handled more gracefully
-	return (1);
-}
-
-//==============Messaging==============//
+//============== Messaging ==============//
 
 /*--------------------------------------------------------------------------*/
 /* receives messages from client											*/
@@ -58,7 +96,6 @@ int	Client::authentication()
 /*--------------------------------------------------------------------------*/
 int	Client::receiveMsg()
 {
-	// std::cout << MAGENTA "[DEBUGG] ===== receiveMsg ======= " WHITE << std::endl;
 	char	tmp[512] = {0};
 	int		received = recv(_socket, tmp, sizeof(tmp), 0);
 
@@ -69,13 +106,11 @@ int	Client::receiveMsg()
 	}
 	else if (received == 0)
 	{
-		std::cout << CYAN << "[" << _nick << "] closed their connection" << std::endl; // needs cleanup
+		std::cout << CYAN << "[" << _nick << "] closed their connection" << std::endl; // needs cleanup -> maybe change to setRegisfailed?
 		return (-1);
 	}
 	else
 	{
-		// std::cout << YELLOW "[DEBUGG] recv is non negative" WHITE << std::endl;
-
 		std::string fullBuffer = _remainder + std::string(tmp, received);
 		_remainder = "";
 
@@ -83,14 +118,10 @@ int	Client::receiveMsg()
 		while ((pos = fullBuffer.find("\r\n")) != std::string::npos)
 		{
 			_buffer = fullBuffer.substr(0, pos);
-			// std::cout << BOLDCYAN << "[DEBUG] buffer: " << _buffer << RESET << std::endl;
 			parseHandler(_buffer, *this, *_server);
-			// pseudoParser(_buffer);
 			fullBuffer = fullBuffer.substr(pos + 2);;
 		}
 		_remainder = fullBuffer;
-		// if (!fullBuffer.empty())
-			// std::cout << BOLDCYAN << "[DEBUG] remainder: " << _remainder << RESET << std::endl;
 	}
 	std::cout << GREEN << "[" << _nick << "]" << " received: " << _buffer << WHITE << std::endl;
 	_buffer.clear();
@@ -106,135 +137,150 @@ int	Client::receiveMsg()
 void	Client::sendMsg(std::string name, std::string reply)
 {
 	reply = ":" + name + " " + reply + "\r\n";
-	// std::cout << "[DEBUG] current reply: " << name << std::endl;
-	// std::cout << "[DEBUG] sendMsg to " << getNick() << " socket=" << _socket << " msg=" << reply << std::endl;
 	if (send(_socket, reply.c_str(), reply.size(), 0) <= 0) // uncertain about the zero at the moment
 	{
 		throw (Errors(ErrorCode::E_SND)); // uncertain about wether it bubbles up correctly to the next catch
 	}
 }
 
-//==============getters and setters==============//
+//============== getters and setters ==============//
 
-void	Client::setRealname(std::string str)
-{
-	_realname = str;
-}
-
-void	Client::setHostname(std::string str)
-{
-	_hostname = str;
-}
-
-void	Client::setUsername(std::string str)
-{
-	_username = str;
-}
-
-bool	Client::getRegistered(void)
-{
-	return (_registered);
-}
-
-void	Client::setRegistered(bool state)
-{
-	_registered = state;
-}
-
-bool	Client::getNickSet(void)
-{
-	return (_nickSet);
-}
-
-void	Client::setNickSet(bool state)
-{
-	_nickSet = state;
-}
-
-bool	Client::getUsernameSet(void)
-{
-	return (_usernameSet);
-}
-
-void	Client::setUsernameSet(bool state)
-{
-	_usernameSet = state;
-}
-
-
-void	Client::setSocket(int socket)
-{
-	_socket = socket;
-}
-
-int Client::getSocket(void)
+int	Client::getSocket(void) // [DEBUGGING]
 {
 	return (_socket);
 }
 
-std::string Client::getNick(void) const
+/*--------------------------------------*/
+/* set _realname to str					*/
+/*--------------------------------------*/
+void	Client::setRealname(const std::string& str)
 {
-	return (_nick);
+	_realname = str;
 }
 
-void	Client::setNick(std::string str)
+/*--------------------------------------*/
+/* set _hostname to str					*/
+/*--------------------------------------*/
+void	Client::setHostname(const std::string& str)
+{
+	_hostname = str;
+}
+
+/*--------------------------------------*/
+/* set _username to str					*/
+/*--------------------------------------*/
+void	Client::setUsername(const std::string& str)
+{
+	_username = str;
+}
+
+/*--------------------------------------*/
+/* set _nick to str						*/
+/*--------------------------------------*/
+void	Client::setNick(const std::string& str)
 {
 	_nick = str;
 }
 
-std::string& Client::getBuffer(void)
+/*--------------------------------------*/
+/* set _regisFailed to value			*/
+/*--------------------------------------*/
+void	Client::setRegisFailed(bool value)
 {
-	return (_buffer);
+	_registrationFailed = value;
 }
 
-char* Client::getBufferPtr(void)
-{
-	return (_buffer.data());
-}
-
-size_t Client::getBufferSize(void)
-{
-	return (_buffer.size());
-}
-
-void	Client::setBufferToValue(uint8_t ascii, size_t len)
-{
-	std::memset(_buffer.data(), ascii, len);
-}
-
-void	Client::setBuffer(std::string str)
-{
-	_buffer = str;
-}
-
-void	Client::setRemainder(std::string str)
-{
-	_remainder = str;
-}
-
-std::string	Client::getRemainder(void)
-{
-	return(_remainder);
-}
-
-std::string	Client::getUsername()
-{
-	return (_username);
-}
-
-std::string	Client::getHostname()
-{
-	return (_hostname);
-}
-
+/*--------------------------------------*/
+/* returns _realname					*/
+/*--------------------------------------*/
 std::string	Client::getRealname()
 {
 	return (_realname);
 }
 
+/*--------------------------------------*/
+/* returns _hostname					*/
+/*--------------------------------------*/
+std::string	Client::getHostname()
+{
+	return (_hostname);
+}
+
+/*--------------------------------------*/
+/* returns _username					*/
+/*--------------------------------------*/
+std::string	Client::getUsername()
+{
+	return (_username);
+}
+
+/*--------------------------------------*/
+/* returns _nick						*/
+/*--------------------------------------*/
+std::string Client::getNick(void) const
+{
+	return (_nick);
+}
+
+/*--------------------------------------*/
+/* returns _regisFailed					*/
+/*--------------------------------------*/
+bool	Client::getRegisFailed(void)
+{
+	return (_registrationFailed);
+}
+
+/*--------------------------------------*/
+/* returns server pointer				*/
+/*--------------------------------------*/
 Server* Client::getServer(void)
 {
 	return (_server);
+}
+
+
+
+//------------can be deleted once authentication is updated------------//
+int	Client::authentication()
+{
+	while(!(_nickSet && _usernameSet && _registered))
+	{
+		if (receiveMsg() == -1)
+			return (-1);
+	}
+	sendMsg("irc_custom", "001 " + _nick + " :Welcome to the IRC server");
+	return (1);
+}
+
+//------------can be deleted once authentication is updated------------//
+bool	Client::getRegistered(void)
+{
+	return (_registered);
+}
+//------------can be deleted once authentication is updated------------//
+void	Client::setRegistered(bool state)
+{
+	_registered = state;
+}
+//------------can be deleted once authentication is updated------------//
+bool	Client::getNickSet(void)
+{
+	return (_nickSet);
+}
+//------------can be deleted once authentication is updated------------//
+void	Client::setNickSet(bool state)
+{
+	_nickSet = state;
+}
+//------------can be deleted once authentication is updated------------//
+bool	Client::getUsernameSet(void)
+{
+	return (_usernameSet);
+}
+//------------can be deleted once authentication is updated------------//
+void	Client::setUsernameSet(bool state)
+{
+	_usernameSet = state;
 }
 
 // Constructor

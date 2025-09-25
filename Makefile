@@ -11,7 +11,6 @@ CPPFILES = \
 	Errors.cpp \
 	Message.cpp \
 	ParseHandler.cpp \
-	ServerDavid.cpp \
 	utils.cpp \
 	ClientMilena.cpp \
 	IrcCodeGetters.cpp \

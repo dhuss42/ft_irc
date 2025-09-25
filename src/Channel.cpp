@@ -6,23 +6,38 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/19 14:00:35 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/22 14:12:03 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/25 17:07:02 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
 
-//================ Orthodox Form ================//
+//================================> Orthodox Form <================================//
 
-Channel::Channel(std::string name) : _name(name), _invOnly(false), _topicOp(true), _pswrdTgle(false), _usrLmtTgl(false), _creationTime(time(nullptr))
+/*----------------------*/
+/* Constructor			*/
+/*----------------------*/
+Channel::Channel(std::string name) : _name(name)
 {
-	// std::cout << "[DEBUG] creation time: " << _creationTime << std::endl;
-	// std::cout << "[DEBUG] human readable: " << ctime(&_creationTime) << std::endl;
 }
 
+/*----------------------*/
+/* Copy Constructor		*/
+/*----------------------*/
+
+/*----------------------*/
+/* Assignment Overload	*/
+/*----------------------*/
+
+/*----------------------*/
+/* Destructor			*/
+/*----------------------*/
 Channel::~Channel()
 {
 }
+
+//================================> public member Methods <================================//
+
 
 //================ Messaging ================//
 
@@ -31,32 +46,16 @@ Channel::~Channel()
 /*------------------------------------------------------*/
 void	Channel::broadcast(const std::string& msg, Client* sender)
 {
-	// std::cout << MAGENTA << "===========boradcast==========" WHITE << std::endl;
-	// std::cout << "[DEBUG] before nullptr check" << std::endl;
-	// std::cout << "[DEBUG] msg " << msg << std::endl;
 	if (sender)
 	{
-		// int counter = 0;
-		// std::cout << "[DEBUG] inside if(sender)" << std::endl;
-		// std::cout << "[DEBUG] sender is: " << sender->getNick() << std::endl;
-		// std::cout << "[DEBUG] _users.size(): " << _users.size() << std::endl;
-
 		for (auto it = _users.begin(); it != _users.end(); it++)
 		{
-			// std::cout << "[DEBUG] users: " << it->second->getNick() << std::endl;
-			// std::cout << "[DEBUG] run: " << counter++ << std::endl;
-			// std::cout << "[DEBUG] sender ptr: " << sender << std::endl;
-			// std::cout << "[DEBUG] sender socket: " << sender->getSocket() << std::endl;
-			// std::cout << "[DEBUG] user ptr:   " << it->second << std::endl;
-			// std::cout << "[DEBUG] user socket:   " << it->second->getSocket() << std::endl;
 			if (it->second != sender)
 			{
-				// std::cout << "[DEBUG]" << "_user is not equal to sender" << std::endl;
 				std::string prefix;
 				if (isOperator(sender))
 					prefix = "@";
 				prefix += sender->getNick() + "!" + sender->getUsername() + "@" + sender->getHostname() + " PRIVMSG " + getName() + " :";
-				// std::cout << "[DEBUG] prefix: " << prefix << std::endl;
 				it->second->sendMsg(prefix, msg);
 			}
 		}
@@ -66,7 +65,9 @@ void	Channel::broadcast(const std::string& msg, Client* sender)
 //================ Channel Operations ================//
 
 //<<<<<<<<<<<<<<<MODE>>>>>>>>>>>>//
-// in irssi a plus is returned when no mode active
+/*--------------------------------------------------*/
+/* returns "+" and ever identified for active mode	*/
+/*--------------------------------------------------*/
 std::string	Channel::getActiveChannelModes(void) const
 {
 	std::string activeModes = "+";
@@ -81,14 +82,13 @@ std::string	Channel::getActiveChannelModes(void) const
 	return (activeModes);
 }
 
-//<<<<<<<<<<<<<<<MODE>>>>>>>>>>>>//
-time_t Channel::getCreationTime(void) const
-{
-	return (_creationTime);
-}
-
 //<<<<<<<<<<<<<<<TOPIC>>>>>>>>>>>>//
 // the return value can be changed to adjust to the parsing logic
+/*--------------------------------------------------*/
+/* checks if only Operator can change topic			*/
+/*	-	checks if client is Operator				*/
+/* changes the topic								*/
+/*--------------------------------------------------*/
 void	Channel::changeTopic(const std::string& topic, const Client* client)
 {
 	if (_topicOp && !isOperator(client))
@@ -101,7 +101,9 @@ void	Channel::changeTopic(const std::string& topic, const Client* client)
 }
 
 //<<<<<<<<<<<<<<<JOIN>>>>>>>>>>>>//
-// gets List of all the Users that are part of the Channel and returns a string to be further processed
+/*--------------------------------------------------*/
+/* returns a string of all joined Users				*/
+/*--------------------------------------------------*/
 const std::string Channel::getJoinedUsers(void) const
 {
 	std::string userList;
@@ -119,6 +121,9 @@ const std::string Channel::getJoinedUsers(void) const
 }
 
 //<<<<<<<<<<<<<<<PART>>>>>>>>>>>>//
+/*--------------------------------------------------*/
+/* checks if channel is empty						*/
+/*--------------------------------------------------*/
 bool	Channel::isEmpty(void) const
 {
 	return (_users.empty());
@@ -126,7 +131,9 @@ bool	Channel::isEmpty(void) const
 
 
 //<<<<<<<<<<<<<<<NOT SURE IF NEEDED>>>>>>>>>>>>//
-
+/*--------------------------------------------------*/
+/* returns amount of users in channel				*/
+/*--------------------------------------------------*/
 size_t Channel::getNbrUsers(void) const
 {
 	return (_users.size());
@@ -136,6 +143,10 @@ size_t Channel::getNbrUsers(void) const
 
 //<<<<<<<<<<<<<<<JOIN>>>>>>>>>>>>//
 // the return value can be changed to adjust to the parsing logic
+/*--------------------------------------------------*/
+/* adds users to channel							*/
+/* - checks for different modes						*/
+/*--------------------------------------------------*/
 bool	Channel::addUser(Client* client, const std::string& password)
 {
 	if (client)
@@ -170,15 +181,13 @@ bool	Channel::addUser(Client* client, const std::string& password)
 		std::cout << "[DEBUG] " << getJoinedUsers() << std::endl;
 	}
 	return (true);
-	// sends information about available commands
-	// if successfull
-	// user receives join message
-	// user receives channel topic
-	// user receives list of users who are on the channel including the user joining
 }
 
 //<<<<<<<<<<<<<<<INVITE>>>>>>>>>>>>//
 // the return value can be changed to adjust to the parsing logic
+/*--------------------------------------------------*/
+/* invite user to channel							*/
+/*--------------------------------------------------*/
 void	Channel::inviteUser(Client* inviter, Client* invited)
 {
 	if (!isOperator(inviter))
@@ -206,6 +215,9 @@ void	Channel::inviteUser(Client* inviter, Client* invited)
 
 //<<<<<<<<<<<<<<<KICK>>>>>>>>>>>>//
 // the return value can be changed to adjust to the parsing logic
+/*--------------------------------------------------*/
+/* kicks User out of channel						*/
+/*--------------------------------------------------*/
 void	Channel::kickUser(Client* kicker, const std::string& kicked)
 {
 	auto it = _users.find(kicked);
@@ -227,6 +239,9 @@ void	Channel::kickUser(Client* kicker, const std::string& kicked)
 }
 
 //<<<<<<<<<<<<<<<PART & JOIN & KICK>>>>>>>>>>>>//
+/*----------------------------------------------------------------------*/
+/* removes user from Channel for KICK and PART and client disconnect	*/
+/*----------------------------------------------------------------------*/
 void	Channel::removeUser(Client* client)
 {
 	if (client)
@@ -236,6 +251,7 @@ void	Channel::removeUser(Client* client)
 		std::cout << "[DEBUG] Before removing operators_size: " << _operators.size() << std::endl;
 		if (_users.find(client->getNick()) != _users.end())
 		{
+			// client->removeFromJoinedChannels(this);
 			_users.erase(client->getNick());
 			std::cout << GREEN "[DEBUG] Removed client with nick: " RESET << client->getNick() << std::endl;
 		}
@@ -248,17 +264,23 @@ void	Channel::removeUser(Client* client)
 	// if so delete the channel object
 }
 
+/*----------------------------------------------------------------------*/
+/* Adds Client to Operator Container									*/
+/*----------------------------------------------------------------------*/
 void	Channel::addOperator(Client* client)
 {
 	if (client)
 	{
-		if (auto it = _operators.find(client->getNick()) == _operators.end())
+		if (_operators.find(client->getNick()) == _operators.end())
 		{
 			_operators[client->getNick()] = client;
 		}
 	}
 }
 
+/*----------------------------------------------------------------------*/
+/* Removes Client from Operator Container								*/
+/*----------------------------------------------------------------------*/
 void	Channel::removeOperator(Client* client)
 {
 	if (client)
@@ -270,17 +292,23 @@ void	Channel::removeOperator(Client* client)
 	}
 }
 
+/*----------------------------------------------------------------------*/
+/* Add to Invite Container of Channel									*/
+/*----------------------------------------------------------------------*/
 void	Channel::addInvUsers(Client* client)
 {
 	if (client)
 	{
-		if (auto it = _invitedUsers.find(client->getNick()) == _invitedUsers.end())
+		if (_invitedUsers.find(client->getNick()) == _invitedUsers.end())
 		{
 			_invitedUsers[client->getNick()] = client;
 		}
 	}
 }
 
+/*----------------------------------------------------------------------*/
+/* Remove from Invite Container of Channel								*/
+/*----------------------------------------------------------------------*/
 void	Channel::removeInvUsers(Client *client)
 {
 	if (client)
@@ -293,6 +321,9 @@ void	Channel::removeInvUsers(Client *client)
 }
 
 //================ verify Clients ================//
+/*----------------------*/
+/* Check if Operator	*/
+/*----------------------*/
 bool	Channel::isOperator(const Client* client) const
 {
 	if (client)
@@ -303,6 +334,9 @@ bool	Channel::isOperator(const Client* client) const
 	return (false);
 }
 
+/*--------------------------*/
+/* Check if User in Channel	*/
+/*--------------------------*/
 bool	Channel::isUser(const Client* client) const
 {
 	if (client)
@@ -313,6 +347,9 @@ bool	Channel::isUser(const Client* client) const
 	return (false);
 }
 
+/*--------------------------------------*/
+/* Check if User is invited to Channel	*/
+/*--------------------------------------*/
 bool	Channel::isInvited(const Client* client) const
 {
 	if (client)

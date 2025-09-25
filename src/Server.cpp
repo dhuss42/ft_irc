@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/23 11:28:11 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/25 15:20:59 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static volatile sig_atomic_t shouldExit = 0;
 // maybe better with a bool inside class and a server pointer here
 
-//================ Orthodox Form ================//
+//================================> Orthodox Form <================================//
 
 /*----------------------*/
 /* Constructor			*/
@@ -31,28 +31,27 @@ Server::Server(std::string portNbr, std::string password)
 }
 
 /*----------------------*/
+/* Copy Constructor		*/
+/*----------------------*/
+
+/*----------------------*/
+/* Assignment Overload	*/
+/*----------------------*/
+
+
+/*----------------------*/
 /* Destructor			*/
 /*----------------------*/
 Server::~Server()
 {
-	// frees allocated client objects
-	for (auto iti = _clientfd.begin(); iti != _clientfd.end(); iti++)
-	{
-		if (iti->second)
-			delete(iti->second);
-	}
-	_clientfd.clear();
-	_clientList.clear();
-	// closes all open file descriptors
-	for (auto it = _sockets.rbegin(); it != _sockets.rend(); it++)
-	{
-		if (it->fd >= 0)
-			close(it->fd);
-	}
-	_sockets.clear();
+	removeAllClients();
+	removeAllChannels();
+	closeAllSockets();
 }
 
-//================ Member Methods ================//
+//================================> private member methods <================================//
+
+//================ initialise Data ================//
 
 // additional considerations to make regarding to safe password policy (could be toggled on and off inside config file)
 	// min length, special chars, not allowed chars, uppecase/lowercase, digit required?
@@ -100,18 +99,14 @@ pollfd	Server::createPollfd()
 	pollfd sock;
 
 	memset(&sock, 0, sizeof(pollfd));
-	// maybe distinguish with if for different types for .events
 	sock.events = POLL_IN;
-
 	try {
 		if (fcntl(sock.fd, F_SETFL, O_NONBLOCK) == -1)
 			throw (Errors(ErrorCode::E_FCNTL));
-		// std::cout << GREEN "set sock.fd to nonblocking" WHITE << std::endl;
 	}
 	catch(const std::exception& e) {
 		Errors::handleErrors(e, this);
 	}
-
 	return (sock);
 }
 
@@ -146,55 +141,7 @@ void	Server::initServer()
 	}
 }
 
-// update pollfd() vector
-// 	add new client fds
-//		pushback new client fds
-//	remove disconnected client fds
-// 		erase client fd
-
-// Server loop logic
-// monitor socketfd and connected clients fd with poll()
-// 	if socket fd has .revents & POLLIN a new client wants to connect
-// 		accept() waiting clients
-//			check for password
-//			create client object
-//			set to nonblocking fctnl()
-//			add to pollfd (_sockets)
-//	if client fd has .revents & POLLIN
-// 		receive incoming messages recv()
-// 			more complex steps with accumulating partial reads into a buffer
-// 				read into client specific buffer
-//				each call to recv() appends to the buffer
-//				check if buffer contains one or more complete messages defined by \r\n
-// 					create substring up to end of message
-//					pass to parser
-//					remove from buffer / remining bytes in buffer kept for next time (like get_next_line)
-//			parse commands (strings)
-//				tokenise and store (container/array of strings)
-//			handle commands
-//				check permissions of client
-//				carry out commands
-// 				update server/client/channel state
-// 				send replies
-//	if client fd has .revents & (POLLHUB | POLLERR | POLLNVAL); means client called close() or exit, error occured on the socket(), invalid fd
-// 		clean up client object
-// 		remove from pollfd
-
-/*------------------------------------------------------------------*/
-/* handles cleanup for closing connections							*/
-/*------------------------------------------------------------------*/
-void	Server::closedConnection(std::vector<pollfd>::iterator &it)
-{
-	Client* client = _clientfd[it->fd];
-
-	if (client)
-	{
-		_clientList.erase(client->getNick());
-		delete client;
-		_clientfd.erase(it->fd);
-	}
-	it = _sockets.erase(it);
-}
+//================ Incoming Revents ================//
 
 /*------------------------------------------------------------------*/
 /* Adds new client to _sockets vector if authentication successful	*/
@@ -220,7 +167,6 @@ void	Server::closedConnection(std::vector<pollfd>::iterator &it)
 /*------------------------------------------------------------------*/
 void	Server::newClient()
 {
-	// std::cout << "[DEBUGG] listening socket has revents & POLLIN" << std::endl;
 	pollfd newConnection = createPollfd();
 
 	newConnection.fd = accept(_sockets[0].fd, NULL, NULL); // not sure here with NULL NULL
@@ -228,7 +174,6 @@ void	Server::newClient()
 		throw (Errors(ErrorCode::E_ACCPT));
 	else
 	{
-		// std::cout << GREEN "[DEBUGG] created accepted Socket" WHITE << std::endl;
 		Client* client = new Client(newConnection.fd, this);
 		if (client->authentication() == -1) // this has to go once JOIN PASS NICK USER are ready
 		{
@@ -242,7 +187,6 @@ void	Server::newClient()
 		}
 		// handle properly successfull connection and unsuccessfull connection
 	}
-	// std::cout << YELLOW "[DEBUGG] exiting newClient()" WHITE << std::endl;
 }
 
 /*----------------------------------------------------------------------------------*/
@@ -262,29 +206,88 @@ void	Server::handlePollRevents()
 		newClient();
 	else
 	{
-		// std::cout << YELLOW "[DEBUGG] entered else in handlePollRevents()" WHITE << std::endl;
 		for (auto it = _sockets.begin(); it != _sockets.end();)
 		{
-			// std::cout << YELLOW "[DEBUGG] entered for in handlePollRevents()" WHITE << std::endl;
 			if (it->revents & POLL_IN)
 			{
 				if (_clientfd[it->fd]->receiveMsg() != -1)
 				{
 					_clientfd[it->fd]->sendMsg(_name, "[Server] Message received"); // needs to be updated
-					++it;
+					if (_clientfd[it->fd]->getRegisFailed())
+						disconnectClient(it);
+					else
+						++it;
 				}
 				else
-					closedConnection(it);
+					disconnectClient(it);
 			}
 			else if (it->revents & (POLLHUP | POLLERR | POLLNVAL))
-				closedConnection(it);
+				disconnectClient(it);
 			else
 				++it;
 		}
 	}
-	// std::cout << YELLOW "[DEBUGG] exiting handlePollRevents()" WHITE << std::endl;
 }
 
+//================ Cleanup ================//
+
+/*--------------------------------------*/
+/* removes all clients					*/
+/*--------------------------------------*/
+void	Server::removeAllClients()
+{
+	for (auto iti = _clientfd.begin(); iti != _clientfd.end(); iti++)
+	{
+		if (iti->second)
+			delete(iti->second);
+	}
+	_clientfd.clear();
+	_clientList.clear();
+}
+
+/*--------------------------------------*/
+/* removes all channels					*/
+/*--------------------------------------*/
+void	Server::removeAllChannels()
+{
+	for (auto it = _channelList.begin(); it != _channelList.end(); ++it)
+	{
+		if (it->second)
+			delete(it->second);
+	}
+	_channelList.clear();
+}
+
+/*--------------------------------------*/
+/* close all Sockets					*/
+/*--------------------------------------*/
+void	Server::closeAllSockets()
+{
+	for (auto it = _sockets.rbegin(); it != _sockets.rend(); it++)
+	{
+		if (it->fd >= 0)
+			close(it->fd);
+	}
+	_sockets.clear();
+}
+
+/*------------------------------------------------------------------*/
+/* handles cleanup for closing connections							*/
+/*------------------------------------------------------------------*/
+void	Server::disconnectClient(std::vector<pollfd>::iterator &it)
+{
+	Client* client = _clientfd[it->fd];
+
+	if (client)
+	{
+		_clientList.erase(client->getNick());
+		delete client;
+		_clientfd.erase(it->fd);
+	}
+	it = _sockets.erase(it);
+}
+
+//================================> member methods <================================//
 
 /*------------------------------------------------------------------------------*/
 /* Loop that keeps Server running 												*/
@@ -309,17 +312,11 @@ void	Server::serverLoop()
 				if (ret == -1)
 				{
 					if (shouldExit)
-					{
-						setShouldExit();
-						return ;
-					}
+						return (setShouldExit());
 					throw (Errors(ErrorCode::E_PLL));
 				}
 				else
-				{
-					// std::cout << MAGENTA "[DEBUGG] poll() has returned a positive value" WHITE << std::endl;
 					handlePollRevents();
-				}
 			}
 			else
 				throw (Errors(ErrorCode::E_SCKEMPTY));
@@ -374,16 +371,95 @@ void	Server::setupSignalHandler()
 	// add more signals here with sigaction
 }
 
-//================ getters & setters ================//
+//================ channel management ================//
 
-//================ verify ================//
+/*------------------------------------------------------------------*/
+/* Creates a new Channel											*/
+/*	- checks if the channel already exists (case insensitive)		*/
+/*	- verifies the new channel will have a valid name				*/
+/*	- creates a new Channel											*/
+/*	- adds channel to map of known channels							*/
+/*	- sets User who created channel as operator						*/
+/*------------------------------------------------------------------*/
+Channel*	Server::createChannel(std::string& name, Client *client) // can be altered to return values for sending replies or adding users afterwards
+{
+	std::string lcName = toLower(name);
+	if (isChannel(lcName))
+		return (getChannel(lcName)); // more of a patch at the moment
+	else if (!verifyChannelName(lcName))
+		return (nullptr);
+	else
+	{
+		Channel* channel = new Channel(lcName);
+		addChannel(channel);
+		channel->addOperator(client);
+		return (channel);
+	}
+}
+
+/*--------------------------------------*/
+/* add one channel to server			*/
+/*--------------------------------------*/
+void	Server::addChannel(Channel* channel)
+{
+	if (channel && !isChannel(channel->getName()))
+		_channelList[channel->getName()] = channel;
+}
+
+/*--------------------------------------*/
+/* remove one channel from server		*/
+/*--------------------------------------*/
+void	Server::removeChannel(Channel* channel)
+{
+	if (channel && isChannel(channel->getName()))
+	{
+		delete channel;
+		_channelList.erase(channel->getName());
+	}
+}
+
+/*--------------------------------------*/
+/* return a Channel with <name>			*/
+/*--------------------------------------*/
+Channel*	Server::getChannel(const std::string& name)
+{
+	auto it = _channelList.find(toLower(name));
+	if (it != _channelList.end())
+		return (it->second);
+	return (nullptr);
+}
+
+/*--------------------------------------*/
+/* return _channelList as unordered map	*/
+/*--------------------------------------*/
+std::unordered_map<std::string, Channel*> Server::getChannelUnoMap(void)
+{
+	return (_channelList);
+}
+
+/*--------------------------------------*/
+/* return _channelList as vector		*/
+/*--------------------------------------*/
+std::vector<std::string> Server::getChannelVector(void)
+{
+	std::vector<std::string> channelVec;
+	for (auto it = _channelList.begin(); it != _channelList.end(); it++)
+	{
+		channelVec.push_back(it->first);
+	}
+	return (channelVec);
+}
+
+/*--------------------------------------*/
+/* checks if Channel exists				*/
+/*--------------------------------------*/
 bool	Server::isChannel(const std::string& name) const
 {
 	std::string lcName = toLower(name);
 	return (_channelList.find(lcName) != _channelList.end());
 }
 
-
+//================ Client management ================//
 //<<<<<<<<<<<<<<<NICK>>>>>>>>>>>>//
 /*------------------------------------------------------------------*/
 /* Checks if the passed nick already exists on the server			*/
@@ -395,91 +471,94 @@ bool	Server::isClient(const std::string& name) const
 	return (_clientList.find(lcName) != _clientList.end());
 }
 
-//================ add Channels and Clients ================//
-
-void	Server::addChannel(Channel* channel)
+//<<<<<<<<<<<<<<<NICK>>>>>>>>>>>>//
+/*------------------------------------------------------------------*/
+/* Checks if the passed nick already exists on the server			*/
+/*	- case insensitive (Dan, dan)									*/
+/*	- if exists it adds an underscore and checks again				*/
+/*------------------------------------------------------------------*/
+void	Server::uniqueNick(std::string& nick)
 {
-	if (channel && !isChannel(channel->getName()))
-		_channelList[channel->getName()] = channel;
+	while (_clientList.find(toLower(nick)) != _clientList.end())
+		nick += "_";
 }
 
-void	Server::removeChannel(Channel* channel)
+/*--------------------------------------*/
+/* return a Client with <nick>			*/
+/*--------------------------------------*/
+Client*	Server::getClient(const std::string& nick)
 {
-	if (channel && isChannel(channel->getName()))
-	{
-		delete channel;
-		_channelList.erase(channel->getName());
-	}
-}
-
-Channel*	Server::getChannel(std::string name)
-{
-	auto it = _channelList.find(toLower(name));
-	if (it != _channelList.end())
+	auto it = _clientList.find(toLower(nick));
+	if (it != _clientList.end())
 		return (it->second);
 	return (nullptr);
 }
 
-std::unordered_map<std::string, Channel*> Server::getChannelUnoMap(void)
-{
-	return (_channelList);
-}
+//================ getters and setters ================//
 
-std::vector<std::string> Server::getChannelVector(void)
-{
-	std::vector<std::string> channelVec;
-	for (auto it = _channelList.begin(); it != _channelList.end(); it++)
-	{
-		channelVec.push_back(it->first);
-	}
-	return (channelVec);
-}
-
-// need to think more about how I want to run things for thins function
-void	Server::addClient(Client* client)
-{
-	if (client && !isClient(client->getNick()))
-	{
-		_clientList[client->getNick()] = client;
-	}
-}
-
-void	Server::removeClient(Client* client)
-{
-	if (client && isClient(client->getNick()))
-	{
-		// not implemented
-	}
-}
-
-Client*	Server::getClient(const std::string& nick)
-{
-	return (_clientList[nick]);
-}
-
+/*--------------------------------------*/
+/* return server name					*/
+/*--------------------------------------*/
 const std::string& Server::getName(void) const
 {
 	return (_name);
 }
 
 //<<<<<<<<<<<<<<<PASS>>>>>>>>>>>>//
+/*--------------------------------------*/
+/* return server password					*/
+/*--------------------------------------*/
 const std::string& Server::getPassword() const
 {
 	return (_password);
 }
 
+/*--------------------------------------*/
+/* set value for sever to exit			*/
+/*--------------------------------------*/
 void	Server::setShouldExit(void)
 {
 	shouldExit = 1;
 }
 
+/*--------------------------------------*/
+/* get value for sever to exit			*/
+/*--------------------------------------*/
 bool	Server::getShouldExit(void)
 {
 	return (shouldExit);
 }
 
-void	Server::uniqueNick(std::string& nick)
-{
-	while (_clientList.find(nick) != _clientList.end())
-		nick += "_";
-}
+// update pollfd() vector
+// 	add new client fds
+//		pushback new client fds
+//	remove disconnected client fds
+// 		erase client fd
+
+// Server loop logic
+// monitor socketfd and connected clients fd with poll()
+// 	if socket fd has .revents & POLLIN a new client wants to connect
+// 		accept() waiting clients
+//			check for password
+//			create client object
+//			set to nonblocking fctnl()
+//			add to pollfd (_sockets)
+//	if client fd has .revents & POLLIN
+// 		receive incoming messages recv()
+// 			more complex steps with accumulating partial reads into a buffer
+// 				read into client specific buffer
+//				each call to recv() appends to the buffer
+//				check if buffer contains one or more complete messages defined by \r\n
+// 					create substring up to end of message
+//					pass to parser
+//					remove from buffer / remining bytes in buffer kept for next time (like get_next_line)
+//			parse commands (strings)
+//				tokenise and store (container/array of strings)
+//			handle commands
+//				check permissions of client
+//				carry out commands
+// 				update server/client/channel state
+// 				send replies
+//	if client fd has .revents & (POLLHUB | POLLERR | POLLNVAL); means client called close() or exit, error occured on the socket(), invalid fd
+// 		clean up client object
+// 		remove from pollfd
