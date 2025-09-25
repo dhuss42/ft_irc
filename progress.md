@@ -7,10 +7,16 @@
 	- solution is to non-block authentication during newClient. The Client should be simply incldued in the list and the complete registration should only happen when all three commands are parsed and handled
 		- PASS, NICK, USER should send a return value that indicated wether the command sent during registration was successfull. if one of them fails the user has to be disconected
 		- send welcome message when connected
+	[] check how to handle disconnectClient from Server method
 [] could be that more bugs occur where names have not been changed to lowercase resulting in segfaults
 [] add @ for operator inside chat
 	- the clients who are not operator see the @ but since the broadcast message does not send to the original sender his nick is displayed without @ in his chat
 	- means that the operator needs a change in nick for that channel so it can be displayed in irssi
+	-> operators are stored in two containers 
+		-> channel users
+		-> channel operators
+		-> when doing something channel specific check operators containers
+		-> when doing something from outside check channel users
 [x] server is slow at times -> RESOLVED
 	- could be because of authentication loop
 [x] when two users in the same channel have the same nick they are treated as the same, one client receives two messages and the other does not receive any
@@ -19,6 +25,19 @@
 [] test userLimit on Server
 	[] think about implementing a cap for users to Join since the server is not allowed to shutdown
 [] check for leaks again
+	[] free all channels when server stops
+	[] also Make methods for cleaning up clients and closing sockets and callthem in destructor instead of doing it all in destructor
+[] register on intra
+[] test on Linux
+[] eval Point
+[] clean up
+	[] make some sort of order in files
+	[] look for functions that are not used
+	[] add 42 header everywhere
+	[] method descriptions
+	[] non-member methods like in utils.cpp look up ruling in 42
+	[] consier what to display during server run (not a lot since std::cout hinders performance)
+[] test strange printf input with nc -> segfaulted
 
 
 ## ====== Day 1 == 25.06 ======
