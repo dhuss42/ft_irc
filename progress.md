@@ -27,7 +27,7 @@
 [] check for leaks again
 	[] free all channels when server stops
 	[] also Make methods for cleaning up clients and closing sockets and callthem in destructor instead of doing it all in destructor
-[] register on intra
+[x] register on intra
 [] test on Linux
 [] eval Point
 [] clean up
