@@ -305,6 +305,8 @@ todo:
     -> as well in nick, but unly first time nick is called
 - trancendence: I sent message on slack, didnt find other people searching
 
+- finished mode but needs a lot of debugging
+
 ## ==== QUESTIONS ====
 - Parser job:
     - if command does not exist or not enough parameters -> is handled already by irssi
