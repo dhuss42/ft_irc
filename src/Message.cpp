@@ -66,3 +66,4 @@ void Message::splitMessage(std::string rawMessage)
 	}
 	this->command = *this->params.begin();
 }
+

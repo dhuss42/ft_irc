@@ -81,7 +81,7 @@ void MessageHandler::handleJoin(void)
 {
 	std::cout << "[DEBUG] JOIN: " << std::endl;
 
-	if (_message.params[1].empty())	//for capability negotiation phase
+	if (_message.params[1].empty())	//for capability negotiation phase	-> change maybe to if _message.params[1] == ""
 			return ;
 
 	// //leaving channels (problem: irssi still opens a chatwindow called #0)
@@ -235,6 +235,16 @@ void MessageHandler::handleMode()
 						channel->getName() + " You're not a channel operator");
 		return;
 	}
+
+	if (!validateModeParameters())
+		return;
+
+	processModes(channel);
+
+	std::string returnMsg = _modeRet1 + _modeRet2;
+	channel->broadcast(returnMsg, &_client);
+	std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
+	_client.sendMsg(prefix, returnMsg);
 }
 
 void MessageHandler::handleWhois()

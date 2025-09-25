@@ -29,9 +29,15 @@ class MessageHandler
 		Client& _client;
 		Message& _message;
 		Server& _server;
+
+		std::string _modeRet1;
+		std::string _modeRet2;
+
 	//using reference instead of pointer because I am sure they already exist
 	public:
-		MessageHandler(Client& client, Message& message, Server& server);
+
+	//Constructor
+	MessageHandler(Client& client, Message& message, Server& server);
 
 	void handleCap(void);
 	void handleJoin(void);
@@ -42,6 +48,13 @@ class MessageHandler
 	void handleWhois(void);
 	void handlePing(void);
 	void handlePrivmsg(void);
+
+	//MODE helpers
+	bool validateModeParameters(void);
+	bool processModes(Channel* channel);
+	bool processParameterModes(Channel* channel, char mode, bool setMode, const std::string& param, bool setModeHasChanged);	//change to void (?)
+	void processNonParameterModes(Channel* channel, char mode, bool setMode, bool setModeHasChanged);
 };
+
 
 #endif

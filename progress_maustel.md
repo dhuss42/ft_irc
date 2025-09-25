@@ -220,7 +220,7 @@ todo:
         - userlimit? - ERR_CHANNELISFULL
         - invite only channel? - ERR_INVITEONLYCHAN
     [not-working] /join 0 -> remove user from all channels -> irssi does not handle this, so dont we
-    [to-do] handle more than 1 channel and key -> seprataed by ','
+    [to-do] handle more than 1 channel and key -> seprataed by ',' -> first test with official server
     [x] send messages to channel
         [x] when entering
         [x] when leaving
@@ -296,7 +296,14 @@ todo:
     - modestring: everything after target
     - or just build string of params[2] until params[end]
 
+## ====== Day 13 == 25.09.2025 ======
+- new logic for mode
 
+---- call david -----
+- irc handles names case insensitive -> be aware if handled everywhere or segfault
+- authentification has to be modified: check in pass, user if error -> disconnect subito
+    -> as well in nick, but unly first time nick is called
+- trancendence: I sent message on slack, didnt find other people searching
 
 ## ==== QUESTIONS ====
 - Parser job:
@@ -352,11 +359,10 @@ todo:
     -> but irssi does not do so but opens a chatwindow called #0
     -> when does this happen? How can I avoid?
 
+- sendMsg and response/error should actually be server functions or call it receiveMsg
+    -> no its ok like that
 
 ----- questions for david ------
-- look for transcendence partner?
-- sendMsg and response/error should actually be server functions or call it receiveMsg
-
 
 ## General Info
 - rebase vs merge
