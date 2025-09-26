@@ -378,82 +378,130 @@ bool	Channel::isInvited(const Client* client) const
 
 //================ getters & setters ================//
 
+/*--------------------------------------*/
+/* returns Channel Name					*/
+/*--------------------------------------*/
 std::string	Channel::getName(void)
 {
 	return (_name);
 }
 
+/*--------------------------------------*/
+/* changes channel name to <name>		*/
+/*--------------------------------------*/
 void		Channel::setName(std::string name)
 {
 	_name = name;
 }
 
+/*--------------------------------------*/
+/* returns channel topic				*/
+/*--------------------------------------*/
 std::string Channel::getTopic(void)
 {
 	return (_topic);
 }
 
+/*--------------------------------------*/
+/* sets channel topic to <topic>		*/
+/*--------------------------------------*/
 void	Channel::setTopic(std::string topic)
 {
 	_topic = topic;
 }
 
+/*--------------------------------------*/
+/* returns channel password				*/
+/*--------------------------------------*/
 std::string Channel::getPassword(void)
 {
 	return (_password);
 }
 
+/*--------------------------------------*/
+/* sets channel password				*/
+/*--------------------------------------*/
 void	Channel::setPassword(std::string password)
 {
 		_password = password;
 }
 
+/*--------------------------------------*/
+/* returns channel user Limit			*/
+/*--------------------------------------*/
 std::size_t	Channel::getUserLimit(void)
 {
 	return (_userLimit);
 }
 
+/*--------------------------------------*/
+/* sets channel user Limit				*/
+/*--------------------------------------*/
 void	Channel::setUserLimit(std::size_t userLimit)
 {
 	_userLimit = userLimit;
 }
 
 // ======= set and get modes =======//
+/*--------------------------------------*/
+/* checks if Channel is invite only		*/
+/*--------------------------------------*/
 bool	Channel::getInvOnly(void)
 {
 	return (_invOnly);
 }
 
+/*----------------------------------------------*/
+/* checks if only Operator can change topic		*/
+/*----------------------------------------------*/
 bool	Channel::getTopicOp(void)
 {
 	return (_topicOp);
 }
 
+/*----------------------------------------------*/
+/* checks if Channel has password				*/
+/*----------------------------------------------*/
 bool	Channel::getPasswordToggle(void)
 {
 	return (_pswrdTgle);
 }
 
+/*----------------------------------------------*/
+/* checks if Channel has user Limit				*/
+/*----------------------------------------------*/
 bool	Channel::getUserLimitToggle(void)
 {
 	return (_usrLmtTgl);
 }
 
+/*----------------------------------------------*/
+/* sets Channel invite only flag				*/
+/*----------------------------------------------*/
 void	Channel::setInvOnly(bool value)
 {
 	_invOnly = value;
 }
 
+/*----------------------------------------------*/
+/* sets only Operator can change topic flag		*/
+/*----------------------------------------------*/
 void	Channel::setTopicOp(bool value)
 {
 	_topicOp = value;
 }
 
+/*----------------------------------------------*/
+/* sets Password active flag					*/
+/*----------------------------------------------*/
 void	Channel::setPasswordToggle(bool value)
 {
 	_pswrdTgle = value;
 }
 
+/*----------------------------------------------*/
+/* sets User Limit flag							*/
+/*----------------------------------------------*/
 void	Channel::setUserLimitToggle(bool value)
 {
 	_usrLmtTgl = value;

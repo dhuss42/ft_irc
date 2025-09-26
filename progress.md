@@ -36,7 +36,7 @@
 	[] make some sort of order in files
 	[] look for functions that are not used
 	[x] add 42 header everywhere
-	[] method descriptions
+	[x] method descriptions
 	[] non-member methods like in utils.cpp look up ruling in 42
 	[] consier what to display during server run (not a lot since std::cout hinders performance)
 	[] delete Architecture branch
@@ -45,7 +45,9 @@
 	- try to replicate segfault first
 [] check for signals
 [] default constructor
-
+[] what do we do when a Client connects and only sends part of the Authentication?
+	-> PASS but not NICK and USER
+	-> disconnect after timeout?
 
 ## ====== Day 1 == 25.06 ======
 - started reading subject (30min)
@@ -398,7 +400,7 @@ Casemapping
 ## ====== Day 21 == 22.09 ====== (6h)
 - worked on server speed
 
-## ====== Day 21 == 24.09 ====== (4h)
+## ====== Day 22 == 24.09 ====== (4h)
 [x] realised "laggy" speed comes from irssi not our server
 	- compare in eval to normal networks with irssi
 [x] testing multiple Client connections to the server
@@ -435,7 +437,7 @@ Casemapping
 	Segmentation fault: 11
 		-> maybe make a sendBuffer for every client
 
-## ====== Day 20 == 25.09 ====== (5h)
+## ====== Day 23 == 25.09 ====== (5h)
 [x] deleted ServerDavid.cpp & tmp.cpp
 [x] free all channels when server stops
 [x] also Make methods for cleaning up clients and closing sockets and callthem in destructor instead of doing it all in destructor
@@ -443,7 +445,7 @@ Casemapping
 [x] add 42 header everywhere
 
 [] clean up
-	[] make some sort of order in files
+	[x] make some sort of order in files
 		-> did in Server.cpp and Server.hpp
 		-> did in Client.cpp and Client.hpp
 		-> started in Channel.cpp and Channel.hpp
@@ -453,7 +455,7 @@ Casemapping
 		-> did in Client.cpp and Client.hpp
 		-> started in Channel.cpp and Channel.hpp
 	[x] add 42 header everywhere
-	[] method descriptions
+	[x] method descriptions
 		-> did in Server.cpp
 		-> did in Client.cpp
 		-> started in Channel.cpp and Channel.hpp
@@ -467,3 +469,6 @@ For leak check at School start Dockerfile in directory
 --> couldn't find any leaks
 --> invalid read for USER and PASS with invalid arguments but is related to them not being handeld yet
 
+## ====== Day 24 == 26.09 ====== ()
+- wrote getter for Channel Parameters
+- did further cleanup

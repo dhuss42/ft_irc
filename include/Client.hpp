@@ -45,7 +45,7 @@ class Client
 		bool	_nickSet = false;
 		bool	_usernameSet = false;
 
-		bool	_registrationFailed = false;
+		bool	_disconnect = false;
 
 		std::unordered_map<std::string, Channel*> _joinedChannels;
 
@@ -84,8 +84,8 @@ class Client
 	std::string getHostname();
 	std::string getRealname();
 
-	void	setRegisFailed(bool value);
-	bool	getRegisFailed(void);
+	void	setDisconnect(bool value);
+	bool	getDisconnect(void);
 
 	Server* getServer(void);
 

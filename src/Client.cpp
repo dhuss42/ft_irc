@@ -185,9 +185,9 @@ void	Client::setNick(const std::string& str)
 /*--------------------------------------*/
 /* set _regisFailed to value			*/
 /*--------------------------------------*/
-void	Client::setRegisFailed(bool value)
+void	Client::setDisconnect(bool value)
 {
-	_registrationFailed = value;
+	_disconnect = value;
 }
 
 /*--------------------------------------*/
@@ -225,9 +225,9 @@ std::string Client::getNick(void) const
 /*--------------------------------------*/
 /* returns _regisFailed					*/
 /*--------------------------------------*/
-bool	Client::getRegisFailed(void)
+bool	Client::getDisconnect(void)
 {
-	return (_registrationFailed);
+	return (_disconnect);
 }
 
 /*--------------------------------------*/
