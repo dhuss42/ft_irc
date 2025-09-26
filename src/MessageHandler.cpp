@@ -22,6 +22,18 @@ MessageHandler::MessageHandler(Client& client, Message& message, Server& server)
 {}
 
 /*
+/ Destructor
+*/
+MessageHandler::~MessageHandler()
+{
+	std::cout << "DESTRUCTOR MessageHandler called" << std::endl;
+	_modeRet1.clear();
+	_modeRet2.clear();
+	_message.command.clear();
+	_message.params.clear();
+}
+
+/*
 instead of _message.params[].empty() -> check for params size < x
 */
 
@@ -205,6 +217,10 @@ void MessageHandler::handleUser()
 void MessageHandler::handleMode()
 {
 	std::cout << "[DEBUG] MODE: " << std::endl;
+	if (!_message.params[2].empty())
+		std::cout << "[DEBUG] parameters: " << _message.params[2] << std::endl;
+	if (!_message.params[3].empty())
+		std::cout << "[DEBUG] parameters: " << _message.params[3] << std::endl;
 
 	if (_message.params.size() < 2)
 	{
@@ -224,7 +240,7 @@ void MessageHandler::handleMode()
 	{
 		std::string prefix = _client.getNick() + "!" + _client.getUsername()
 				+ "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
-		_client.sendResponse(prefix, IrcResponseCode::RPL_CHANNELMODEIS, "mode/" + channel->getName() + " [" + channel->getActiveChannelModes() + "]");
+		_client.sendResponse(prefix, IrcResponseCode::RPL_CHANNELMODEIS, "mode/" + channel->getName() + " [" + channel->getActiveChannelModes() + "]");	// add getAcitveChannelParamters
 		return ;
 	}
 	if (!channel->isOperator(&_client))
@@ -242,9 +258,13 @@ void MessageHandler::handleMode()
 	processModes(channel);
 
 	std::string returnMsg = _modeRet1 + _modeRet2;
-	channel->broadcast(returnMsg, &_client);
-	std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
-	_client.sendMsg(prefix, returnMsg);
+	if (!returnMsg.empty())
+	{
+		std::string broadcastMsg = "mode/" + channel->getName() + " [" + returnMsg + "] by " + _client.getNick();
+		channel->broadcast(broadcastMsg, &_client);
+		std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
+		_client.sendMsg(prefix, broadcastMsg);
+	}
 }
 
 void MessageHandler::handleWhois()

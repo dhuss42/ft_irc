@@ -307,6 +307,14 @@ todo:
 
 - finished mode but needs a lot of debugging
 
+## ====== Day 14 == 26.09.2025 ======
+- lots of debuggung
+- found iterating error
+- found out to not use in if concdition: Message.params[i].empty() but i < message.params.size()
+    because Message.params[i].empty() has undefined behaviour if it goes beyond borders
+
+- bug if /mode #channel channel -> Error message ok but channel will be closed
+
 ## ==== QUESTIONS ====
 - Parser job:
     - if command does not exist or not enough parameters -> is handled already by irssi

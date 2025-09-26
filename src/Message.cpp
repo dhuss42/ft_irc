@@ -16,7 +16,11 @@ Message::Message(): command(), params()
 {}
 
 Message::~Message()
-{}
+{
+	std::cout << "DESTRUCTOR Message called" << std::endl;
+	command.clear();
+	params.clear();
+}
 
 Message::Message(const Message &other)
 
