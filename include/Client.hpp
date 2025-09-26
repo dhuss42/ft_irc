@@ -50,6 +50,9 @@ class Client
 		std::unordered_map<std::string, Channel*> _joinedChannels;
 
 	public:
+		Client() = delete;
+		Client(const Client&) = delete;
+		Client& operator=(const Client&) = delete;
 		Client(int fd, Server* server);
 		~Client();
 

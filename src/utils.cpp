@@ -56,18 +56,3 @@ bool	verifyNickName(const std::string& name)
 	return (true);
 }
 
-//==================JOIN==================//
-
-bool	verifyChannelName(const std::string& name)
-{
-	if (name.empty() || name.size() >= 50)
-		return (false);
-	if (name[0] == '#' || name[0] == '&' || name[0] == '+' || name[0] == '!')
-	{
-		if (name.find(' ') != std::string::npos ||
-			name.find(',') != std::string::npos ||
-			name.find(7) != std::string::npos)
-			return (false);
-	}
-	return (true);
-}

@@ -39,7 +39,10 @@ class Channel
 		std::unordered_map <std::string, Client*> _operators;
 
 	public:
+		Channel() = delete;
 		Channel(std::string name);
+		Channel(const Channel&) = delete;
+    	Channel& operator=(const Channel&) = delete;
 		~Channel();
 
 		// ======= Adding and Removing Clients =======//

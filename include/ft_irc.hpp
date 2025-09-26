@@ -35,7 +35,6 @@
 #include <string>
 #include <cstring>
 #include <sstream>
-#include <ctime> // forgot to check if we can use time
 
 /*=================== Colours ==================*/
 
@@ -60,8 +59,7 @@
 #define BOLDWHITE   "\033[1m\033[37m"
 
 /*=================== utils ==================*/
-bool	verifyChannelName(const std::string& name);
 std::string	toLower(const std::string& str);
-
+bool	verifyNickName(const std::string& name);
 
 #endif

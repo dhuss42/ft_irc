@@ -12,7 +12,7 @@
 
 #include "Client.hpp"
 
-//================================> Orthodox Form <================================//
+//================================> Constructor and Destructor <================================//
 
 // it might make sense to pass pollfd, this would save me from having two unorderedmaps with clients
 // I could just have the clients nick and a pointer to the client
@@ -21,17 +21,9 @@
 /*----------------------*/
 /* Constructor			*/
 /*----------------------*/
-Client::Client(int fd, Server* server) : _nick("default"), _username("default"), _realname("default"), _hostname(server->getName()), _server(server), _socket(fd)
+Client::Client(int fd, Server* server) : _server(server), _socket(fd)
 {
 }
-
-/*----------------------*/
-/* Copy Constructor		*/
-/*----------------------*/
-
-/*----------------------*/
-/* Assignment Overload	*/
-/*----------------------*/
 
 /*----------------------*/
 /* Destructor			*/

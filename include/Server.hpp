@@ -53,10 +53,11 @@ class Server
 		static void	handleSignal(int sig);
 
 	public:
-		Server();
+		Server() = delete;
 		Server(std::string portNbr, std::string password);
+		Server(const Server&) = delete;
+    	Server& operator=(const Server&) = delete;
 		~Server();
-
 
 		void		serverLoop();
 		static void	setupSignalHandler();

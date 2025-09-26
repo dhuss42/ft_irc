@@ -22,6 +22,8 @@
 [x] when two users in the same channel have the same nick they are treated as the same, one client receives two messages and the other does not receive any
 	[x] currently server is not handling two cliebnts with same nick. Either not allow it or suffixs "_" to the nick
 [] test userlimit when set in channel
+	-> inside the irssi Client it looks like the User joined a channel
+	-> original irssi servers hinder from joining
 [] test userLimit on Server
 	[] think about implementing a cap for users to Join since the server is not allowed to shutdown
 [] How Many Channels can 1 user join?
@@ -33,8 +35,8 @@
 [] test on Linux
 [] eval Point
 [] clean up
-	[] make some sort of order in files
-	[] look for functions that are not used
+	[x] make some sort of order in files
+	[x] look for functions that are not used
 	[x] add 42 header everywhere
 	[x] method descriptions
 	[] non-member methods like in utils.cpp look up ruling in 42
@@ -44,10 +46,12 @@
 [] maybe implement clientSendBuffer because if segfault
 	- try to replicate segfault first
 [] check for signals
-[] default constructor
+[x] default constructor
 [] what do we do when a Client connects and only sends part of the Authentication?
 	-> PASS but not NICK and USER
 	-> disconnect after timeout?
+[] what happens when last Operator leaves channel but there are other clients still in the channel
+	-> make one an operator?
 
 ## ====== Day 1 == 25.06 ======
 - started reading subject (30min)
@@ -474,4 +478,5 @@ For leak check at School start Dockerfile in directory
 - did further cleanup
 - deleted Architecture branch
 - added Error responses for Channel::addUser()
-
+- clean up
+- handled constructors for Client/Server/Channel
