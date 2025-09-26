@@ -473,3 +473,5 @@ For leak check at School start Dockerfile in directory
 - wrote getter for Channel Parameters
 - did further cleanup
 - deleted Architecture branch
+- added Error responses for Channel::addUser()
+

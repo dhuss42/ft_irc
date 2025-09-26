@@ -89,12 +89,12 @@ std::string	Channel::getActiveChannelModes(void) const
 /*--------------------------------------------------*/
 std::string	Channel::getActiveChannelParameters(void) const
 {
-	std::string parameters = " ";
+	std::string parameters;
 
 	if (_pswrdTgle)
-		parameters += _password + " ";
+		parameters += " " + _password;
 	if (_usrLmtTgl)
-		parameters += std::to_string(_userLimit);
+		parameters += " " + std::to_string(_userLimit);
 	return (parameters);
 }
 
@@ -167,19 +167,20 @@ bool	Channel::addUser(Client* client, const std::string& password)
 {
 	if (client)
 	{
+		const std::string& serverName = client->getServer()->getName();
 		if (_usrLmtTgl && _users.size() >= _userLimit)
 		{
-			std::cout << "[DEBUG] user limit is set and userLimit " << _userLimit << " is reached!" << std::endl;
+			client->sendError(serverName, IrcErrorCode::ERR_CHANNELISFULL, "Channel is full");
 			return (false);
 		}
 		if (_invOnly && !isInvited(client))
 		{
-			std::cout << "[DEBUG] invite Only is set and user is not invited!" << std::endl;
+			client->sendError(serverName, IrcErrorCode::ERR_INVITEONLYCHAN, "Invite-only channel");
 			return (false);
 		}
 		if (_pswrdTgle && password != _password)
 		{
-			std::cout << "[DEBUG] password is set and wrong password!" << std::endl;
+			client->sendError(serverName, IrcErrorCode::ERR_BADCHANNELKEY, "Bad channel key");
 			return (false);
 		}
 		auto it = _users.find(client->getNick());
