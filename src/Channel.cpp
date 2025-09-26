@@ -12,7 +12,7 @@
 
 #include "Channel.hpp"
 
-//================================> Orthodox Form <================================//
+//================================> Constructor and Destructor <================================//
 
 /*----------------------*/
 /* Constructor			*/
@@ -20,14 +20,6 @@
 Channel::Channel(std::string name) : _name(name)
 {
 }
-
-/*----------------------*/
-/* Copy Constructor		*/
-/*----------------------*/
-
-/*----------------------*/
-/* Assignment Overload	*/
-/*----------------------*/
 
 /*----------------------*/
 /* Destructor			*/
@@ -53,8 +45,8 @@ void	Channel::broadcast(const std::string& msg, Client* sender)
 			if (it->second != sender)
 			{
 				std::string prefix;
-				if (isOperator(sender))
-					prefix = "@";
+				// if (isOperator(sender))
+				// 	prefix = "@";
 				prefix += sender->getNick() + "!" + sender->getUsername() + "@" + sender->getHostname() + " PRIVMSG " + getName() + " :";
 				it->second->sendMsg(prefix, msg);
 			}

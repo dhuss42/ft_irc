@@ -15,7 +15,7 @@
 static volatile sig_atomic_t shouldExit = 0;
 // maybe better with a bool inside class and a server pointer here
 
-//================================> Orthodox Form <================================//
+//================================> Constructor & Destructor <================================//
 
 /*----------------------*/
 /* Constructor			*/
@@ -29,15 +29,6 @@ Server::Server(std::string portNbr, std::string password)
 	// could set this directly in parsing if the portNbr is only needed there
 	initServer();
 }
-
-/*----------------------*/
-/* Copy Constructor		*/
-/*----------------------*/
-
-/*----------------------*/
-/* Assignment Overload	*/
-/*----------------------*/
-
 
 /*----------------------*/
 /* Destructor			*/
@@ -372,6 +363,22 @@ void	Server::setupSignalHandler()
 }
 
 //================ channel management ================//
+
+//==================JOIN==================//
+
+static bool	verifyChannelName(const std::string& name)
+{
+	if (name.empty() || name.size() >= 50)
+		return (false);
+	if (name[0] == '#' || name[0] == '&' || name[0] == '+' || name[0] == '!')
+	{
+		if (name.find(' ') != std::string::npos ||
+			name.find(',') != std::string::npos ||
+			name.find(7) != std::string::npos)
+			return (false);
+	}
+	return (true);
+}
 
 /*------------------------------------------------------------------*/
 /* Creates a new Channel											*/
