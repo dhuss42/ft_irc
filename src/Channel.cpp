@@ -66,11 +66,12 @@ void	Channel::broadcast(const std::string& msg, Client* sender)
 
 //<<<<<<<<<<<<<<<MODE>>>>>>>>>>>>//
 /*--------------------------------------------------*/
-/* returns "+" and ever identified for active mode	*/
+/* returns "+" and every identifier for active mode	*/
 /*--------------------------------------------------*/
 std::string	Channel::getActiveChannelModes(void) const
 {
 	std::string activeModes = "+";
+
 	if (_invOnly)
 		activeModes += "i";
 	if (_pswrdTgle)
@@ -80,6 +81,21 @@ std::string	Channel::getActiveChannelModes(void) const
 	if (_topicOp)
 		activeModes += "t";
 	return (activeModes);
+}
+
+//<<<<<<<<<<<<<<<MODE>>>>>>>>>>>>//
+/*--------------------------------------------------*/
+/* returns active parameters as string				*/
+/*--------------------------------------------------*/
+std::string	Channel::getActiveChannelParameters(void) const
+{
+	std::string parameters = " ";
+
+	if (_pswrdTgle)
+		parameters += _password + " ";
+	if (_usrLmtTgl)
+		parameters += std::to_string(_userLimit);
+	return (parameters);
 }
 
 //<<<<<<<<<<<<<<<TOPIC>>>>>>>>>>>>//

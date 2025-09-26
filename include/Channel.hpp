@@ -91,6 +91,7 @@ class Channel
 		void	setUserLimitToggle(bool value);
 
 		std::string	getActiveChannelModes(void) const;
+		std::string	getActiveChannelParameters(void) const;
 	};
 
 
