@@ -124,7 +124,7 @@ bool MessageHandler::processParameterModes(Channel* channel, char mode, bool set
 			{
 				if (!_server.isClient(_message.params[i]))
 				{
-					_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL, _message.params[i]);	//goes trotzdem avanti
+					_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHNICK, _message.params[i]);	//should go trotzdem avanti
 					return false;
 				}
 				if (setModeHasChanged)

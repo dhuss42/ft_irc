@@ -233,7 +233,8 @@ void MessageHandler::handleMode()
 	{
 		std::string prefix = _client.getNick() + "!" + _client.getUsername()
 				+ "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
-		_client.sendResponse(prefix, IrcResponseCode::RPL_CHANNELMODEIS, "mode/" + channel->getName() + " [" + channel->getActiveChannelModes() + "]");	// add getAcitveChannelParamters
+		_client.sendResponse(prefix, IrcResponseCode::RPL_CHANNELMODEIS, "mode/" + channel->getName()
+				+ " [" + channel->getActiveChannelModes() + channel->getActiveChannelParameters() + "]");
 		return ;
 	}
 	if (!channel->isOperator(&_client))
