@@ -23,7 +23,7 @@ class Message
 {
 	public:
 		std::string					command;
-		std::vector<std::string>	params;
+		std::vector<std::string>	params;	//should be private(?)
 
 		Message();
 		~Message();

@@ -27,7 +27,7 @@ class MessageHandler
 {
 	private:
 		Client& _client;
-		Message& _message;
+		Message &_message;
 		Server& _server;
 
 		std::string _modeRet1;
@@ -37,7 +37,9 @@ class MessageHandler
 	public:
 
 	//Constructor
-	MessageHandler(Client& client, Message& message, Server& server);
+	MessageHandler(Client& client, Message &message, Server& server);
+	//Destructor
+	~MessageHandler();
 
 	void handleCap(void);
 	void handleJoin(void);
@@ -52,7 +54,7 @@ class MessageHandler
 	//MODE helpers
 	bool validateModeParameters(void);
 	bool processModes(Channel* channel);
-	bool processParameterModes(Channel* channel, char mode, bool setMode, const std::string& param, bool setModeHasChanged);	//change to void (?)
+	bool processParameterModes(Channel* channel, char mode, bool setMode, size_t i, bool setModeHasChanged);	//change to void (?)
 	void processNonParameterModes(Channel* channel, char mode, bool setMode, bool setModeHasChanged);
 };
 
