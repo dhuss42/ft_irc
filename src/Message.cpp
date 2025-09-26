@@ -16,7 +16,10 @@ Message::Message(): command(), params()
 {}
 
 Message::~Message()
-{}
+{
+	command.clear();
+	params.clear();
+}
 
 Message::Message(const Message &other)
 

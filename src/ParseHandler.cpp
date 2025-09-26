@@ -45,6 +45,6 @@ void parseHandler(std::string rawMessage, Client &client, Server &server)
 
 	else
 		std::cout << RED << "We dont handle this command: " << message.command << "!" << RESET << std::endl;
-		// throw (Errors(ErrorCode::E_PSSWRD));
 		//send this message to client
+
 }

@@ -22,6 +22,15 @@ MessageHandler::MessageHandler(Client& client, Message& message, Server& server)
 {}
 
 /*
+/ Destructor
+*/
+MessageHandler::~MessageHandler()
+{
+	_modeRet1.clear();
+	_modeRet2.clear();
+}
+
+/*
 instead of _message.params[].empty() -> check for params size < x
 */
 
@@ -81,7 +90,7 @@ void MessageHandler::handleJoin(void)
 {
 	std::cout << "[DEBUG] JOIN: " << std::endl;
 
-	if (_message.params[1].empty())	//for capability negotiation phase	-> change maybe to if _message.params[1] == ""
+	if (_message.params.size() < 2)	//for capability negotiation phase	-> change maybe to if _message.params[1] == ""
 			return ;
 
 	// //leaving channels (problem: irssi still opens a chatwindow called #0)
@@ -224,7 +233,8 @@ void MessageHandler::handleMode()
 	{
 		std::string prefix = _client.getNick() + "!" + _client.getUsername()
 				+ "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
-		_client.sendResponse(prefix, IrcResponseCode::RPL_CHANNELMODEIS, "mode/" + channel->getName() + " [" + channel->getActiveChannelModes() + "]");
+		_client.sendResponse(prefix, IrcResponseCode::RPL_CHANNELMODEIS, "mode/" + channel->getName()
+				+ " [" + channel->getActiveChannelModes() + channel->getActiveChannelParameters() + "]");
 		return ;
 	}
 	if (!channel->isOperator(&_client))
@@ -242,9 +252,13 @@ void MessageHandler::handleMode()
 	processModes(channel);
 
 	std::string returnMsg = _modeRet1 + _modeRet2;
-	channel->broadcast(returnMsg, &_client);
-	std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
-	_client.sendMsg(prefix, returnMsg);
+	if (!returnMsg.empty())
+	{
+		std::string broadcastMsg = "mode/" + channel->getName() + " [" + returnMsg + "] by " + _client.getNick();
+		channel->broadcast(broadcastMsg, &_client);
+		std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
+		_client.sendMsg(prefix, broadcastMsg);
+	}
 }
 
 void MessageHandler::handleWhois()
