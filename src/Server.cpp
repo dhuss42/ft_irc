@@ -213,7 +213,7 @@ void	Server::handlePollRevents()
 				if (_clientfd[it->fd]->receiveMsg() != -1)
 				{
 					_clientfd[it->fd]->sendMsg(_name, "[Server] Message received"); // needs to be updated
-					if (_clientfd[it->fd]->getRegisFailed())
+					if (_clientfd[it->fd]->getDisconnect())
 						disconnectClient(it);
 					else
 						++it;
