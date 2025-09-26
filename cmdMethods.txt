@@ -6,13 +6,14 @@ NICK
 		void	Server::uniqueNick(std::string& nick)
 	check the string for legal chars
 		bool	verifyNickName(const std::string& name) -> utils.cpp
+	set user to disconnect when Nick fails during authentication
+		void	Client::setDisconnect(bool value)
 
 PASS
 	get Password Server
 		const std::string& Server::getPassword() const
-	close connection
-		void	Server::closedConnection(std::vector<pollfd>::iterator &it)
-	For closing connection to work properly the authentication logic has to be changed
+	set Disconnect bool 
+		void	Client::setDisconnect(bool value)
 
 JOIN
 	get Password Channel
@@ -33,6 +34,7 @@ PART
 KICK
 	kick user from Channel and check if kicker has priviledges to do so
 		void	Channel::kickUser(Client* kicker, std::string kicked)
+	could be that here and in QUIT it may also make sense to set the disconnect bool and then disconnect the user not sure
 
 INVITE
 	invite user to Channel and check if inviter has priviledges to do so
