@@ -4,12 +4,12 @@ set -euo pipefail
 HOST="127.0.0.1"
 PORT="6667"
 PASS="123"
-COUNT=10
+COUNT=50
 BASE_NICK="testnick"
 BASE_CHANNEL="#test"
 KEEP_OPEN=60             # how long each client stays connected
 MSG_INTERVAL=5           # seconds between PRIVMSG
-MODE="partial"            # normal | halfopen | longnick | joinflood | privspam | invalid
+MODE="normal"            # normal | halfopen | longnick | joinflood | privspam | invalid
 
 send_slowly() {
     local cmd="$1"
