@@ -313,7 +313,7 @@ todo:
 - found out to not use in if concdition: Message.params[i].empty() but i < message.params.size()
     because Message.params[i].empty() has undefined behaviour if it goes beyond borders
 
-- bug if /mode #channel channel -> Error message ok, but channel will be closed
+- bug if /mode #channel +o channel -> Error message ok, but channel will be closed
 
 ## ==== QUESTIONS ====
 - Parser job:

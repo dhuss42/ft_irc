@@ -53,9 +53,16 @@ class MessageHandler
 
 	//MODE helpers
 	bool validateModeParameters(void);
-	bool processModes(Channel* channel);
-	bool processParameterModes(Channel* channel, char mode, bool setMode, size_t i, bool setModeHasChanged);	//change to void (?)
-	void processNonParameterModes(Channel* channel, char mode, bool setMode, bool setModeHasChanged);
+	void processModes(Channel* channel);
+	bool processInvMode(Channel* channel, bool setMode, bool setModeHasChanged);
+	bool processTopicOpMode(Channel* channel, bool setMode, bool setModeHasChanged);
+	bool processPasswordMode(Channel* channel, size_t i, bool setMode, bool setModeHasChanged);
+	bool processUserLimitMode(Channel* channel, size_t i, bool setMode, bool setModeHasChanged);
+	bool processOperatorMode(Channel* channel, size_t i, bool setMode, bool setModeHasChanged);
+	void processChannelModes(Channel* channel, char mode, bool setMode, size_t i, bool setModeHasChanged);
+
+	// void processParameterModes(Channel* channel, char mode, bool setMode, size_t i, bool setModeHasChanged);	//change to void (?)
+	// void processNonParameterModes(Channel* channel, char mode, bool setMode, bool setModeHasChanged);
 };
 
 
