@@ -313,7 +313,18 @@ todo:
 - found out to not use in if concdition: Message.params[i].empty() but i < message.params.size()
     because Message.params[i].empty() has undefined behaviour if it goes beyond borders
 
-- bug if /mode #channel +o channel -> Error message ok, but channel will be closed
+[???] bug if /mode #channel +o channel -> Error message ok, but channel will be closed
+
+- todo:
+    - rename HandlerHelpers -> ModeHelperFcts
+        - or add ModeHelpers and copy from HandlerHelpers so I can use HandlerHelpers for other functions
+    - Mode main function more clean
+    - mode functions with commands
+    - moder tests with error messages from david
+    - join main function more clean and with more than one command
+    - join functions with commands
+    - rename ParseHandler -> Parser
+
 
 ## ==== QUESTIONS ====
 - Parser job:
