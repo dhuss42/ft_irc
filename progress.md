@@ -39,7 +39,7 @@
 	[x] method descriptions
 	[] non-member methods like in utils.cpp look up ruling in 42
 	[] consier what to display during server run (not a lot since std::cout hinders performance)
-	[] delete Architecture branch
+	[x] delete Architecture branch
 [] test strange printf input with nc -> segfaulted
 [] maybe implement clientSendBuffer because if segfault
 	- try to replicate segfault first
@@ -472,3 +472,4 @@ For leak check at School start Dockerfile in directory
 ## ====== Day 24 == 26.09 ====== ()
 - wrote getter for Channel Parameters
 - did further cleanup
+- deleted Architecture branch
