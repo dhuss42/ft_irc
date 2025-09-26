@@ -26,11 +26,8 @@ MessageHandler::MessageHandler(Client& client, Message& message, Server& server)
 */
 MessageHandler::~MessageHandler()
 {
-	std::cout << "DESTRUCTOR MessageHandler called" << std::endl;
 	_modeRet1.clear();
 	_modeRet2.clear();
-	_message.command.clear();
-	_message.params.clear();
 }
 
 /*
@@ -93,7 +90,7 @@ void MessageHandler::handleJoin(void)
 {
 	std::cout << "[DEBUG] JOIN: " << std::endl;
 
-	if (_message.params[1].empty())	//for capability negotiation phase	-> change maybe to if _message.params[1] == ""
+	if (_message.params.size() < 2)	//for capability negotiation phase	-> change maybe to if _message.params[1] == ""
 			return ;
 
 	// //leaving channels (problem: irssi still opens a chatwindow called #0)
@@ -217,10 +214,6 @@ void MessageHandler::handleUser()
 void MessageHandler::handleMode()
 {
 	std::cout << "[DEBUG] MODE: " << std::endl;
-	if (!_message.params[2].empty())
-		std::cout << "[DEBUG] parameters: " << _message.params[2] << std::endl;
-	if (!_message.params[3].empty())
-		std::cout << "[DEBUG] parameters: " << _message.params[3] << std::endl;
 
 	if (_message.params.size() < 2)
 	{
