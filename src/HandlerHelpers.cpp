@@ -92,7 +92,7 @@ bool MessageHandler::processUserLimitMode(Channel* channel, size_t i, bool setMo
 	{
 		size_t pos;
 		int limit = std::stoi(_message.params[i], &pos);
-		if (pos != _message.params[i].length())
+		if (pos != _message.params[i].length() || limit <= 0)
 			return false;
 		if (setModeHasChanged)
 			this->_modeRet1 += "+";
@@ -123,7 +123,9 @@ bool MessageHandler::processOperatorMode(Channel* channel, size_t i, bool setMod
 	{
 		if (!_server.isClient(_message.params[i]))
 		{
-			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHNICK, _message.params[i]);	//should go trotzdem avanti
+			//problem if _message.params[i] == this channel -> irssi window closes
+			// solution is adding emptyspace for now
+			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHNICK, " " + _message.params[i]);	//should go trotzdem avanti
 			return false;
 		}
 		if (setModeHasChanged)

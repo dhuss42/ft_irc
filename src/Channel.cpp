@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
+/*   By: maustel <maustel@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/19 14:00:35 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/25 17:07:02 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/27 11:23:00 by maustel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,17 +170,17 @@ bool	Channel::addUser(Client* client, const std::string& password)
 		const std::string& serverName = client->getServer()->getName();
 		if (_usrLmtTgl && _users.size() >= _userLimit)
 		{
-			client->sendError(serverName, IrcErrorCode::ERR_CHANNELISFULL, "Channel is full");
+			client->sendError(serverName, IrcErrorCode::ERR_CHANNELISFULL, this->getName());
 			return (false);
 		}
 		if (_invOnly && !isInvited(client))
 		{
-			client->sendError(serverName, IrcErrorCode::ERR_INVITEONLYCHAN, "Invite-only channel");
+			client->sendError(serverName, IrcErrorCode::ERR_INVITEONLYCHAN, this->getName());
 			return (false);
 		}
 		if (_pswrdTgle && password != _password)
 		{
-			client->sendError(serverName, IrcErrorCode::ERR_BADCHANNELKEY, "Bad channel key");
+			client->sendError(serverName, IrcErrorCode::ERR_BADCHANNELKEY, this->getName());
 			return (false);
 		}
 		auto it = _users.find(client->getNick());

@@ -108,28 +108,28 @@ void MessageHandler::handleJoin(void)
 	// 	return;
 	// }
 
+	Channel* channel;
+
 	if (_message.params.size() < 2)
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
 						"Not enough parameters");
 		return;
 	}
-
-	Channel* channel = _server.createChannel(_message.params[1], &_client);
-	if (!channel)
+	if (_server.isChannel(_message.params[1]))
+		channel = _server.getChannel(_message.params[1]);
+	else
 	{
-		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL,
-						_message.params[1]);
-		return;
+		channel = _server.createChannel(_message.params[1], &_client);
+		if (!channel)
+		{
+			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL,
+							_message.params[1]);
+			return;
+		}
 	}
-
 	if (!channel->addUser(&_client, _message.params[2]))
 		return ;
-	// all checks if client may join (password, userlimit, inviteOnly) is done in addUSer
-	// but need to add:
-		// _client.sendError(_server.getName(), IrcErrorCode::ERR_BADCHANNELKEY, "Bad channel key");
-		// _client.sendError(_server.getName(), IrcErrorCode::ERR_CHANNELISFULL, "Channel is full");
-		// _client.sendError(_server.getName(), IrcErrorCode::ERR_INVITEONLYCHAN, "Invite-only channel");
 
 	// Send message to channel that <nick> has joined
 	std::string joinMsg = _client.getNick() + " [~" +
