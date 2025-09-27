@@ -317,14 +317,14 @@ todo:
     -> added a " " for now
 
 - todo:
-    - rename HandlerHelpers -> ModeHelperFcts
+    [x] rename HandlerHelpers -> ModeHelperFcts
         - or add ModeHelpers and copy from HandlerHelpers so I can use HandlerHelpers for other functions
     - Mode main function more clean
     - mode functions with commands
-    - mode tests with error messages from david
+    [x] mode tests with error messages from david
     - join main function more clean and with more than one command
     - join functions with commands
-    - rename ParseHandler -> Parser
+    [x] rename ParseHandler -> Parser
 
     [x] /join inv only channel -> after error message trotzdem irssi window
         -> must be client->sendError(serverName, IrcErrorCode::ERR_INVITEONLYCHAN, this->name);

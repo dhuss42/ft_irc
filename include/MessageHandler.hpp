@@ -52,6 +52,7 @@ class MessageHandler
 	void handlePrivmsg(void);
 
 	//MODE helpers
+	
 	bool validateModeParameters(void);
 	void processModes(Channel* channel);
 	bool processInvMode(Channel* channel, bool setMode, bool setModeHasChanged);
@@ -60,6 +61,9 @@ class MessageHandler
 	bool processUserLimitMode(Channel* channel, size_t i, bool setMode, bool setModeHasChanged);
 	bool processOperatorMode(Channel* channel, size_t i, bool setMode, bool setModeHasChanged);
 	void processChannelModes(Channel* channel, char mode, bool setMode, size_t i, bool setModeHasChanged);
+	void sendActiveChannelModes(Channel* channel);
+	void sendNotChannelOpErrorMessage(Channel* channel);
+	void sendChangedModes(std::string returnMsg, Channel* channel);
 
 	// void processParameterModes(Channel* channel, char mode, bool setMode, size_t i, bool setModeHasChanged);	//change to void (?)
 	// void processNonParameterModes(Channel* channel, char mode, bool setMode, bool setModeHasChanged);

@@ -10,12 +10,12 @@ CPPFILES = \
 	Channel.cpp \
 	Errors.cpp \
 	Message.cpp \
-	ParseHandler.cpp \
+	Parser.cpp \
 	utils.cpp \
 	ClientMilena.cpp \
 	IrcCodeGetters.cpp \
 	MessageHandler.cpp \
-	HandlerHelpers.cpp
+	ModeHelpers.cpp
 
 SRCS = $(addprefix $(SRC_DIR)/, $(CPPFILES))
 OBJS = $(addprefix $(OBJ_DIR)/, $(CPPFILES:.cpp=.o))

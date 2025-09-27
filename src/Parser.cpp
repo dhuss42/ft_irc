@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ParseHandler.cpp                                   :+:      :+:    :+:   */
+/*   Parser.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maustel <maustel@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -14,6 +14,9 @@
 
 
 //client pointer wird mitgeschickt, damit ich auf client und server methods zugreifen kann
+/*------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------*/
 void parseHandler(std::string rawMessage, Client &client, Server &server)
 {
 	Message message;

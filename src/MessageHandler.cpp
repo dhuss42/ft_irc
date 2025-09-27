@@ -86,6 +86,9 @@ void MessageHandler::handleCap(void)
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_INVALIDCAPCMD, _message.params[1] + ":Invalid or missing CAP subcommand" );
 }
 
+/*------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------*/
 void MessageHandler::handleJoin(void)
 {
 	std::cout << "[DEBUG] JOIN: " << std::endl;
@@ -163,6 +166,9 @@ void MessageHandler::handleJoin(void)
 	//maybe send also creation time
 }
 
+/*------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------*/
 void MessageHandler::handlePass(void)
 {
 	std::cout << "[DEBUG] PASS: " << std::endl;
@@ -174,6 +180,9 @@ void MessageHandler::handlePass(void)
 	_client.setRegistered(true);
 }
 
+/*------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------*/
 void MessageHandler::handleNick(void)
 {
 	std::cout << "[DEBUG] NICK: " << std::endl;
@@ -191,6 +200,9 @@ void MessageHandler::handleNick(void)
 	ERR_ALREADYREGISTRED: If the client tries to send another USER message after registration
 		-> "You may not reregister"
 */
+/*------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------*/
 void MessageHandler::handleUser()
 {
 	std::cout << "[DEBUG] USER: " << std::endl;
@@ -211,10 +223,11 @@ void MessageHandler::handleUser()
 	}
 }
 
+/*------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------*/
 void MessageHandler::handleMode()
 {
-	std::cout << "[DEBUG] MODE: " << std::endl;
-
 	if (_message.params.size() < 2)
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
@@ -231,42 +244,34 @@ void MessageHandler::handleMode()
 	Channel* channel = _server.getChannel(target);
 	if (_message.params.size() == 2)
 	{
-		std::string prefix = _client.getNick() + "!" + _client.getUsername()
-				+ "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
-		_client.sendResponse(prefix, IrcResponseCode::RPL_CHANNELMODEIS, "mode/" + channel->getName()
-				+ " [" + channel->getActiveChannelModes() + channel->getActiveChannelParameters() + "]");
+		sendActiveChannelModes(channel);
 		return ;
 	}
 	if (!channel->isOperator(&_client))
 	{
-		std::string prefix = _client.getNick() + "!" + _client.getUsername()
-				+ "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
-		_client.sendError(prefix, IrcErrorCode::ERR_CHANOPRIVSNEEDED,
-						channel->getName() + " You're not a channel operator");
+		sendNotChannelOpErrorMessage(channel);
 		return;
 	}
-
 	if (!validateModeParameters())
 		return;
-
 	processModes(channel);
-
 	std::string returnMsg = _modeRet1 + _modeRet2;
-	if (!returnMsg.empty())
-	{
-		std::string broadcastMsg = "mode/" + channel->getName() + " [" + returnMsg + "] by " + _client.getNick();
-		channel->broadcast(broadcastMsg, &_client);
-		std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
-		_client.sendMsg(prefix, broadcastMsg);
-	}
+	if (returnMsg.size() > 0)
+		sendChangedModes(returnMsg, channel);
 }
 
+/*------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------*/
 void MessageHandler::handleWhois()
 {
 	std::cout << "[DEBUG] WHOIS: " << std::endl;
 	//todo
 }
 
+/*------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------*/
 void MessageHandler::handlePing()
 {
 	std::cout << "[DEBUG] PING: " << std::endl;
@@ -275,6 +280,9 @@ void MessageHandler::handlePing()
 	_client.sendMsg("irc_custom", "PONG " + _message.params[1]);
 }
 
+/*------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------*/
 void MessageHandler::handlePrivmsg()
 {
 	std::cout << "[DEBUG] PRIVMSG: " << std::endl;
@@ -285,7 +293,6 @@ void MessageHandler::handlePrivmsg()
 						"Not enough parameters");
 		return;
 	}
-
 	const std::string& target = _message.params[1];
 	const std::string& message = _message.params[2];
 	if (_server.isClient(target))
