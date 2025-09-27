@@ -319,8 +319,8 @@ todo:
 - todo:
     [x] rename HandlerHelpers -> ModeHelperFcts
         - or add ModeHelpers and copy from HandlerHelpers so I can use HandlerHelpers for other functions
-    - Mode main function more clean
-    - mode functions with commands
+    [x] Mode main function more clean
+    [x] mode functions with commands
     [x] mode tests with error messages from david
     - join main function more clean and with more than one command
     - join functions with commands
@@ -331,7 +331,15 @@ todo:
     [x] negative user still possible
 
 ## ====== Day 15 == 27.09.2025 ======
+- did todos from yesterday
 
+- PASS:
+    - It is possible to send multiple PASS commands before registering but only the last one sent is used for
+        verification and it may not be changed once the client has been registered. -> how would that work in irssi??
+    - we maybe need a flag like isAuthenticated() ?
+    - try connect with wrong password and try again with right password
+        -> does not work. Nothing arrives at server
+    
 
 ## ==== QUESTIONS ====
 - Parser job:

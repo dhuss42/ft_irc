@@ -167,17 +167,43 @@ void MessageHandler::handleJoin(void)
 }
 
 /*------------------------------------------------------------------------------
-
+Check if
+	- right amount of parameters
+	- client is already registered
+	- right password
+otherwise disconnect
 ------------------------------------------------------------------------------*/
 void MessageHandler::handlePass(void)
 {
 	std::cout << "[DEBUG] PASS: " << std::endl;
-	if (_message.params[1].empty() || _message.params[1] != _server.getPassword())
+	if (_message.params.size() < 2)
 	{
-		_client.sendError("irc_custom", IrcErrorCode::ERR_PASSWDMISMATCH, "wrong password! Refused!");
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
+						"Not enough parameters");
+		_client.setDisconnect(true);
+		return;
+	}
+	if (_message.params.size() > 2)
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_PASSWDMISMATCH,
+						"Too many parameters");
+		_client.setDisconnect(true);
+		return;
+	}
+	if (_client.getRegistered())	//create flag if client is already registered
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_ALREADYREGISTRED,
+						"Already registered");
+		_client.setDisconnect(true);
 		return ;
 	}
-	_client.setRegistered(true);
+	if (_message.params[1].empty() || _message.params[1] != _server.getPassword())
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_PASSWDMISMATCH,
+			"Wrong password! Refused!");
+		_client.setDisconnect(true);
+		return ;
+	}
 }
 
 /*------------------------------------------------------------------------------

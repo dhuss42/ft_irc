@@ -41,18 +41,20 @@ class MessageHandler
 	//Destructor
 	~MessageHandler();
 
-	void handleCap(void);
-	void handleJoin(void);
+	void handleCap(void);	//done
+	void handleJoin(void);	//not yet ready
 	void handlePass(void);
 	void handleNick(void);
 	void handleUser(void);
-	void handleMode(void);
+	void handleMode(void);	//done
 	void handleWhois(void);
 	void handlePing(void);
-	void handlePrivmsg(void);
+	void handlePrivmsg(void);	//done
+	void handlePart(void);	//will do david
+	void handleQuit(void);	//will do david
 
 	//MODE helpers
-	
+
 	bool validateModeParameters(void);
 	void processModes(Channel* channel);
 	bool processInvMode(Channel* channel, bool setMode, bool setModeHasChanged);
