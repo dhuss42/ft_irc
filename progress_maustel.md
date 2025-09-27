@@ -325,6 +325,10 @@ todo:
     - join functions with commands
     - rename ParseHandler -> Parser
 
+    - /join inv only channel -> after error message trotzdem irssi window
+
+## ====== Day 15 == 27.09.2025 ======
+
 
 ## ==== QUESTIONS ====
 - Parser job:
