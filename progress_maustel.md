@@ -337,9 +337,17 @@ todo:
     - It is possible to send multiple PASS commands before registering but only the last one sent is used for
         verification and it may not be changed once the client has been registered. -> how would that work in irssi??
     - we maybe need a flag like isAuthenticated() ?
+    - we also need a flag if pass got called -> if /connect localhost 6667 <no-pass> : pass does not get called, should disconnect
     - try connect with wrong password and try again with right password
         -> does not work. Nothing arrives at server
-    
+
+- NICK
+    - give the client a nickname or change the previous one.
+        -> check if client already has a nickname
+    - if in use: ERR_NICKNAMEINUSE
+    - if verify nickname fails -> ERR_ERRONEUSNICKNAME
+    [?] if no nickname parameter is given : in docu it should send error but irssi liberachat tells you your nickname
+    - I need here flag _client.getNickset() to check if i have to disconnect
 
 ## ==== QUESTIONS ====
 - Parser job:

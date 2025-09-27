@@ -93,9 +93,6 @@ void MessageHandler::handleJoin(void)
 {
 	std::cout << "[DEBUG] JOIN: " << std::endl;
 
-	if (_message.params.size() < 2)	//for capability negotiation phase	-> change maybe to if _message.params[1] == ""
-			return ;
-
 	// //leaving channels (problem: irssi still opens a chatwindow called #0)
 	// if (_message.params[1][1] == '0')	//irssi does not handle this
 	// {
@@ -111,14 +108,15 @@ void MessageHandler::handleJoin(void)
 	// 	return;
 	// }
 
-	Channel* channel;
-
 	if (_message.params.size() < 2)
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
 						"Not enough parameters");
 		return;
 	}
+	if (_message.params[1] == "")	//for capability negotiation phase
+		return ;
+	Channel* channel;
 	if (_server.isChannel(_message.params[1]))
 		channel = _server.getChannel(_message.params[1]);
 	else
@@ -167,7 +165,8 @@ void MessageHandler::handleJoin(void)
 }
 
 /*------------------------------------------------------------------------------
-Check if
+PASS command
+Checks if
 	- right amount of parameters
 	- client is already registered
 	- right password
@@ -176,27 +175,27 @@ otherwise disconnect
 void MessageHandler::handlePass(void)
 {
 	std::cout << "[DEBUG] PASS: " << std::endl;
-	if (_message.params.size() < 2)
-	{
-		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
-						"Not enough parameters");
-		_client.setDisconnect(true);
-		return;
-	}
-	if (_message.params.size() > 2)
-	{
-		_client.sendError(_server.getName(), IrcErrorCode::ERR_PASSWDMISMATCH,
-						"Too many parameters");
-		_client.setDisconnect(true);
-		return;
-	}
-	if (_client.getRegistered())	//create flag if client is already registered
-	{
-		_client.sendError(_server.getName(), IrcErrorCode::ERR_ALREADYREGISTRED,
-						"Already registered");
-		_client.setDisconnect(true);
-		return ;
-	}
+	// if (_message.params.size() < 2)
+	// {
+	// 	_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
+	// 					"Not enough parameters");
+	// 	_client.setDisconnect(true);
+	// 	return;
+	// }
+	// if (_message.params.size() > 2)
+	// {
+	// 	_client.sendError(_server.getName(), IrcErrorCode::ERR_PASSWDMISMATCH,
+	// 					"Too many parameters");
+	// 	_client.setDisconnect(true);
+	// 	return;
+	// }
+	// if (_client.getRegistered())	//create flag if client is already registered
+	// {
+	// 	_client.sendError(_server.getName(), IrcErrorCode::ERR_ALREADYREGISTRED,
+	// 					"Already registered");
+	// 	_client.setDisconnect(true);
+	// 	return ;
+	// }
 	if (_message.params[1].empty() || _message.params[1] != _server.getPassword())
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_PASSWDMISMATCH,
@@ -207,14 +206,42 @@ void MessageHandler::handlePass(void)
 }
 
 /*------------------------------------------------------------------------------
-
+NICK command
+Used to give the client a nickname or change the previous one.
+Sends error when
+	- nickname in use
+	- verify nickname fails
+	- no nickname parameter given
 ------------------------------------------------------------------------------*/
 void MessageHandler::handleNick(void)
 {
 	std::cout << "[DEBUG] NICK: " << std::endl;
+	std::cout << "[DEBUG] nickname: " << _message.params[1] << std::endl;
 	//error if nickname in use, otherwise accept
-	if (_message.params[1].empty())
-		return ;	//send error message
+	// if (_message.params.size() < 2 || _message.params[1].empty())
+	// {
+	// 	_client.sendError(_server.getName(), IrcErrorCode::ERR_ERRONEUSNICKNAME,
+	// 					"No nickname provided");
+	// 	if (!_client.getNickSet())
+	// 		_client.setDisconnect(true); //only at first call
+	// 	return;
+	// }
+	// if (!verifyNickName(_message.params[1]))
+	// {
+	// 	_client.sendError(_server.getName(), IrcErrorCode::ERR_ERRONEUSNICKNAME,
+	// 					_message.params[1]);
+	// 	if (!_client.getNickSet())
+	// 		_client.setDisconnect(true); //only at first call
+	// 	return;
+	// }
+	// if (_server.isClient(_message.params[1]))
+	// {
+	// 	_client.sendError(_server.getName(), IrcErrorCode::ERR_NICKNAMEINUSE,
+	// 					"Nickname is already in use, choose another one");
+	// 	if (!_client.getNickSet())
+	// 		_client.setDisconnect(true); //only at first call
+	// 	return;
+	// }
 	_client.setNick(_message.params[1]);
 	_client.setNickSet(true);
 }
@@ -254,12 +281,15 @@ void MessageHandler::handleUser()
 ------------------------------------------------------------------------------*/
 void MessageHandler::handleMode()
 {
+	std::cout << "[DEBUG] MODE: " << std::endl;
 	if (_message.params.size() < 2)
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
 						"Not enough parameters");
 		return;
 	}
+	if (_message.params.size() == 3 && _message.params[1] == _client.getNick() && _message.params[2] == "+i")
+		return ; // registration phase
 	std::string target = _message.params[1];
 	if (!_server.isChannel(target))
 	{
