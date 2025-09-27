@@ -178,27 +178,27 @@ otherwise disconnect
 void MessageHandler::handlePass(void)
 {
 	std::cout << "[DEBUG] PASS: " << std::endl;
-	// if (_message.params.size() < 2)
-	// {
-	// 	_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
-	// 					"Not enough parameters");
-	// 	_client.setDisconnect(true);
-	// 	return;
-	// }
-	// if (_message.params.size() > 2)
-	// {
-	// 	_client.sendError(_server.getName(), IrcErrorCode::ERR_PASSWDMISMATCH,
-	// 					"Too many parameters");
-	// 	_client.setDisconnect(true);
-	// 	return;
-	// }
-	// if (_client.getRegistered())	//create flag if client is already registered
-	// {
-	// 	_client.sendError(_server.getName(), IrcErrorCode::ERR_ALREADYREGISTRED,
-	// 					"Already registered");
-	// 	_client.setDisconnect(true);
-	// 	return ;
-	// }
+	if (_message.params.size() < 2)
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
+						"Not enough parameters");
+		_client.setDisconnect(true);
+		return;
+	}
+	if (_message.params.size() > 2)
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_PASSWDMISMATCH,
+						"Too many parameters");
+		_client.setDisconnect(true);
+		return;
+	}
+	if (_client.getRegistered())	//create flag if client is already registered
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_ALREADYREGISTRED,
+						"Already registered");
+		_client.setDisconnect(true);
+		return ;
+	}
 	if (_message.params[1].empty() || _message.params[1] != _server.getPassword())
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_PASSWDMISMATCH,
@@ -206,6 +206,7 @@ void MessageHandler::handlePass(void)
 		_client.setDisconnect(true);
 		return ;
 	}
+	_client.setRegistered(true);
 }
 
 /*------------------------------------------------------------------------------
@@ -214,37 +215,39 @@ Used to give the client a nickname or change the previous one.
 Sends error when
 	- nickname in use
 	- verify nickname fails
-	- no nickname parameter given
+	- no nickname parameter given (/nick "")
+	- /nick without parameter is handled by irssi
 ------------------------------------------------------------------------------*/
 void MessageHandler::handleNick(void)
 {
 	std::cout << "[DEBUG] NICK: " << std::endl;
-	std::cout << "[DEBUG] nickname: " << _message.params[1] << std::endl;
 	//error if nickname in use, otherwise accept
-	// if (_message.params.size() < 2 || _message.params[1].empty())
-	// {
-	// 	_client.sendError(_server.getName(), IrcErrorCode::ERR_ERRONEUSNICKNAME,
-	// 					"No nickname provided");
-	// 	if (!_client.getNickSet())
-	// 		_client.setDisconnect(true); //only at first call
-	// 	return;
-	// }
-	// if (!verifyNickName(_message.params[1]))
-	// {
-	// 	_client.sendError(_server.getName(), IrcErrorCode::ERR_ERRONEUSNICKNAME,
-	// 					_message.params[1]);
-	// 	if (!_client.getNickSet())
-	// 		_client.setDisconnect(true); //only at first call
-	// 	return;
-	// }
-	// if (_server.isClient(_message.params[1]))
-	// {
-	// 	_client.sendError(_server.getName(), IrcErrorCode::ERR_NICKNAMEINUSE,
-	// 					"Nickname is already in use, choose another one");
-	// 	if (!_client.getNickSet())
-	// 		_client.setDisconnect(true); //only at first call
-	// 	return;
-	// }
+	if (_message.params.size() < 2 || _message.params[1].empty())
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_ERRONEUSNICKNAME,
+						"No nickname given");
+		if (!_client.getNickSet())
+			_client.setDisconnect(true); //only at first call
+		return;
+	}
+	if (!verifyNickName(_message.params[1]))
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_ERRONEUSNICKNAME,
+						_message.params[1] + " Erroneous Nickname");
+		if (!_client.getNickSet())
+			_client.setDisconnect(true); //only at first call
+		return;
+	}
+	if (_server.isClient(_message.params[1]))
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NICKNAMEINUSE,
+						"Nickname is already in use, choose another one");
+		if (!_client.getNickSet())
+			_client.setDisconnect(true); //only at first call
+		return;
+	}
+
+	std::cout << "[DEBUG] NICK sets nickname: " << _message.params[1] << std::endl;
 	_client.setNick(_message.params[1]);
 	_client.setNickSet(true);
 }
@@ -293,7 +296,7 @@ void MessageHandler::handleMode()
 	}
 	if (_message.params.size() == 3 && _message.params[1] == _client.getNick() && _message.params[2] == "+i")
 	{
-		_client.sendMsg(_server.getName(), _message.params[0] + _message.params[1] + _message.params[2]);
+		_client.sendMsg(_server.getName(), _message.params[0] + " " + _message.params[1] + " " + _message.params[2]);
 		return ; // registration phase
 	}
 	std::string target = _message.params[1];
