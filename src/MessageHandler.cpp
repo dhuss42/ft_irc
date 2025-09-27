@@ -115,7 +115,10 @@ void MessageHandler::handleJoin(void)
 		return;
 	}
 	if (_message.params[1] == "")	//for capability negotiation phase
+	{
+		_client.sendMsg(_server.getName(), _message.params[0] + _message.params[1]);
 		return ;
+	}
 	Channel* channel;
 	if (_server.isChannel(_message.params[1]))
 		channel = _server.getChannel(_message.params[1]);
@@ -289,7 +292,10 @@ void MessageHandler::handleMode()
 		return;
 	}
 	if (_message.params.size() == 3 && _message.params[1] == _client.getNick() && _message.params[2] == "+i")
+	{
+		_client.sendMsg(_server.getName(), _message.params[0] + _message.params[1] + _message.params[2]);
 		return ; // registration phase
+	}
 	std::string target = _message.params[1];
 	if (!_server.isChannel(target))
 	{
