@@ -466,7 +466,7 @@ Casemapping
 
 For leak check at School start Dockerfile in directory
 - docker build -t valgrind .
-- docker run -p 6667:6667 -it --rm -v /Users/dhuss/Projects/circle_5/ft_irc:/app valgrind
+- docker run -p 6667:6667 -it --rm -v $PWD:/app valgrind
 - valgrind --leak-check=full ./ircserv 6667 123
 - run ConnectionTest.sh in separate Terminal with port 6667 and pass 123
 --> currently no leaks for 15 users connectin to one Channel and writing messages
@@ -480,3 +480,6 @@ For leak check at School start Dockerfile in directory
 - added Error responses for Channel::addUser()
 - clean up
 - handled constructors for Client/Server/Channel
+
+## ====== Day 25 == 27.09 ====== ()
+- description for Signals

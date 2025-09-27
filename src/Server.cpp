@@ -12,8 +12,15 @@
 
 #include "Server.hpp"
 
+/*--------------------------------------------------------*/
+/* sig_atomic_t	*/
+/*	-> the signal handler won't interrupt a write and leave the varialbe in a corrupted state*/
+/* volatile	*/
+/* 	-> tells compiler to always go into memory when reading/writing */
+/*	-> otherwise compile can assume that the variable will nerver change */
+/*	-> caches the value*/
+/*--------------------------------------------------------*/
 static volatile sig_atomic_t shouldExit = 0;
-// maybe better with a bool inside class and a server pointer here
 
 //================================> Constructor & Destructor <================================//
 
