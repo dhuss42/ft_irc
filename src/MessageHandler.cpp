@@ -194,7 +194,7 @@ void MessageHandler::handlePass(void)
 	}
 	if (_client.getRegistered())	//create flag if client is already registered
 	{
-		_client.sendError(_server.getName(), IrcErrorCode::ERR_ALREADYREGISTRED,
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_ALREADYREGISTERED,
 						"Already registered");
 		_client.setDisconnect(true);
 		return ;
@@ -260,26 +260,42 @@ void MessageHandler::handleNick(void)
 		-> "You may not reregister"
 */
 /*------------------------------------------------------------------------------
-
+USER <username> <hostname> <servername> :<realname>
 ------------------------------------------------------------------------------*/
 void MessageHandler::handleUser()
 {
 	std::cout << "[DEBUG] USER: " << std::endl;
-	if (_message.params[1].empty())
-		return ;	//send Errormessage
+	std::cout << "[DEBUG] size params: " << _message.params.size() << std::endl;
+	std::cout << "[DEBUG] first param: " << _message.params[1] << std::endl;
 
-	if (_message.params.size() == 5)
+	if (_message.params.size() < 2 || _message.params[1].empty())
 	{
-		_client.setUsername(_message.params[1]);
-		_client.setHostname(_message.params[2]);
-		_client.setRealname(_message.params[4]);
-
-		std::cout << "[DEBUG] username: " << _client.getUsername() << std::endl;
-		std::cout << "[DEBUG] hostname: " << _client.getHostname() << std::endl; // not sure if better to have servername here or IP Address, this seems slower than doing it constructor
-		std::cout << "[DEBUG] realname: " << _client.getRealname() << std::endl;
-
-		_client.setUsernameSet(true);
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
+						"Not enough parameters");
+		_client.setDisconnect(true);
+		return;
 	}
+	if (_client.getUsernameSet())
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_ALREADYREGISTERED,
+						"AlreadyRegistered");
+		_client.setDisconnect(true);
+		return;
+	}
+
+	_client.setUsername(_message.params[1]);
+
+	if (_message.params.size() > 2)
+		_client.setHostname(_message.params[2]);
+	else
+		_client.setHostname(_message.params[1]);
+
+	if (_message.params.size() > 4)
+		_client.setRealname(_message.params[4]);
+	else
+		_client.setHostname(_message.params[1]);
+
+	_client.setUsernameSet(true);
 }
 
 /*------------------------------------------------------------------------------

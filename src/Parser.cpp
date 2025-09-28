@@ -47,7 +47,8 @@ void parseHandler(std::string rawMessage, Client &client, Server &server)
 	// and other commands...
 
 	else
-		std::cout << RED << "We dont handle this command: " << message.command << "!" << RESET << std::endl;
+		client.sendError(server.getName(), IrcErrorCode::ERR_UNKNOWNCOMMAND, "Unknown command: " + message.command);
+		// std::cout << RED << "We dont handle this command: " << message.command << "!" << RESET << std::endl;
 		//send this message to client
 
 }

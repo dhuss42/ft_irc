@@ -340,6 +340,7 @@ todo:
     - we also need a flag if pass got called -> if /connect localhost 6667 <no-pass> : pass does not get called, should disconnect
     - try connect with wrong password and try again with right password
         -> does not work. Nothing arrives at server
+    - if already registered: ERR_ALREADYREGISTERED
 
 - NICK
     [x] give the client a nickname or change the previous one.
@@ -349,6 +350,15 @@ todo:
     [x] if no nickname parameter is given : in docu it should send error but irssi handels it and gives you your nick
     - I need here flag _client.getNickset() to check if i have to disconnect
     - need function to inform irssi about nick change
+
+## ====== Day 16 == 28.09.2025 ======
+- USER
+    [x] The USER command is used at the beginning of a connection to specify the username and realname of a new user.
+    [x] <username > MUST NOT be empty. If it is empty, the server SHOULD reject the command with ERR_NEEDMOREPARAMS
+        (even if an empty parameter is provided); otherwise it MUST use a default value instead.
+    [x] If a client tries to send the USER command after they have already completed registration with the server,
+        the ERR_ALREADYREGISTERED reply should be sent and the attempt should fail.
+        -> i still need getRegistered(void)
 
 ## ==== QUESTIONS ====
 - Parser job:
@@ -413,6 +423,7 @@ todo:
 - when I try to connect with wrong password and then retry with right password -> does not work
 - if /connect localhost 6667 <no-pass> : handlePass does not get called, but should disconnect
     -> we maybe need a flag if pass got already called -> at some point: if not , disconnect
+- I still need getRegistered(void) for User
 
 ## General Info
 - rebase vs merge
