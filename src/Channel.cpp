@@ -36,6 +36,23 @@ Channel::~Channel()
 /*------------------------------------------------------*/
 /* Sends message to all users in channel except sender	*/
 /*------------------------------------------------------*/
+void	Channel::broadcastUpdated(const std::string& content, Client* sender, const std::string& command)
+{
+	if (sender)
+	{
+		std::string msg = ":" + sender->getNick() + "!" + sender->getUsername() + "@" + sender->getHostname() + " " + command + " :" + content + "\r\n";
+		std::cout << "[Debug] " << msg << std::endl;
+		for (auto it = _users.begin(); it != _users.end(); it++)
+		{
+			if (it->second != sender)
+				it->second->sendRaw(msg);
+		}
+	}
+}
+
+/*------------------------------------------------------*/
+/* Sends message to all users in channel except sender	*/
+/*------------------------------------------------------*/
 void	Channel::broadcast(const std::string& msg, Client* sender)
 {
 	if (sender)
@@ -271,6 +288,14 @@ void	Channel::removeUser(Client* client)
 	}
 	// check outside if Channel has 0 members now
 	// if so delete the channel object
+}
+
+/*----------------------------------------------------------------------*/
+/* Return unordered_map of all Clients in Channel						*/
+/*----------------------------------------------------------------------*/
+std::map<std::string, Client*> Channel::getUsers(void)
+{
+	return (_users);
 }
 
 /*----------------------------------------------------------------------*/

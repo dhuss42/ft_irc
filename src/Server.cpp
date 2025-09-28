@@ -18,7 +18,7 @@
 /* volatile	*/
 /* 	-> tells compiler to always go into memory when reading/writing */
 /*	-> otherwise compile can assume that the variable will nerver change */
-/*	-> caches the value*/
+/*	-> caches the value */
 /*--------------------------------------------------------*/
 static volatile sig_atomic_t shouldExit = 0;
 
@@ -210,7 +210,7 @@ void	Server::handlePollRevents()
 			{
 				if (_clientfd[it->fd]->receiveMsg() != -1)
 				{
-					_clientfd[it->fd]->sendMsg(_name, "[Server] Message received"); // needs to be updated
+					// _clientfd[it->fd]->sendMsg(_name, "[Server] Message received"); // needs to be updated
 					if (_clientfd[it->fd]->getDisconnect())
 						disconnectClient(it);
 					else
@@ -470,6 +470,7 @@ std::vector<std::string> Server::getChannelVector(void)
 bool	Server::isChannel(const std::string& name) const
 {
 	std::string lcName = toLower(name);
+	std::cout << YELLOW "[DEBUG] lowercase Name of Channel: " << lcName << WHITE << std::endl;
 	return (_channelList.find(lcName) != _channelList.end());
 }
 
