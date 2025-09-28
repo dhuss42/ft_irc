@@ -39,6 +39,24 @@ Client::~Client()
 
 //============== Channel Data ==============//
 
+Channel* Client::getJoinedChannel(const std::string& name)
+{
+	auto it = _joinedChannels.find(name);
+	if (it != _joinedChannels.end())
+		return (it->second);
+	return (nullptr);
+}
+
+bool	Client::isJoinedChannel(const std::string& name)
+{
+	for (auto it = _joinedChannels.begin(); it != _joinedChannels.end(); ++it)
+		std::cout <<YELLOW "[DEBUG] " << _nick << " is part of :" << it->first << WHITE << std::endl;
+
+	if (_joinedChannels.find(name) != _joinedChannels.end())
+		return (true);
+	return (false);
+}
+
 /*------------------------------------------------------------------------------*/
 /* add the Channel to the container storing all the Channels user is part of	*/
 /*------------------------------------------------------------------------------*/
@@ -52,14 +70,11 @@ void	Client::addToJoinedChannels(Channel* channel)
 // /*----------------------------------------------------------------------------------*/
 // /* remove the Channel from the container storing all the Channels user is part of	*/
 // /*----------------------------------------------------------------------------------*/
-// void	Client::removeFromJoinedChannels(Channel* channel)
-// {
-// 	if (channel)
-// 	{
-// 		if (_joinedChannels.find(channel->getName()) != _joinedChannels.end())
-// 			_joinedChannels.erase(channel->getName());
-// 	}
-// }
+void	Client::removeFromJoinedChannels(const std::string& name)
+{
+	if (_joinedChannels.find(name) != _joinedChannels.end())
+			_joinedChannels.erase(name);
+}
 
 /*----------------------------------------------------------------------------------*/
 /* remove User from all Channels he has joined										*/
@@ -70,6 +85,11 @@ void	Client::removeFromAllJoinedChannels()
 	for (auto it = _joinedChannels.begin(); it != _joinedChannels.end(); ++it)
 		it->second->removeUser(this);
 	_joinedChannels.clear();
+}
+
+std::unordered_map<std::string, Channel*> Client::getJoinedChannels(void)
+{
+	return (_joinedChannels);
 }
 
 //============== Messaging ==============//
@@ -118,6 +138,20 @@ int	Client::receiveMsg()
 	std::cout << GREEN << "[" << _nick << "]" << " received: " << _buffer << WHITE << std::endl;
 	_buffer.clear();
 	return (0);
+}
+
+/*------------------------------------------------------------------*/
+/* sends replies to client											*/
+/*	- replies are patched together for the correct format for irssi */
+/*		- every msg sent must end in \r\n							*/
+/*		- :server 001 nickname :Welcome to IRC Server				*/
+/*------------------------------------------------------------------*/
+void	Client::sendRaw(const std::string& msg)
+{
+	if (send(_socket, msg.c_str(), msg.size(), 0) <= 0) // uncertain about the zero at the moment
+	{
+		throw (Errors(ErrorCode::E_SND)); // uncertain about wether it bubbles up correctly to the next catch
+	}
 }
 
 /*------------------------------------------------------------------*/

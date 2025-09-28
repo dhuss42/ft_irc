@@ -53,6 +53,9 @@
 [] what happens when last Operator leaves channel but there are other clients still in the channel
 	-> make one an operator?
 
+[] during first join
+	-> 12:37 -!- : No such channel
+
 ## ====== Day 1 == 25.06 ======
 - started reading subject (30min)
 
@@ -481,5 +484,11 @@ For leak check at School start Dockerfile in directory
 - clean up
 - handled constructors for Client/Server/Channel
 
-## ====== Day 25 == 27.09 ====== ()
+## ====== Day 25 == 27.09 ====== (2h)
 - description for Signals
+- worked on Quit and Part
+
+## ====== Day 26 == 28.09 ====== (4h)
+- worked on Quit and Part
+	- quit does sent the status message, maybe because of broadcasting not to client self?
+	- part is currently sending status message but only to the client parting and it is not updating the UI correctly

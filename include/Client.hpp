@@ -56,12 +56,16 @@ class Client
 		Client(int fd, Server* server);
 		~Client();
 
+	Channel*	getJoinedChannel(const std::string& name);
+	bool	isJoinedChannel(const std::string& name);
 	void	addToJoinedChannels(Channel* channel);
-	// void	removeFromJoinedChannels(Channel* channel);
+	void	removeFromJoinedChannels(const std::string& name);
 	void	removeFromAllJoinedChannels();
+	std::unordered_map<std::string, Channel*> getJoinedChannels(void);
 
 	void	sendResponse(std::string name, IrcResponseCode code, std::string reply);
 	void	sendMsg(std::string name, std::string reply);
+	void	sendRaw(const std::string& msg);
 	void	sendError(std::string name, IrcErrorCode code, std::string reply);
 	int		authentication(); // can be deleted once authentication is updated
 	int		receiveMsg();

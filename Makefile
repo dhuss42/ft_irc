@@ -15,6 +15,7 @@ CPPFILES = \
 	ClientMilena.cpp \
 	IrcCodeGetters.cpp \
 	MessageHandler.cpp \
+	MessageHandlerDavid.cpp \
 	HandlerHelpers.cpp
 
 SRCS = $(addprefix $(SRC_DIR)/, $(CPPFILES))

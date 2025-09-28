@@ -49,6 +49,7 @@ class Channel
 		bool	addUser(Client* client, const std::string& password);
 		void	addOperator(Client* client);
 		void	addInvUsers(Client* client);
+		std::map<std::string, Client*> getUsers(void);
 
 		void	inviteUser(Client* inviter, Client* invited);
 		void	kickUser(Client* kicker, const std::string& kicked);
@@ -59,6 +60,7 @@ class Channel
 
 		// ======= send Messages =======//
 		void	broadcast(const std::string& msg, Client* sender);
+		void	broadcastUpdated(const std::string& content, Client* sender, const std::string& command);
 
 		void	changeTopic(const std::string& topic, const Client* client);
 
