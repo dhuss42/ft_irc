@@ -43,15 +43,19 @@ class MessageHandler
 
 	void handleCap(void);	//done
 	void handleJoin(void);	//not yet ready
-	void handlePass(void);
-	void handleNick(void);
-	void handleUser(void);
+	void handlePass(void);	//re-check
+	void handleNick(void);	//re-check
+	void handleUser(void);	//re-check
 	void handleMode(void);	//done
 	void handleWhois(void);
 	void handlePing(void);
 	void handlePrivmsg(void);	//done
 	void handlePart(void);	//will do david
 	void handleQuit(void);	//will do david
+	void handleKick(void);
+	void handleInvite(void);
+	void handleTopic(void);
+	void handleNotice(void);
 
 	//MODE helpers
 

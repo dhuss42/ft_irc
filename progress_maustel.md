@@ -358,7 +358,7 @@ todo:
         (even if an empty parameter is provided); otherwise it MUST use a default value instead.
     [x] If a client tries to send the USER command after they have already completed registration with the server,
         the ERR_ALREADYREGISTERED reply should be sent and the attempt should fail.
-        -> i still need getRegistered(void)
+        -> i still need getRegistered(void) or better getUsernameSet()
 
 ## ==== QUESTIONS ====
 - Parser job:
@@ -423,7 +423,7 @@ todo:
 - when I try to connect with wrong password and then retry with right password -> does not work
 - if /connect localhost 6667 <no-pass> : handlePass does not get called, but should disconnect
     -> we maybe need a flag if pass got already called -> at some point: if not , disconnect
-- I still need getRegistered(void) for User
+- I still need getRegistered(void) for User or getUsernameSet
 
 ## General Info
 - rebase vs merge
