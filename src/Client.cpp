@@ -171,6 +171,7 @@ void	Client::sendRaw(std::string msg)
 void	Client::sendMsg(std::string name, std::string reply)
 {
 	reply = ":" + name + " " + reply + "\r\n";
+	std::cout << YELLOW "[DEBUG] reply - " << reply << std::endl;
 	if (send(_socket, reply.c_str(), reply.size(), 0) <= 0) // uncertain about the zero at the moment
 	{
 		throw (Errors(ErrorCode::E_SND)); // uncertain about wether it bubbles up correctly to the next catch

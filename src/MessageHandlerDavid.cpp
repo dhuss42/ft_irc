@@ -36,22 +36,10 @@ void MessageHandler::handleQuit(void)
 // I channel is never added to _joined channels
 void	MessageHandler::handleQuit2(void)
 {
-	std::string	reason;
-
 	std::cout << MAGENTA << "HANDLE QUIT2" WHITE << std::endl;
-
-
+	std::string	reason;
 	if (_message.params.size() == 2)
 		reason = _message.params[1];
-
-	std::cout << "[DEBUG] message param[0]" << _message.params[0]  << std::endl;
-	std::cout << "[DEBUG] message param[1]" << _message.params[1]  << std::endl;
-
-
-
-	std::string quitMsg = ":" + _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " QUIT :" + reason + "\r\n";
-
-	std::cout << "[DEBUG] " << quitMsg << std::endl;
 
 	std::unordered_set<Client*> recipients;
 	std::unordered_map<std::string, Channel*> joinedChannels = _client.getJoinedChannels();
@@ -66,19 +54,14 @@ void	MessageHandler::handleQuit2(void)
 			{
 				std::cout << "[DEBUG] For Channel: " << it->second->getName() << " Found user: " << iter->second->getNick() << std::endl;
 				recipients.insert(iter->second);
-
 			}
 		}
-		// for every channel get the list of joined users
-		// send to the user if not the quitter
+
 	}
-
-	_client.sendRaw(quitMsg); // not sure if needed
-
 	for (auto iterate = recipients.begin(); iterate != recipients.end(); ++iterate)
 	{
-		std::cout << "[DEBUG] sending to " << (*iterate)->getNick() << " | " << quitMsg << std::endl;
-		(*iterate)->sendRaw(quitMsg);
+		(*iterate)->sendMsg((*iterate)->getNick() + "!" + (*iterate)->getUsername() + "@" + (*iterate)->getHostname() + " ", "QUIT :" + reason);
+		// not sure if this is entirely correct but when I send it with the quitting clients info irssi does not respond have to double check
 	}
 	_client.setDisconnect(true);
 }
@@ -111,7 +94,6 @@ void MessageHandler::handlePart(void)
 		{
 			std::cout << "[Debug]: Channel does not exist" << std::endl;
 			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL, channelName); // problem with formating look in ir protocol
-			// 10:45 -!- #dhusssibussi: No such channel || is response on IRCnet but on server page not channel
 		}
 		else if (!_client.isJoinedChannel(channelName))
 		{
