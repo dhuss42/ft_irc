@@ -19,8 +19,8 @@ Send active cahnnel modes and parameters into channel to user that asked for it
 void MessageHandler::sendActiveChannelModes(Channel *channel)
 {
 	std::string activeModes = channel->getActiveChannelModes() + channel->getActiveChannelParameters();
-	_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(),
-		"Mode " + channel->getName() + " " + activeModes);
+	_client.sendResponse(_client.getNick() + "!@" + _client.getHostname(), IrcResponseCode::RPL_CHANNELMODEIS,
+		channel->getName() + " " + activeModes);
 }
 
 /*------------------------------------------------------------------------------
@@ -40,10 +40,13 @@ Send all changed modes and parameters into channel to all users in that channel
 ------------------------------------------------------------------------------*/
 void MessageHandler::sendChangedModes(std::string returnMsg, Channel *channel)
 {
-	std::string broadcastMsg = "mode/" + channel->getName() + " [" + returnMsg + "] by " + _client.getNick();
-		channel->broadcast(broadcastMsg, &_client);
-	std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
-		_client.sendMsg(prefix, broadcastMsg);
+	// std::string broadcastMsg = "mode/" + channel->getName() + " [" + returnMsg + "] by " + _client.getNick();
+	// 	channel->broadcast(broadcastMsg, &_client);
+	// std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
+	// 	_client.sendMsg(prefix, broadcastMsg);
+	std::string activeModes = channel->getActiveChannelModes() + channel->getActiveChannelParameters();
+	_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(),
+		"Mode " + channel->getName() + " " + returnMsg);
 }
 
 /*------------------------------------------------------------------------------
