@@ -43,7 +43,8 @@ void parseHandler(std::string rawMessage, Client &client, Server &server)
 		handler.handlePing();
 	else if (message.command == "PRIVMSG")
 		handler.handlePrivmsg();	//still needs change to handler.
-
+	else if (message.command == "PART")
+		handler.handlePart();
 	// and other commands...
 
 	else

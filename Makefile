@@ -16,7 +16,7 @@ CPPFILES = \
 	IrcCodeGetters.cpp \
 	MessageHandler.cpp \
 	MessageHandlerDavid.cpp \
-	HandlerHelpers.cpp
+	ModeHelpers.cpp
 
 SRCS = $(addprefix $(SRC_DIR)/, $(CPPFILES))
 OBJS = $(addprefix $(OBJ_DIR)/, $(CPPFILES:.cpp=.o))
