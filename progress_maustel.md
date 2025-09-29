@@ -368,7 +368,9 @@ todo:
     [x] in User function server: sends welcome message
     [x] irssi sends after join #chan an automatic MODE #chan and then WHO #chan -> is standard in IRC clients
     - and sometimes also  MODE #cha b
-    - 15:59 [Users #cha] 15:59 [ albi] and in server window: 15:59 -!- [Users @albi]
+    [x] 15:59 [Users #cha] 15:59 [ albi] and in server window: 15:59 -!- [Users @albi] -> was symbol of "* "
+    - rework on nick -> nickname already exists -> not working davids check
+
 
 ## ==== QUESTIONS ====
 - Parser job:

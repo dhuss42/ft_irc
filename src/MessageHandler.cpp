@@ -157,7 +157,6 @@ void MessageHandler::handleJoin(void)
 	if (!users.empty())
 	{
 		std::cout << "[DEBUG]: entered if condition !users.empty" << std::endl;
-		//docu says to use response codes, but not sure if it works as it should here
 		std::string prefix = _client.getNick() + "!@" + _client.getHostname();
 		_client.sendResponse(prefix, IrcResponseCode::RPL_NAMREPLY,
 							"* " + _message.params[1] + " " + users);
@@ -221,7 +220,7 @@ Sends error when
 void MessageHandler::handleNick(void)
 {
 	std::cout << "[DEBUG] NICK: " << std::endl;
-	//error if nickname in use, otherwise accept
+
 	if (_message.params.size() < 2 || _message.params[1].empty())
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_ERRONEUSNICKNAME,
@@ -230,27 +229,44 @@ void MessageHandler::handleNick(void)
 			_client.setDisconnect(true); //only at first call
 		return;
 	}
-	if (!verifyNickName(_message.params[1]))
+	std::string newNick = _message.params[1];
+	if (!verifyNickName(newNick))
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_ERRONEUSNICKNAME,
-						_message.params[1] + " Erroneous Nickname");
+						newNick + " Erroneous Nickname");
 		if (!_client.getNickSet())
 			_client.setDisconnect(true); //only at first call
 		return;
 	}
-	if (_server.isClient(_message.params[1]))
+	if (_client.getNickSet() && _client.getNick() == newNick)
+		return ;
+	if (_server.isClient(newNick))	//not working -> david
 	{
+		std::cout << "[DEBUG] nick is already in use! " << newNick << std::endl;
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NICKNAMEINUSE,
 						"Nickname is already in use, choose another one");
 		if (!_client.getNickSet())
-			_client.setDisconnect(true); //only at first call
+		_client.setDisconnect(true); //only at first call
 		return;
 	}
+	if (!_server.isClient(newNick))
+		std::cout << "[DEBUG] nick is not yet in use! " << newNick << std::endl;
 
-	std::cout << "[DEBUG] NICK sets nickname: " << _message.params[1] << std::endl;
-	_client.setNick(_message.params[1]);
+	if (_client.getNickSet())//send something to client so he knows the new nickname?
+	{
+		std::cout << "[DEBUG] NICK change nickname " << newNick << std::endl;
+		std::string oldNick = _client.getNick();
+		std::string prefix = oldNick + "!" + _client.getUsername() + "@" + _client.getHostname() + " NICK " + newNick + " :";
+		// updateNicknameInChannels(client, oldNick, newNick, nickChangeMsg);
+		// server.broadcastMessage(client, "", nickChangeMsg);
+		_client.sendMsg(prefix, "");
+	}
+
+	std::cout << "[DEBUG] NICK sets nickname: " << newNick << std::endl;
+
+	_client.setNick(newNick);
 	_client.setNickSet(true);
-	//send something to client so he knows the new nickname?
+
 }
 
 /*
@@ -297,7 +313,8 @@ void MessageHandler::handleUser()
 		_client.setHostname(_message.params[1]);
 
 	_client.setUsernameSet(true);
-	_client.sendResponse(_server.getName(), IrcResponseCode::RPL_WELCOME, "Welcome to our super nice IRC server!");
+	if (_client.getRegistered())
+		_client.sendResponse(_server.getName(), IrcResponseCode::RPL_WELCOME, "Welcome to our super nice IRC server!");
 }
 
 /*------------------------------------------------------------------------------
