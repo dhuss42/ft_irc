@@ -49,9 +49,6 @@ Channel* Client::getJoinedChannel(const std::string& name)
 
 bool	Client::isJoinedChannel(const std::string& name)
 {
-	for (auto it = _joinedChannels.begin(); it != _joinedChannels.end(); ++it)
-		std::cout <<YELLOW "[DEBUG] " << _nick << " is part of :" << it->first << WHITE << std::endl;
-
 	if (_joinedChannels.find(name) != _joinedChannels.end())
 		return (true);
 	return (false);
@@ -146,12 +143,18 @@ int	Client::receiveMsg()
 /*		- every msg sent must end in \r\n							*/
 /*		- :server 001 nickname :Welcome to IRC Server				*/
 /*------------------------------------------------------------------*/
-void	Client::sendRaw(const std::string& msg)
+void	Client::sendRaw(std::string msg)
 {
-	if (send(_socket, msg.c_str(), msg.size(), 0) <= 0) // uncertain about the zero at the moment
+	std::cout << GREEN "[DEBUG] socket: " << _socket << "\nnick: " << _nick << std::endl;
+	
+	ssize_t sent = send(_socket, msg.c_str(), msg.size(), 0);
+	if (sent <= 0) 
 	{
-		throw (Errors(ErrorCode::E_SND)); // uncertain about wether it bubbles up correctly to the next catch
+		std::cout << RED "did not send msg" << WHITE << std::endl;
+		std::cout << "Ernno: " << errno << std::endl;
 	}
+	else
+		std::cout << "bytes sent: " << sent << std::endl;
 }
 
 /*------------------------------------------------------------------*/

@@ -41,8 +41,8 @@ void	Channel::broadcastUpdated(const std::string& content, Client* sender, const
 	if (sender)
 	{
 		std::string msg = ":" + sender->getNick() + "!" + sender->getUsername() + "@" + sender->getHostname() + " " + command + " :" + content + "\r\n";
-		std::cout << "[Debug] " << msg << std::endl;
-		for (auto it = _users.begin(); it != _users.end(); it++)
+		std::cout << YELLOW "[Debug] broadcastUpdated " << msg << WHITE << std::endl;
+		for (auto it = _users.begin(); it != _users.end(); ++it)
 		{
 			if (it->second != sender)
 				it->second->sendRaw(msg);

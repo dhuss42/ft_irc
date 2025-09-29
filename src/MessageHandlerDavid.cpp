@@ -4,8 +4,15 @@
 // Parse Handler if Check
 // into MessageHandler
 
-// when pushing delete method declaration & parse Handler check
+	// void handleQuit(void);
+	// void handleQuit2(void);
+	// void handlePart(void);
 
+// when pushing delete method declaration & parse Handler check
+	// else if (message.command == "QUIT")
+	// 	handler.handleQuit();
+	// else if (message.command == "PART")
+	// 	handler.handlePart();
 
 void MessageHandler::handleQuit(void)
 {
@@ -30,6 +37,8 @@ void MessageHandler::handleQuit(void)
 void	MessageHandler::handleQuit2(void)
 {
 	std::string	reason;
+
+	std::cout << MAGENTA << "HANDLE QUIT2" WHITE << std::endl;
 
 
 	if (_message.params.size() == 2)
@@ -67,6 +76,9 @@ void	MessageHandler::handleQuit2(void)
 		// send to the user if not the quitter
 	}
 	
+	_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "Quit");
+
+
 	for (auto iterate = recipients.begin(); iterate != recipients.end(); ++iterate)
 	{
 		std::cout << "[DEBUG] sending to " << (*iterate)->getNick() << " | " << quitMsg << std::endl;
@@ -78,6 +90,7 @@ void	MessageHandler::handleQuit2(void)
 // PART
 void MessageHandler::handlePart(void)
 {
+	std::cout << MAGENTA << "HANDLE PART" WHITE << std::endl;
 	// need to type # before channel name otherwise irssi interprets it as reason for leaving
 	// if no channel is given the second parameter is the current channel
 	// max three parameters 1. PART 2. List of Channels to part from 3. reason
@@ -92,7 +105,7 @@ void MessageHandler::handlePart(void)
 	
 	for (auto it = _message.params.begin(); it != _message.params.end(); ++it)
 	{
-		std::cout << "[Debug]: channels Parting from: " << *it << std::endl;
+		std::cout << "[Debug]: message Parameters: " << *it << std::endl;
 	}
 
 	std::regex del(",");
@@ -120,9 +133,16 @@ void MessageHandler::handlePart(void)
 			_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "PART " + channelName);
 			std::cout << "[Debug]: Removing from Channel " << channelName << std::endl;
 			_client.removeFromJoinedChannels(channelName);
-			Channel* channel = _client.getJoinedChannel(channelName);
+			// Channel* channel = _client.getJoinedChannel(channelName); --> seems as if it's not stored correctly
+			Channel* channel = _server.getChannel(channelName);
 			if (channel)
+			{
+				std::cout << "[Debug]: channel exists" << std::endl; // -> ERR_NOTONCHANNEL 442
+				channel->broadcastUpdated("reason", &_client, "PART" + channelName);
 				channel->removeUser(&_client);
+			}
+			else
+				std::cout << "[Debug]: channel does not exists" << std::endl;
 			// currently I get the status log but the ui is not changing back
 		}
 		++it;

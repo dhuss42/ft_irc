@@ -470,7 +470,7 @@ std::vector<std::string> Server::getChannelVector(void)
 bool	Server::isChannel(const std::string& name) const
 {
 	std::string lcName = toLower(name);
-	std::cout << YELLOW "[DEBUG] lowercase Name of Channel: " << lcName << WHITE << std::endl;
+	// std::cout << YELLOW "[DEBUG] lowercase Name of Channel: " << lcName << WHITE << std::endl;
 	return (_channelList.find(lcName) != _channelList.end());
 }
 
