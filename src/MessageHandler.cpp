@@ -140,7 +140,7 @@ void MessageHandler::handleJoin(void)
 						_client.getUsername() + "@" + _client.getHostname() +
 						"] has joined " + _message.params[1] + "\n";
 	channel->broadcast(joinMsg, &_client);
-	std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
+	std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " JOIN " + channel->getName() + " :";
 	_client.sendMsg(prefix, joinMsg);
 
 	std::string topic = channel->getTopic();
@@ -158,9 +158,9 @@ void MessageHandler::handleJoin(void)
 	{
 		std::cout << "[DEBUG]: entered if condition !users.empty" << std::endl;
 		//docu says to use response codes, but not sure if it works as it should here
-		std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
+		std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname();
 		_client.sendResponse(prefix, IrcResponseCode::RPL_NAMREPLY,
-							"Users " + _message.params[1] + ": " + users);
+							"=" + _message.params[1] + " " + users);
 		_client.sendResponse(prefix, IrcResponseCode::RPL_ENDOFNAMES,
 							_message.params[1] + " :End of /NAMES list.");
 	}
@@ -250,6 +250,7 @@ void MessageHandler::handleNick(void)
 	std::cout << "[DEBUG] NICK sets nickname: " << _message.params[1] << std::endl;
 	_client.setNick(_message.params[1]);
 	_client.setNickSet(true);
+	//send something to client so he knows the new nickname?
 }
 
 /*

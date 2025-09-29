@@ -360,6 +360,13 @@ todo:
         the ERR_ALREADYREGISTERED reply should be sent and the attempt should fail.
         -> i still need getRegistered(void) or better getUsernameSet()
 
+## ====== Day 17 == 29.09.2025 ======
+- sendResponse: :servername 345 nickname #channelname modestring
+
+- todo
+    - how to nickname change -> tell it ui
+    - in User function server: sends welcome message
+
 ## ==== QUESTIONS ====
 - Parser job:
     - if command does not exist or not enough parameters -> is handled already by irssi
