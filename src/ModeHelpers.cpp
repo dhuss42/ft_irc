@@ -18,10 +18,9 @@ Send active cahnnel modes and parameters into channel to user that asked for it
 ------------------------------------------------------------------------------*/
 void MessageHandler::sendActiveChannelModes(Channel *channel)
 {
-	std::string prefix = _client.getNick() + "!" + _client.getUsername()
-				+ "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
-	_client.sendResponse(prefix, IrcResponseCode::RPL_CHANNELMODEIS, "mode/" + channel->getName()
-				+ " [" + channel->getActiveChannelModes() + channel->getActiveChannelParameters() + "]");
+	std::string activeModes = channel->getActiveChannelModes() + channel->getActiveChannelParameters();
+	_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(),
+		"Mode " + channel->getName() + " " + activeModes);
 }
 
 /*------------------------------------------------------------------------------
