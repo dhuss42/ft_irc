@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/25 14:42:13 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/25 16:46:14 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/29 11:14:59 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,8 @@ bool	Client::isJoinedChannel(const std::string& name)
 /*------------------------------------------------------------------------------*/
 void	Client::addToJoinedChannels(Channel* channel)
 {
-	if (channel)
-		_joinedChannels.emplace(channel->getName(), channel);
+	if (_joinedChannels.find(channel->getName()) != _joinedChannels.end())
+			_joinedChannels[channel->getName()] = channel;
 }
 
 // RESULTED IN SEGFAULTS BECAUSE I CODED WHEN I SHOULD HAVE STOPPED ALREADY
@@ -146,9 +146,9 @@ int	Client::receiveMsg()
 void	Client::sendRaw(std::string msg)
 {
 	std::cout << GREEN "[DEBUG] socket: " << _socket << "\nnick: " << _nick << std::endl;
-	
+
 	ssize_t sent = send(_socket, msg.c_str(), msg.size(), 0);
-	if (sent <= 0) 
+	if (sent <= 0)
 	{
 		std::cout << RED "did not send msg" << WHITE << std::endl;
 		std::cout << "Ernno: " << errno << std::endl;

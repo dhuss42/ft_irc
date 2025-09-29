@@ -20,10 +20,10 @@ void MessageHandler::handleQuit(void)
 
 	if (_message.params.size() > 2)
 		return ;
-	std::string msg = _client.getNick() + " [~" + _client.getUsername() + "@" + _client.getHostname() + "] has quit "; 
+	std::string msg = _client.getNick() + " [~" + _client.getUsername() + "@" + _client.getHostname() + "] has quit ";
 	if (_message.params.size() == 2)
 		msg += "[\"" + _message.params[1] + "\"]";
-		
+
 	std::unordered_map<std::string, Channel*> joinedChannels = _client.getJoinedChannels();
 	for (auto it = joinedChannels.begin(); it != joinedChannels.end(); ++it)
 		it->second->broadcast(msg, &_client);
@@ -33,7 +33,7 @@ void MessageHandler::handleQuit(void)
 // 12:34 -!- paikka [~david@ip-005-146-193-175.um05.pools.vodafone-ip.de] has quit
 //       ["ciao"]
 
-
+// I channel is never added to _joined channels
 void	MessageHandler::handleQuit2(void)
 {
 	std::string	reason;
@@ -47,12 +47,12 @@ void	MessageHandler::handleQuit2(void)
 	std::cout << "[DEBUG] message param[0]" << _message.params[0]  << std::endl;
 	std::cout << "[DEBUG] message param[1]" << _message.params[1]  << std::endl;
 
-	
+
 
 	std::string quitMsg = ":" + _client.getNick() + "!" +
-                          _client.getUsername() + "@" +
-                          _client.getHostname() +
-                          " QUIT :" + reason + "\r\n";
+							_client.getUsername() + "@" +
+							_client.getHostname() +
+							" QUIT :" + reason + "\r\n";
 
 	std::cout << "[DEBUG] " << quitMsg << std::endl;
 
@@ -75,9 +75,8 @@ void	MessageHandler::handleQuit2(void)
 		// for every channel get the list of joined users
 		// send to the user if not the quitter
 	}
-	
-	_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "Quit");
 
+	_client.sendRaw(quitMsg);
 
 	for (auto iterate = recipients.begin(); iterate != recipients.end(); ++iterate)
 	{
@@ -95,18 +94,17 @@ void MessageHandler::handlePart(void)
 	// if no channel is given the second parameter is the current channel
 	// max three parameters 1. PART 2. List of Channels to part from 3. reason
 
+
 	if (_message.params.size() < 2)
 	{
 		// _client.sendError(); // -> ERR_NEEDMOREPARAMS 461
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS, "Not enough parameters");
-		std::cout << "[Debug]: not enough params" << std::endl;	
+		std::cout << "[Debug]: not enough params" << std::endl;
 		return ;
 	}
-	
-	for (auto it = _message.params.begin(); it != _message.params.end(); ++it)
-	{
-		std::cout << "[Debug]: message Parameters: " << *it << std::endl;
-	}
+	std::string reason;
+	if (_message.params.size() > 2)
+		reason = _message.params[2];
 
 	std::regex del(",");
 
@@ -122,23 +120,25 @@ void MessageHandler::handlePart(void)
 		{
 			std::cout << "[Debug]: Channel does not exist" << std::endl; // -> ERR_NOSUCHCHANNEL 403
 			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL, channelName + ":No such Channel"); // problem with formating look in ir protocol
+			// 10:45 -!- #dhusssibussi: No such channel || is response on IRCnet but on server page not channel
 		}
 		else if (!_client.isJoinedChannel(channelName))
 		{
 			std::cout << "[Debug]: Not on Channel:" << std::endl; // -> ERR_NOTONCHANNEL 442
 			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOTONCHANNEL, channelName + ":You're not on that channel");
+			// 10:43 -!- #test You're not on that channel || is response on IRCnet but on server page not channel
 		}
 		else
 		{
-			_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "PART " + channelName);
+			_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "PART " + channelName + " " + reason);
 			std::cout << "[Debug]: Removing from Channel " << channelName << std::endl;
 			_client.removeFromJoinedChannels(channelName);
 			// Channel* channel = _client.getJoinedChannel(channelName); --> seems as if it's not stored correctly
 			Channel* channel = _server.getChannel(channelName);
 			if (channel)
 			{
-				std::cout << "[Debug]: channel exists" << std::endl; // -> ERR_NOTONCHANNEL 442
-				channel->broadcastUpdated("reason", &_client, "PART" + channelName);
+				std::cout << "[Debug]: channel exists" << std::endl;
+				channel->broadcastUpdated(reason, &_client, "PART " + channelName);
 				channel->removeUser(&_client);
 			}
 			else
@@ -148,22 +148,4 @@ void MessageHandler::handlePart(void)
 		++it;
 		// also check if the channel is empty now
 	}
-	// check if at least two parameters
-	// takes list of channels to Part
-	// last argument is reason for parting
-
-	// check if client is joined to channel
-		// -> ERR_NOTONCHANNEL 442
-	// check if there is such as channel
-		// -> ERR_NOSUCHCHANNEL 403
-
-	
-	// remove from one Channel at a time
-	// remove from Channel Container
-	// remove from usersJoinedChannels
-	// always append reason
-
 }
-
-// 12:33 -!- paikka [~david@ip-005-146-193-175.um05.pools.vodafone-ip.de] has left
-//           #dhuss [bye]
