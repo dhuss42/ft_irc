@@ -37,8 +37,8 @@ void parseHandler(std::string rawMessage, Client &client, Server &server)
 		handler.handleUser();
 	else if (message.command == "MODE")
 		handler.handleMode();
-	else if (message.command == "WHOIS")
-		handler.handleWhois();
+	else if (message.command == "WHO")
+		handler.handleWho();
 	else if (message.command == "PING")
 		handler.handlePing();
 	else if (message.command == "PRIVMSG")

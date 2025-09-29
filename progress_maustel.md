@@ -367,9 +367,14 @@ todo:
     [x] how to nickname change -> tell it ui
     [x] in User function server: sends welcome message
     [x] irssi sends after join #chan an automatic MODE #chan and then WHO #chan -> is standard in IRC clients
+    - sometimes also MODE #chan b
     [x] 15:59 [Users #cha] 15:59 [ albi] and in server window: 15:59 -!- [Users @albi] -> was symbol of "* "
     - rework on nick -> nickname already exists -> not working davids check
     - need updateNicknameInChannels
+    - sometimes happens -!- Irssi: Removed reconnection to server localhost port 1111
+            18:27 [david4] -!- Irssi: Looking up localhost
+    - _server.getClient(cleanNick);	//not working anymore ?!
+    - finish WHO
 
 ## ==== QUESTIONS ====
 - Parser job:

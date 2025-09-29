@@ -258,7 +258,7 @@ void MessageHandler::handleNick(void)
 		std::string oldNick = _client.getNick();
 		std::string prefix = oldNick + "!" + _client.getUsername() + "@" + _client.getHostname() + " NICK " + newNick + " :";
 		// updateNicknameInChannels(client, oldNick, newNick, nickChangeMsg);
-		// server.broadcastMessage(client, "", nickChangeMsg);
+		// server.broadcastMessage(client, "", nickChangeMsg);	//??
 		_client.sendMsg(prefix, "");
 	}
 
@@ -363,10 +363,76 @@ void MessageHandler::handleMode()
 /*------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------*/
-void MessageHandler::handleWhois()
+void MessageHandler::handleWho()
 {
-	std::cout << "[DEBUG] WHOIS: " << std::endl;
-	//todo
+	std::cout << "[DEBUG] WHO: " << std::endl;
+
+	if (_message.params.size() < 2)
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
+						"Not enough parameters");
+		return;
+	}
+	std::string mask = _message.params[1];
+	Channel *channel;
+
+	if (_server.isChannel(mask))
+	{
+		channel = _server.getChannel(mask);
+		const std::string users = channel->getJoinedUsers();
+
+		// Split the users string by spaces
+		std::istringstream iss(users);
+		std::string nick;
+
+		std::cout << "[DEBUG] users = : " << users << std::endl;
+
+		while (iss >> nick)
+		{
+			std::string cleanNick = nick;
+			if (cleanNick[0] == '@')
+				cleanNick = cleanNick.substr(1);
+
+			Client* client = _server.getClient(cleanNick);	//not working anymore ?!
+			std::cout << "[DEBUG] cleannick = '" << cleanNick << "'" << std::endl;
+			if (client != nullptr)
+			{
+				std::string reply = channel->getName() + " " +
+					client->getUsername() + " " +
+					client->getHostname() + " " +
+					_server.getName() + " " +
+					client->getNick() + " " +
+					(channel->isOperator(client) ? "H@" : "H") + " " +
+					"1 " +
+					client->getRealname();
+
+				std::cout << "[DEBUG] reply = : " << reply << std::endl;
+
+				client->sendResponse(_server.getName(),
+					IrcResponseCode::RPL_WHOREPLY, reply);
+					// channel->getName() + " " +
+					// client->getUsername() + " " +
+					// client->getHostname() + " " +
+					// _server.getName() + " " +
+					// client->getNick() + " " +
+					// (channel->isOperator(client) ? "H@" : "H") + " " +
+					// "1 " +
+					// client->getRealname());
+			}
+		}
+	}
+
+	// if (_server.isChannel(mask))
+	// {
+		// _client.sendResponse(_server.getName(),
+		// 		IrcResponseCode::RPL_WHOREPLY,
+		// 		channel->getName() + " " + _client.getUsername() + " " + _client.getHostname()
+		// 		+ " " + _server.getName() + " " + _client.getNick() + " something"  " :1 realname");
+		// 		//"something" should be: H@ - User modes (H = here, @ = channel operator)
+	// }
+	_client.sendResponse(_server.getName(),
+				IrcResponseCode::RPL_ENDOFWHO,
+				mask);
 }
 
 /*------------------------------------------------------------------------------
