@@ -277,7 +277,7 @@ void	Channel::removeUser(Client* client)
 		std::cout << "[DEBUG] Before removing operators_size: " << _operators.size() << std::endl;
 		if (_users.find(client->getNick()) != _users.end())
 		{
-			// client->removeFromJoinedChannels(this);
+			// client->removeFromJoinedChannels(_name);
 			_users.erase(client->getNick());
 			std::cout << GREEN "[DEBUG] Removed client with nick: " RESET << client->getNick() << std::endl;
 		}
