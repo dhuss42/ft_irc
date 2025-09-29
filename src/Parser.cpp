@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ParseHandler.cpp                                   :+:      :+:    :+:   */
+/*   Parser.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maustel <maustel@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -14,6 +14,9 @@
 
 
 //client pointer wird mitgeschickt, damit ich auf client und server methods zugreifen kann
+/*------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------*/
 void parseHandler(std::string rawMessage, Client &client, Server &server)
 {
 	Message message;
@@ -44,7 +47,8 @@ void parseHandler(std::string rawMessage, Client &client, Server &server)
 	// and other commands...
 
 	else
-		std::cout << RED << "We dont handle this command: " << message.command << "!" << RESET << std::endl;
+		client.sendError(server.getName(), IrcErrorCode::ERR_UNKNOWNCOMMAND, "Unknown command: " + message.command);
+		// std::cout << RED << "We dont handle this command: " << message.command << "!" << RESET << std::endl;
 		//send this message to client
 
 }

@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   HandlerHelpers.cpp                                 :+:      :+:    :+:   */
+/*   ModeHelpers.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maustel <maustel@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,10 +12,48 @@
 
 #include "MessageHandler.hpp"
 
-// Process 'i' mode (invonly)
+/*------------------------------------------------------------------------------
+Send active cahnnel modes and parameters into channel to user that asked for it
+	- for command /mode #channel (qithout any parameters)
+------------------------------------------------------------------------------*/
+void MessageHandler::sendActiveChannelModes(Channel *channel)
+{
+	std::string prefix = _client.getNick() + "!" + _client.getUsername()
+				+ "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
+	_client.sendResponse(prefix, IrcResponseCode::RPL_CHANNELMODEIS, "mode/" + channel->getName()
+				+ " [" + channel->getActiveChannelModes() + channel->getActiveChannelParameters() + "]");
+}
+
+/*------------------------------------------------------------------------------
+Send " You're not a channel operator" into channel to user that wanted to do
+mode changes but has no operator privileges
+------------------------------------------------------------------------------*/
+void MessageHandler::sendNotChannelOpErrorMessage(Channel *channel)
+{
+	std::string prefix = _client.getNick() + "!" + _client.getUsername()
+				+ "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
+	_client.sendError(prefix, IrcErrorCode::ERR_CHANOPRIVSNEEDED,
+				channel->getName() + " You're not a channel operator");
+}
+
+/*------------------------------------------------------------------------------
+Send all changed modes and parameters into channel to all users in that channel
+------------------------------------------------------------------------------*/
+void MessageHandler::sendChangedModes(std::string returnMsg, Channel *channel)
+{
+	std::string broadcastMsg = "mode/" + channel->getName() + " [" + returnMsg + "] by " + _client.getNick();
+		channel->broadcast(broadcastMsg, &_client);
+	std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
+		_client.sendMsg(prefix, broadcastMsg);
+}
+
+/*------------------------------------------------------------------------------
+Process 'i' mode (invonly)
+	- sets/removes inviteOnlyChannelFlag
+	- if something changes here, it writes into return strings
+------------------------------------------------------------------------------*/
 bool MessageHandler::processInvMode(Channel* channel, bool setMode, bool setModeHasChanged)
 {
-	std::cout << "[DEBUG] mode: " << setMode << " i" << std::endl;
 	if (setMode == true && channel->getInvOnly() == false)
 	{
 		if (setModeHasChanged)
@@ -35,10 +73,13 @@ bool MessageHandler::processInvMode(Channel* channel, bool setMode, bool setMode
 	return false;
 }
 
-// Process 't' mode (topic operator)
+/*------------------------------------------------------------------------------
+Process 't' mode (topic operator)
+	- sets / removes topicOperatorFlag (means that only operators can change topic)
+	- if something changes here, it writes into return strings
+------------------------------------------------------------------------------*/
 bool MessageHandler::processTopicOpMode(Channel* channel, bool setMode, bool setModeHasChanged)
 {
-	std::cout << "[DEBUG] mode: " << setMode << " t" << std::endl;
 	if (setMode == true && channel->getTopicOp() == false)
 	{
 		if (setModeHasChanged)
@@ -58,10 +99,13 @@ bool MessageHandler::processTopicOpMode(Channel* channel, bool setMode, bool set
 	return false;
 }
 
-// Process 'k' mode (password)
+/*------------------------------------------------------------------------------
+Process 'k' mode (password)
+	- if no parameter is given, mode k command will be ignored
+	- if something changes here, it writes into return strings
+------------------------------------------------------------------------------*/
 bool MessageHandler::processPasswordMode(Channel* channel, size_t i, bool setMode, bool setModeHasChanged)
 {
-	std::cout << "[DEBUG] mode: " << setMode << " k" << std::endl;
 	if (i < _message.params.size() && setMode == true)
 	{
 		if (setModeHasChanged)
@@ -84,10 +128,14 @@ bool MessageHandler::processPasswordMode(Channel* channel, size_t i, bool setMod
 	return false;
 }
 
-// Process 'l' mode (user limit)
+/*------------------------------------------------------------------------------
+Process 'l' mode (user limit)
+	- checks if limit is an integer and >0
+		-> if not, it will be ignored
+	- if something changes here, it writes into return strings
+------------------------------------------------------------------------------*/
 bool MessageHandler::processUserLimitMode(Channel* channel, size_t i, bool setMode, bool setModeHasChanged)
 {
-	std::cout << "[DEBUG] mode: " << setMode << " l" << std::endl;
 	if (i < _message.params.size() && setMode == true)
 	{
 		size_t pos;
@@ -114,11 +162,13 @@ bool MessageHandler::processUserLimitMode(Channel* channel, size_t i, bool setMo
 	return false;
 }
 
-// Process 'o' mode (operator)
+/*------------------------------------------------------------------------------
+Process 'o' mode (operator)
+	- checks if nick which should get operator exists
+	- if something changes here, it writes into return strings
+------------------------------------------------------------------------------*/
 bool MessageHandler::processOperatorMode(Channel* channel, size_t i, bool setMode, bool setModeHasChanged)
 {
-	std::cout << "[DEBUG] mode: " << setMode << " 0" << std::endl;
-	std::cout << "[DEBUG] size params: " << _message.params.size() << " i = " << i << std::endl;
 	if (i < _message.params.size() && setMode == true)
 	{
 		if (!_server.isClient(_message.params[i]))
@@ -147,11 +197,11 @@ bool MessageHandler::processOperatorMode(Channel* channel, size_t i, bool setMod
 	return false;
 }
 
-// Main orchestrator function
+/*------------------------------------------------------------------------------
+Main orchestrator function to devide in explicit modes
+------------------------------------------------------------------------------*/
 void MessageHandler::processChannelModes(Channel* channel, char mode, bool setMode, size_t i, bool setModeHasChanged)
 {
-	std::cout << "[DEBUG] mode: " << mode << std::endl;
-
 	switch (mode)
 	{
 		case 'i':
@@ -172,22 +222,25 @@ void MessageHandler::processChannelModes(Channel* channel, char mode, bool setMo
 	}
 }
 
+/*------------------------------------------------------------------------------
+iterates through parameter and mode characters and calls corresponding modeFunction
+	- i
+	- t
+	- k
+	- l
+	- o
+------------------------------------------------------------------------------*/
 void MessageHandler::processModes(Channel* channel)
 {
-	std::cout << "[DEBUG] process mode: " << std::endl;
-	const std::string allowedChars = "-+ikolt";
+	const std::string modeChars = "ikolt";
+	bool setMode = true;
 	bool setModeHasChanged = true;
 	for(size_t i = 2; i < _message.params.size(); i++)
 	{
-		bool setMode = true;
-		setModeHasChanged = false;
 		std::string mode = _message.params[i];
-		std::cout << "[DEBUG] mode: " << mode << std::endl;
 		size_t j = 0;
 		while (j < mode.size())
 		{
-			std::cout << "[DEBUG] mode: " << j << " " << mode[j] << std::endl;
-			std::cout << "[DEBUG] mode: i =" << i << std::endl;
 			if (mode[j] == '-' && setMode == true)
 			{
 				setMode = false;
@@ -198,8 +251,11 @@ void MessageHandler::processModes(Channel* channel)
 				setMode = true;
 				setModeHasChanged = true;
 			}
-			else if (allowedChars.find_first_of(mode[j]) != std::string::npos)
+			else if (modeChars.find_first_of(mode[j]) != std::string::npos)
+			{
 				processChannelModes(channel, mode[j], setMode, (i + 1), setModeHasChanged);
+				setModeHasChanged = false;
+			}
 			if (((mode[j] == 'l' || mode[j] == 'o') && setMode == true
 				&& (i + 1) < _message.params.size()) || mode[j] == 'k')
 					i++;
@@ -208,9 +264,16 @@ void MessageHandler::processModes(Channel* channel)
 	}
 }
 
+/*------------------------------------------------------------------------------
+Checks for enough parameters and unknown mode characters
+	- if error ocuurs, will send error message to client
+	- handles each mode character of first parameter
+	- if mode needs parameter, paramter will increment
+	- if all mode parameters are handled, goes to next parameter and
+		handles each mode character of that parameter
+------------------------------------------------------------------------------*/
 bool MessageHandler::validateModeParameters()
 {
-	std::cout << "[DEBUG] validate mode: " << std::endl;
 	const std::string allowedChars = "-+ikolt";
 	for(size_t i = 2; i < _message.params.size(); i++)
 	{

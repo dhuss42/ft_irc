@@ -317,21 +317,48 @@ todo:
     -> added a " " for now
 
 - todo:
-    - rename HandlerHelpers -> ModeHelperFcts
+    [x] rename HandlerHelpers -> ModeHelperFcts
         - or add ModeHelpers and copy from HandlerHelpers so I can use HandlerHelpers for other functions
-    - Mode main function more clean
-    - mode functions with commands
-    - mode tests with error messages from david
+    [x] Mode main function more clean
+    [x] mode functions with commands
+    [x] mode tests with error messages from david
     - join main function more clean and with more than one command
     - join functions with commands
-    - rename ParseHandler -> Parser
+    [x] rename ParseHandler -> Parser
 
     [x] /join inv only channel -> after error message trotzdem irssi window
         -> must be client->sendError(serverName, IrcErrorCode::ERR_INVITEONLYCHAN, this->name);
     [x] negative user still possible
 
 ## ====== Day 15 == 27.09.2025 ======
+- did todos from yesterday
 
+- PASS:
+    [?] It is possible to send multiple PASS commands before registering but only the last one sent is used for
+        verification and it may not be changed once the client has been registered. -> how would that work in irssi??
+    - we maybe need a flag like isAuthenticated() ?
+    - we also need a flag if pass got called -> if /connect localhost 6667 <no-pass> : pass does not get called, should disconnect
+    - try connect with wrong password and try again with right password
+        -> does not work. Nothing arrives at server
+    - if already registered: ERR_ALREADYREGISTERED
+
+- NICK
+    [x] give the client a nickname or change the previous one.
+        -> check if client already has a nickname
+    [x] if in use: ERR_NICKNAMEINUSE
+    [x] if verify nickname fails -> ERR_ERRONEUSNICKNAME
+    [x] if no nickname parameter is given : in docu it should send error but irssi handels it and gives you your nick
+    - I need here flag _client.getNickset() to check if i have to disconnect
+    - need function to inform irssi about nick change
+
+## ====== Day 16 == 28.09.2025 ======
+- USER
+    [x] The USER command is used at the beginning of a connection to specify the username and realname of a new user.
+    [x] <username > MUST NOT be empty. If it is empty, the server SHOULD reject the command with ERR_NEEDMOREPARAMS
+        (even if an empty parameter is provided); otherwise it MUST use a default value instead.
+    [x] If a client tries to send the USER command after they have already completed registration with the server,
+        the ERR_ALREADYREGISTERED reply should be sent and the attempt should fail.
+        -> i still need getRegistered(void) or better getUsernameSet()
 
 ## ==== QUESTIONS ====
 - Parser job:
@@ -391,6 +418,12 @@ todo:
     -> no its ok like that
 
 ----- questions for david ------
+- need function to inform irssi about nick change
+- I still ned the flag _client.getNickset() to disconnect only at first call of nick
+- when I try to connect with wrong password and then retry with right password -> does not work
+- if /connect localhost 6667 <no-pass> : handlePass does not get called, but should disconnect
+    -> we maybe need a flag if pass got already called -> at some point: if not , disconnect
+- I still need getRegistered(void) for User or getUsernameSet
 
 ## General Info
 - rebase vs merge

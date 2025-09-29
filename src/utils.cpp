@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
+/*   By: maustel <maustel@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/25 14:41:49 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/25 15:26:41 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/27 16:19:49 by maustel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,24 +35,23 @@ bool	verifyNickName(const std::string& name)
 	char first = name[0];
 	if (first == '$' || first == '|' || first == '#' || first == '&' || first == '+' || first == '%' || first == '~' || std::isdigit(first))
 		return (false);
-	for (const char &c : name)
-	{
-		switch (c)
-		{
-			if (std::isalnum(static_cast<unsigned char> (c)))
-				continue;
-			case ('['):
-			case (']'):
-			case ('{'):
-			case ('}'):
-			case ('\\'):
-			case ('|'):
-				continue;
-
+	for (const char &c : name) {
+	switch (c) {
+		case '[':
+		case ']':
+		case '{':
+		case '}':
+		case '\\':
+		case '|':
+			continue;
 		default:
-			return (false);
-		}
+			if (std::isalnum(static_cast<unsigned char>(c))) {
+				continue;
+			}
+			std::cout << "[DEBUG] Error in verify nickname: " << c << std::endl;
+			return false;
 	}
+}
 	return (true);
 }
 

@@ -52,7 +52,7 @@ const char* getIrcErrorCodeString(IrcErrorCode code)
 		case IrcErrorCode::ERR_USERSDISABLED: return "446";		// USERS command disabled
 		case IrcErrorCode::ERR_NOTREGISTERED: return "451";		// You have not registered
 		case IrcErrorCode::ERR_NEEDMOREPARAMS: return "461";		// Not enough parameters --
-		case IrcErrorCode::ERR_ALREADYREGISTRED: return "462";	// Already registered
+		case IrcErrorCode::ERR_ALREADYREGISTERED: return "462";	// Already registered
 		case IrcErrorCode::ERR_NOPERMFORHOST: return "463";		// No permission for operation
 		case IrcErrorCode::ERR_PASSWDMISMATCH: return "464";		// Password mismatch
 		case IrcErrorCode::ERR_YOUREBANNEDCREEP: return "465";	// You're banned
@@ -225,7 +225,7 @@ const std::string getIrcErrorReply(IrcErrorCode code)
 		case IrcErrorCode::ERR_USERSDISABLED: return "USERS command disabled";
 		case IrcErrorCode::ERR_NOTREGISTERED: return "You have not registered";
 		case IrcErrorCode::ERR_NEEDMOREPARAMS: return "Not enough parameters --";
-		case IrcErrorCode::ERR_ALREADYREGISTRED: return "Already registered";
+		case IrcErrorCode::ERR_ALREADYREGISTERED: return "Already registered";
 		case IrcErrorCode::ERR_NOPERMFORHOST: return "No permission for operation";
 		case IrcErrorCode::ERR_PASSWDMISMATCH: return "Password mismatch";
 		case IrcErrorCode::ERR_YOUREBANNEDCREEP: return "You're banned";

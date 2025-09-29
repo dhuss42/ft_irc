@@ -41,17 +41,24 @@ class MessageHandler
 	//Destructor
 	~MessageHandler();
 
-	void handleCap(void);
-	void handleJoin(void);
-	void handlePass(void);
-	void handleNick(void);
-	void handleUser(void);
-	void handleMode(void);
+	void handleCap(void);	//done
+	void handleJoin(void);	//not yet ready
+	void handlePass(void);	//re-check
+	void handleNick(void);	//re-check
+	void handleUser(void);	//re-check
+	void handleMode(void);	//done
 	void handleWhois(void);
 	void handlePing(void);
-	void handlePrivmsg(void);
+	void handlePrivmsg(void);	//done
+	void handlePart(void);	//will do david
+	void handleQuit(void);	//will do david
+	void handleKick(void);
+	void handleInvite(void);
+	void handleTopic(void);
+	void handleNotice(void);
 
 	//MODE helpers
+
 	bool validateModeParameters(void);
 	void processModes(Channel* channel);
 	bool processInvMode(Channel* channel, bool setMode, bool setModeHasChanged);
@@ -60,6 +67,9 @@ class MessageHandler
 	bool processUserLimitMode(Channel* channel, size_t i, bool setMode, bool setModeHasChanged);
 	bool processOperatorMode(Channel* channel, size_t i, bool setMode, bool setModeHasChanged);
 	void processChannelModes(Channel* channel, char mode, bool setMode, size_t i, bool setModeHasChanged);
+	void sendActiveChannelModes(Channel* channel);
+	void sendNotChannelOpErrorMessage(Channel* channel);
+	void sendChangedModes(std::string returnMsg, Channel* channel);
 
 	// void processParameterModes(Channel* channel, char mode, bool setMode, size_t i, bool setModeHasChanged);	//change to void (?)
 	// void processNonParameterModes(Channel* channel, char mode, bool setMode, bool setModeHasChanged);

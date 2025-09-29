@@ -48,7 +48,7 @@ enum class IrcErrorCode
 	ERR_USERSDISABLED,	// USERS command disabled
 	ERR_NOTREGISTERED,	// You have not registered
 	ERR_NEEDMOREPARAMS,	// Not enough parameters --
-	ERR_ALREADYREGISTRED,// Already registered
+	ERR_ALREADYREGISTERED,// Already registered
 	ERR_NOPERMFORHOST,	// No permission for operation
 	ERR_PASSWDMISMATCH,	// Password mismatch
 	ERR_YOUREBANNEDCREEP,// You're banned

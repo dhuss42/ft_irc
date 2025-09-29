@@ -10,7 +10,7 @@ CPPFILES = \
 	Channel.cpp \
 	Errors.cpp \
 	Message.cpp \
-	ParseHandler.cpp \
+	Parser.cpp \
 	utils.cpp \
 	ClientMilena.cpp \
 	IrcCodeGetters.cpp \
