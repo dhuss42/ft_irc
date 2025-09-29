@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/25 14:42:13 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/29 11:14:59 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/29 15:20:02 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -277,7 +277,8 @@ int	Client::authentication()
 		if (receiveMsg() == -1)
 			return (-1);
 	}
-	sendMsg("irc_custom", "001 " + _nick + " :Welcome to the IRC server");
+
+	sendResponse(_server->getName(), IrcResponseCode::RPL_WELCOME, "WelcomeMessage");
 	return (1);
 }
 

@@ -45,7 +45,8 @@ void parseHandler(std::string rawMessage, Client &client, Server &server)
 		handler.handlePrivmsg();	//still needs change to handler.
 	else if (message.command == "PART")
 		handler.handlePart();
-	// and other commands...
+	else if (message.command == "QUIT")
+		handler.handleQuit2();
 
 	else
 		client.sendError(server.getName(), IrcErrorCode::ERR_UNKNOWNCOMMAND, "Unknown command: " + message.command);

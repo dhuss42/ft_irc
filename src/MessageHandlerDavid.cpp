@@ -49,10 +49,7 @@ void	MessageHandler::handleQuit2(void)
 
 
 
-	std::string quitMsg = ":" + _client.getNick() + "!" +
-							_client.getUsername() + "@" +
-							_client.getHostname() +
-							" QUIT :" + reason + "\r\n";
+	std::string quitMsg = ":" + _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " QUIT :" + reason + "\r\n";
 
 	std::cout << "[DEBUG] " << quitMsg << std::endl;
 
@@ -76,7 +73,7 @@ void	MessageHandler::handleQuit2(void)
 		// send to the user if not the quitter
 	}
 
-	_client.sendRaw(quitMsg);
+	_client.sendRaw(quitMsg); // not sure if needed
 
 	for (auto iterate = recipients.begin(); iterate != recipients.end(); ++iterate)
 	{
@@ -90,24 +87,18 @@ void	MessageHandler::handleQuit2(void)
 void MessageHandler::handlePart(void)
 {
 	std::cout << MAGENTA << "HANDLE PART" WHITE << std::endl;
-	// need to type # before channel name otherwise irssi interprets it as reason for leaving
-	// if no channel is given the second parameter is the current channel
-	// max three parameters 1. PART 2. List of Channels to part from 3. reason
-
 
 	if (_message.params.size() < 2)
 	{
-		// _client.sendError(); // -> ERR_NEEDMOREPARAMS 461
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS, "Not enough parameters");
-		std::cout << "[Debug]: not enough params" << std::endl;
 		return ;
 	}
+
 	std::string reason;
 	if (_message.params.size() > 2)
 		reason = _message.params[2];
 
 	std::regex del(",");
-
 	std::sregex_token_iterator it(_message.params[1].begin(), _message.params[1].end(), del, -1);
 	std::sregex_token_iterator end;
 
@@ -118,13 +109,13 @@ void MessageHandler::handlePart(void)
 		std::cout << "[Debug]: " << channelName << std::endl;
 		if (!_server.isChannel(channelName))
 		{
-			std::cout << "[Debug]: Channel does not exist" << std::endl; // -> ERR_NOSUCHCHANNEL 403
+			std::cout << "[Debug]: Channel does not exist" << std::endl;
 			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL, channelName + ":No such Channel"); // problem with formating look in ir protocol
 			// 10:45 -!- #dhusssibussi: No such channel || is response on IRCnet but on server page not channel
 		}
 		else if (!_client.isJoinedChannel(channelName))
 		{
-			std::cout << "[Debug]: Not on Channel:" << std::endl; // -> ERR_NOTONCHANNEL 442
+			std::cout << "[Debug]: Not on Channel:" << std::endl;
 			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOTONCHANNEL, channelName + ":You're not on that channel");
 			// 10:43 -!- #test You're not on that channel || is response on IRCnet but on server page not channel
 		}
@@ -133,19 +124,19 @@ void MessageHandler::handlePart(void)
 			_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "PART " + channelName + " " + reason);
 			std::cout << "[Debug]: Removing from Channel " << channelName << std::endl;
 			_client.removeFromJoinedChannels(channelName);
-			// Channel* channel = _client.getJoinedChannel(channelName); --> seems as if it's not stored correctly
 			Channel* channel = _server.getChannel(channelName);
 			if (channel)
 			{
 				std::cout << "[Debug]: channel exists" << std::endl;
 				channel->broadcastUpdated(reason, &_client, "PART " + channelName);
 				channel->removeUser(&_client);
+				if (channel->getNbrUsers() == 0)
+					_server.removeChannel(channel);
 			}
 			else
 				std::cout << "[Debug]: channel does not exists" << std::endl;
 			// currently I get the status log but the ui is not changing back
 		}
 		++it;
-		// also check if the channel is empty now
 	}
 }
