@@ -52,6 +52,7 @@
 	-> disconnect after timeout?
 [] what happens when last Operator leaves channel but there are other clients still in the channel
 	-> make one an operator?
+[] when server is stopped with ctrl + c should every client receive quit?
 
 [] during first join
 	-> 12:37 -!- : No such channel

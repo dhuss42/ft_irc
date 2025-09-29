@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/25 14:42:13 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/29 15:20:02 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/29 16:10:35 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ Channel* Client::getJoinedChannel(const std::string& name)
 
 bool	Client::isJoinedChannel(const std::string& name)
 {
+	for (auto it = _joinedChannels.begin(); it != _joinedChannels.end(); ++it)
+		std::cout << YELLOW << "[DEBUG] " << _nick << " is part of: " << it->first << WHITE << std::endl;
 	if (_joinedChannels.find(name) != _joinedChannels.end())
 		return (true);
 	return (false);
@@ -59,8 +61,11 @@ bool	Client::isJoinedChannel(const std::string& name)
 /*------------------------------------------------------------------------------*/
 void	Client::addToJoinedChannels(Channel* channel)
 {
-	if (_joinedChannels.find(channel->getName()) != _joinedChannels.end())
-			_joinedChannels[channel->getName()] = channel;
+	if (_joinedChannels.find(channel->getName()) == _joinedChannels.end())
+	{
+		std::cout << YELLOW << "[DEBUG] " << _nick << " is joining: " << channel->getName() << WHITE << std::endl;
+		_joinedChannels[channel->getName()] = channel;
+	}
 }
 
 // RESULTED IN SEGFAULTS BECAUSE I CODED WHEN I SHOULD HAVE STOPPED ALREADY

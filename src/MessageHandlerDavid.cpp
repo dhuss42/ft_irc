@@ -110,7 +110,7 @@ void MessageHandler::handlePart(void)
 		if (!_server.isChannel(channelName))
 		{
 			std::cout << "[Debug]: Channel does not exist" << std::endl;
-			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL, channelName + ":No such Channel"); // problem with formating look in ir protocol
+			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL, channelName); // problem with formating look in ir protocol
 			// 10:45 -!- #dhusssibussi: No such channel || is response on IRCnet but on server page not channel
 		}
 		else if (!_client.isJoinedChannel(channelName))
