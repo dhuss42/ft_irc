@@ -40,7 +40,7 @@ void	Client::sendError(std::string name, IrcErrorCode code, std::string reply)
 /*------------------------------------------------------------------*/
 void	Client::sendResponse(std::string name, IrcResponseCode code, std::string reply)
 {
-	reply = ":" + name + " " + getIrcResponseCodeString(code) + " " + getNick() + " :" + reply + "\r\n";
+	reply = ":" + name + " " + getIrcResponseCodeString(code) + " " + getNick() + " " + reply + "\r\n";
 	std::cout << "[DEBUG] current reply: " << name << std::endl;
 	std::cout << "[DEBUG] sendMsg to " << getNick() << " socket=" << _socket << " msg=" << reply << std::endl;
 	if (send(_socket, reply.c_str(), reply.size(), 0) <= 0) // uncertain about the zero at the moment
