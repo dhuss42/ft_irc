@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/29 13:35:36 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/09/29 15:08:10 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,17 +173,9 @@ void	Server::newClient()
 	else
 	{
 		Client* client = new Client(newConnection.fd, this);
-		if (client->authentication() == -1) // this has to go once JOIN PASS NICK USER are ready
-		{
-			delete client;
-		}
-		else
-		{
-			_clientfd[newConnection.fd] = client;
-			_clientList[toLower(client->getNick())] = client;
-			_sockets.push_back(newConnection);
-		}
-		// handle properly successfull connection and unsuccessfull connection
+		_clientfd[newConnection.fd] = client;
+		_clientList[toLower(client->getNick())] = client;
+		_sockets.push_back(newConnection);
 	}
 }
 
