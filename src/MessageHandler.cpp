@@ -146,9 +146,9 @@ void MessageHandler::handleJoin(void)
 	std::string topic = channel->getTopic();
 	if (!topic.empty())
 	{
-		std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
+		std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname();
 		_client.sendResponse(prefix, IrcResponseCode::RPL_TOPIC,
-							"Topic for " + _message.params[1] + " :" + topic);
+							_message.params[1] + " :" + topic);
 	}
 
 	// Send channel user list to client
@@ -158,9 +158,9 @@ void MessageHandler::handleJoin(void)
 	{
 		std::cout << "[DEBUG]: entered if condition !users.empty" << std::endl;
 		//docu says to use response codes, but not sure if it works as it should here
-		std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname();
+		std::string prefix = _client.getNick() + "!@" + _client.getHostname();
 		_client.sendResponse(prefix, IrcResponseCode::RPL_NAMREPLY,
-							"=" + _message.params[1] + " " + users);
+							"* " + _message.params[1] + " " + users);
 		_client.sendResponse(prefix, IrcResponseCode::RPL_ENDOFNAMES,
 							_message.params[1] + " :End of /NAMES list.");
 	}

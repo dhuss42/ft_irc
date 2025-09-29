@@ -96,7 +96,7 @@
     - https://datatracker.ietf.org/doc/html/rfc1459#section-4.1.3
     ## --- post registration phase ---
     - MODE <nickname> +i -> server: confirms mode change
-    - WHOIS <nickname> (Requests information about users matching nickname) -> server: Send WHO replies
+    - WHO <nickname> (Requests information about users matching nickname) -> server: Send WHO replies
     ## --- keep alive ---
     - PING irc_custom -> server responds: PONG irc_custom
 
@@ -111,7 +111,7 @@
     - PRIVMSG -> (?) maybe channel command?
     - NICK
     - USER
-    - WHOIS
+    - WHO -> for automatic rquests from channel, wants to know who is in that channel
     ## --- channel commands ---
     - JOIN
     - PART
@@ -365,7 +365,10 @@ todo:
 
 - todo
     - how to nickname change -> tell it ui
-    - in User function server: sends welcome message
+    [x] in User function server: sends welcome message
+    [x] irssi sends after join #chan an automatic MODE #chan and then WHO #chan -> is standard in IRC clients
+    - and sometimes also  MODE #cha b
+    - 15:59 [Users #cha] 15:59 [ albi] and in server window: 15:59 -!- [Users @albi]
 
 ## ==== QUESTIONS ====
 - Parser job:
