@@ -171,9 +171,7 @@ bool MessageHandler::processOperatorMode(Channel* channel, size_t i, bool setMod
 	{
 		if (!_server.isClient(_message.params[i]))
 		{
-			//problem if _message.params[i] == this channel -> irssi window closes
-			// solution is adding emptyspace for now
-			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHNICK, " " + _message.params[i]);	//should go trotzdem avanti
+			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHNICK, _message.params[i]);
 			return false;
 		}
 		if (setModeHasChanged)

@@ -388,6 +388,10 @@ todo:
     [x] changed modes not to all users
     [x] You're not a channel operator message -> wrong format and in server window now
     - check all messages in right format (broadcast, error, respnse, msg, PRIVMSG)
+    - test privmsg
+    [x] test /mode o nosuchnick
+    [x] test /mode Not enough parameters
+    [???] join: users sometimes dont get listet all of them
 
 ## ==== QUESTIONS ====
 - Parser job:

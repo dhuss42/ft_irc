@@ -171,7 +171,7 @@ void MessageHandler::handlePass(void)
 		_client.setDisconnect(true);
 		return;
 	}
-	if (_client.getRegistered())	//create flag if client is already registered
+	if (_client.getRegistered())
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_ALREADYREGISTERED,
 						"Already registered");
