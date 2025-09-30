@@ -1,35 +1,33 @@
 
 #include "MessageHandler.hpp"
 
+/*----------------------------------------------------------------------*/
+/* Quit																	*/
+/*	- check if client send reason										*/
+/*	- loop over channels that client is part of							*/
+/* 	- for every channel extract recipients excluding quitter			*/
+/*	- send quit message to recipients									*/
+/*	- set Disconnect bool for client									*/
+/*----------------------------------------------------------------------*/
 void	MessageHandler::handleQuit(void)
 {
-	std::cout << MAGENTA << "HANDLE QUIT2" WHITE << std::endl;
 	std::string	reason;
 	if (_message.params.size() == 2)
 		reason = _message.params[1];
 
 	std::unordered_set<Client*> recipients;
 	std::unordered_map<std::string, Channel*> joinedChannels = _client.getJoinedChannels();
-	// loop over al joined channels and send message to all clients in those channels except when it's the client himself
 	for (auto it = joinedChannels.begin(); it != joinedChannels.end(); ++it)
 	{
-		std::cout << "[DEBUG] user is part of Channel: " << it->second->getName() << std::endl;
 		std::map<std::string, Client*> users = it->second->getUsers();
 		for (auto iter = users.begin(); iter != users.end(); ++iter)
 		{
 			if (iter->second != &_client)
-			{
-				std::cout << "[DEBUG] For Channel: " << it->second->getName() << " Found user: " << iter->second->getNick() << std::endl;
 				recipients.insert(iter->second);
-			}
 		}
-
 	}
 	for (auto iterate = recipients.begin(); iterate != recipients.end(); ++iterate)
-	{
-		(*iterate)->sendMsg((*iterate)->getNick() + "!" + (*iterate)->getUsername() + "@" + (*iterate)->getHostname() + " ", "QUIT :" + reason);
-		// not sure if this is entirely correct but when I send it with the quitting clients info irssi does not respond have to double check
-	}
+		(*iterate)->sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "QUIT :" + reason);
 	_client.setDisconnect(true);
 }
 

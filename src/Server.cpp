@@ -76,7 +76,7 @@ void	Server::parseArgs(const std::string& portNbr, const std::string& password)
 		}
 		else
 			throw (Errors(ErrorCode::E_PRT));
-		if (all_of(password.begin(), password.end(), ::isprint))
+		if (!password.empty() && all_of(password.begin(), password.end(), ::isprint))
 			_password = password;
 		else
 			throw (Errors(ErrorCode::E_PSSWRD));

@@ -1,40 +1,30 @@
 # File to track progress for inception project and to list the next to dos
 
 ## To dos
-[] update authentication process
-	- currently it is waiting on the booleans to turn true but it should only check once respectively wether NICK, PASS, USER were successfull otherwise it will not delete the client object
-		- results in not properly closing the connection when pass is incorrect
-	- solution is to non-block authentication during newClient. The Client should be simply incldued in the list and the complete registration should only happen when all three commands are parsed and handled
-		- PASS, NICK, USER should send a return value that indicated wether the command sent during registration was successfull. if one of them fails the user has to be disconected
-		- send welcome message when connected
-	[x] check how to handle disconnectClient from Server method
+
+### lowerCase names
 [] could be that more bugs occur where names have not been changed to lowercase resulting in segfaults
-[] add @ for operator inside chat
-	- the clients who are not operator see the @ but since the broadcast message does not send to the original sender his nick is displayed without @ in his chat
-	- means that the operator needs a change in nick for that channel so it can be displayed in irssi
-	-> operators are stored in two containers
-		-> channel users
-		-> channel operators
-		-> when doing something channel specific check operators containers
-		-> when doing something from outside check channel users
-[x] server is slow at times -> RESOLVED
-	- could be because of authentication loop
-[x] when two users in the same channel have the same nick they are treated as the same, one client receives two messages and the other does not receive any
-	[x] currently server is not handling two cliebnts with same nick. Either not allow it or suffixs "_" to the nick
-[] test userlimit when set in channel
-	-> inside the irssi Client it looks like the User joined a channel
-	-> original irssi servers hinder from joining
+
+### Server
 [] test userLimit on Server
 	[] think about implementing a cap for users to Join since the server is not allowed to shutdown
+[] when server is stopped with ctrl + c should every client receive quit?
+	-> maybe an error message so irssi doesn't freeze in it's state?
+
+
+### Channels
 [] How Many Channels can 1 user join?
 	- consider enforcing a limit for Channels
+
+### Leaks
 [] check for leaks again
 	[x] free all channels when server stops
 	[x] also Make methods for cleaning up clients and closing sockets and callthem in destructor instead of doing it all in destructor
-[x] register on intra
+
+### Eval Linux
 [] test on Linux
-[] eval Point
-[] clean up
+
+### clean up
 	[x] make some sort of order in files
 	[x] look for functions that are not used
 	[x] add 42 header everywhere
@@ -42,18 +32,32 @@
 	[] non-member methods like in utils.cpp look up ruling in 42
 	[] consier what to display during server run (not a lot since std::cout hinders performance)
 	[x] delete Architecture branch
+
+### send
 [] test strange printf input with nc -> segfaulted
 [] maybe implement clientSendBuffer because if segfault
 	- try to replicate segfault first
-[] check for signals
-[x] default constructor
+
+### Authentication
 [] what do we do when a Client connects and only sends part of the Authentication?
 	-> PASS but not NICK and USER
 	-> disconnect after timeout?
+
+### parssing
+[x] when password is empty string the client is able to connect with providing no password and also with "", but is never disconnected -> remains in limbo
+	-> empty, "", '', "'
+[] think about further problematic things password
+	- max length for password
+[] currently when passing "" as portnbr server is stuck in Error message
+
+### part / kick / quit
 [] what happens when last Operator leaves channel but there are other clients still in the channel
 	-> make one an operator?
-[] when server is stopped with ctrl + c should every client receive quit?
 
+### quit
+[x] clients send quit to all channels when closing the window
+
+### join
 [] during first join
 	-> 12:37 -!- : No such channel
 
@@ -498,7 +502,8 @@ For leak check at School start Dockerfile in directory
 - finished Quit and Part
 - got eval Points
 
-## ====== Day 28 == 30.09 ====== (6h)
+## ====== Day 28 == 30.09 ====== (8h)
 - nearly finished kick
 	- problem with ui not responding properly
 - lots of small patches for different function to make everything work
+- fixed but for quit where the recipients name was displayed in quit message in channel
