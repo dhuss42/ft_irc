@@ -93,21 +93,6 @@ void MessageHandler::handleJoin(void)
 {
 	std::cout << "[DEBUG] JOIN: " << std::endl;
 
-	// //leaving channels (problem: irssi still opens a chatwindow called #0)
-	// if (_message.params[1][1] == '0')	//irssi does not handle this
-	// {
-	// 	std::cout << "[DEBUG]: entered if condition 0" << std::endl;
-	// 	std::unordered_map <std::string, Channel* > chanList = _server.getChannelUnoMap();
-	// 	for (auto it = chanList.begin(); it != chanList.end(); it++)
-	// 	{
-	// 		it->second->removeUser(&_client);	//not working
-	// 		std::string joinMsg = _client.getNick() + " [~" +
-	// 					_client.getUsername() + "@" + _client.getHostname() +
-	// 					"] has left " + _message.params[1] + "\n";
-	// 	}
-	// 	return;
-	// }
-
 	if (_message.params.size() < 2)
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
@@ -119,51 +104,27 @@ void MessageHandler::handleJoin(void)
 		_client.sendMsg(_server.getName(), _message.params[0] + _message.params[1]);
 		return ;
 	}
+	std::string chan = _message.params[1];
+	std::string key;
+	if (_message.params.size() > 2)
+		key = _message.params[2];
 	Channel* channel;
-	if (_server.isChannel(_message.params[1]))
-		channel = _server.getChannel(_message.params[1]);
+	if (_server.isChannel(chan))
+		channel = _server.getChannel(chan);
 	else
 	{
-		channel = _server.createChannel(_message.params[1], &_client);
+		channel = _server.createChannel(chan, &_client);
 		if (!channel)
 		{
 			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL,
-							_message.params[1]);
+							chan);
 			return;
 		}
 	}
-	if (!channel->addUser(&_client, _message.params[2]))
+	if (!channel->addUser(&_client, key))
 		return ;
 
-	// Send message to channel that <nick> has joined
-	std::string joinMsg = _client.getNick() + " [~" +
-						_client.getUsername() + "@" + _client.getHostname() +
-						"] has joined " + _message.params[1] + "\n";
-	channel->broadcast(joinMsg, &_client);
-	std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " JOIN " + channel->getName() + " :";
-	_client.sendMsg(prefix, joinMsg);
-
-	std::string topic = channel->getTopic();
-	if (!topic.empty())
-	{
-		std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname();
-		_client.sendResponse(prefix, IrcResponseCode::RPL_TOPIC,
-							_message.params[1] + " :" + topic);
-	}
-
-	// Send channel user list to client
-	std::string users = channel->getJoinedUsers();
-	std::cout << "[DEBUG]: get joined users:" << users.size() << " " << users << std::endl;
-	if (!users.empty())
-	{
-		std::cout << "[DEBUG]: entered if condition !users.empty" << std::endl;
-		std::string prefix = _client.getNick() + "!@" + _client.getHostname();
-		_client.sendResponse(prefix, IrcResponseCode::RPL_NAMREPLY,
-							"* " + _message.params[1] + " " + users);
-		_client.sendResponse(prefix, IrcResponseCode::RPL_ENDOFNAMES,
-							_message.params[1] + " :End of /NAMES list.");
-	}
-	//maybe send also creation time
+	sendJoinTopicUserlistMsg(channel);
 }
 
 /*------------------------------------------------------------------------------

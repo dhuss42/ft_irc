@@ -58,7 +58,7 @@ class MessageHandler
 	void handleTopic(void);
 	void handleNotice(void);
 
-	//MODE helpers
+	//MODE Utils
 
 	bool validateModeParameters(void);
 	void processModes(Channel* channel);
@@ -72,8 +72,9 @@ class MessageHandler
 	void sendNotChannelOpErrorMessage(Channel* channel);
 	void sendChangedModes(std::string returnMsg, Channel* channel);
 
-	// void processParameterModes(Channel* channel, char mode, bool setMode, size_t i, bool setModeHasChanged);	//change to void (?)
-	// void processNonParameterModes(Channel* channel, char mode, bool setMode, bool setModeHasChanged);
+	//JOIN utils
+
+	void sendJoinTopicUserlistMsg(Channel* channel);
 };
 
 

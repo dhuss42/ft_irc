@@ -375,6 +375,9 @@ todo:
             18:27 [david4] -!- Irssi: Looking up localhost
     - _server.getClient(cleanNick);	//not working anymore ?!
     - finish WHO
+    -  MODE #chan b -> handle it
+
+## ====== Day 18 == 30.09.2025 ======
 
 ## ==== QUESTIONS ====
 - Parser job:
