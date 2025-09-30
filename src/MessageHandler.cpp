@@ -237,7 +237,7 @@ void MessageHandler::handleNick(void)
 		std::cout << "[DEBUG] NICK change nickname " << newNick << std::endl;
 		std::string oldNick = _client.getNick();
 		std::string prefix = oldNick + "!" + _client.getUsername() + "@" + _client.getHostname() + " NICK " + newNick + " :";
-		// updateNicknameInChannels(client, oldNick, newNick, nickChangeMsg);
+		updateNicknameInChannels(newNick);
 		// server.broadcastMessage(client, "", nickChangeMsg);	//??
 		_client.sendMsg(prefix, "");
 	}

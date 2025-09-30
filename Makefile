@@ -17,7 +17,8 @@ CPPFILES = \
 	MessageHandler.cpp \
 	MessageHandlerDavid.cpp \
 	ModeUtils.cpp \
-	JoinUtils.cpp
+	JoinUtils.cpp \
+	HandlerUtils.cpp
 
 SRCS = $(addprefix $(SRC_DIR)/, $(CPPFILES))
 OBJS = $(addprefix $(OBJ_DIR)/, $(CPPFILES:.cpp=.o))
