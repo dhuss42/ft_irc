@@ -43,6 +43,7 @@ bool	verifyNickName(const std::string& name)
 		case '}':
 		case '\\':
 		case '|':
+		case '_':
 			continue;
 		default:
 			if (std::isalnum(static_cast<unsigned char>(c))) {

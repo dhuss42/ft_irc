@@ -89,6 +89,23 @@ void	Client::removeFromAllJoinedChannels()
 	_joinedChannels.clear();
 }
 
+void	Client::updateNickInChannels(const std::string& newNick)
+{
+	std::map<std::string, Client*> channelUsers;
+	for (auto it = _joinedChannels.begin(); it != _joinedChannels.end(); ++it)
+	{
+		channelUsers = it->second->getUsers();
+		auto iter = channelUsers.find(newNick);
+		if (iter != channelUsers.end())
+		{
+			Client* clientPtr = iter->second;
+			channelUsers.erase(_nick);
+			channelUsers[newNick] = clientPtr;
+		}
+	}
+}
+
+
 std::unordered_map<std::string, Channel*> Client::getJoinedChannels(void)
 {
 	return (_joinedChannels);
