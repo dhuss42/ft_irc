@@ -385,6 +385,9 @@ todo:
 - todo:
     - when entering in channel [users] only me
     - /mode -o me -> i can still operate
+    [x] changed modes not to all users
+    - You're not a channel operator message -> wrong format and in server window now
+    - check all messages in right format (broadcast, error, respnse, msg, PRIVMSG)
 
 ## ==== QUESTIONS ====
 - Parser job:

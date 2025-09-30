@@ -293,8 +293,12 @@ void MessageHandler::handleUser()
 		_client.setHostname(_message.params[1]);
 
 	_client.setUsernameSet(true);
-	if (_client.getRegistered())
+	if (_client.getRegistered() && _client.getNickSet())
+	{
 		_client.sendResponse(_server.getName(), IrcResponseCode::RPL_WELCOME, "Welcome to our super nice IRC server!");
+
+		//initialize clientlist
+	}
 }
 
 /*------------------------------------------------------------------------------
