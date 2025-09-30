@@ -467,7 +467,7 @@ void MessageHandler::handlePrivmsg()
 		Channel* channel = _server.getChannel(target);
 		if (channel && channel->getJoinedUsers().find(_client.getNick()) != std::string::npos)
 		{
-			channel->broadcast(message, &_client);
+			channel->broadcastUpdated(message, &_client, "PRIVMSG " + channel->getName());
 		}
 		else
 			_client.sendError(_server.getName(), IrcErrorCode::ERR_CANNOTSENDTOCHAN,

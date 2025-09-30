@@ -375,7 +375,7 @@ todo:
             18:27 [david4] -!- Irssi: Looking up localhost
     - _server.getClient(cleanNick);	//not working anymore ?!
     - finish WHO
-    -  MODE #chan b -> handle it
+    [x] MODE #chan b -> handle it
 
 ## ====== Day 18 == 30.09.2025 ======
 - finished PING
@@ -384,7 +384,7 @@ todo:
 
 - todo:
     - when entering in channel [users] only me
-    - /mode -o me -> i can still operate
+    [x] /mode -o me -> i can still operate
     [x] changed modes not to all users
     - You're not a channel operator message -> wrong format and in server window now
     - check all messages in right format (broadcast, error, respnse, msg, PRIVMSG)

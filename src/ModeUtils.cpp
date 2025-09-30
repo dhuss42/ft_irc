@@ -18,7 +18,7 @@ Send active cahnnel modes and parameters into channel to user that asked for it
 ------------------------------------------------------------------------------*/
 void MessageHandler::sendActiveChannelModes(Channel *channel)
 {
-	std::string activeModes = channel->getActiveChannelModes() + channel->getActiveChannelParameters();
+	std::string activeModes = channel->getActiveChannelModes() + " " + channel->getActiveChannelParameters();
 	_client.sendResponse(_server.getName(),
 				IrcResponseCode::RPL_CHANNELMODEIS,
 				channel->getName() + " " + activeModes);
@@ -30,10 +30,8 @@ mode changes but has no operator privileges
 ------------------------------------------------------------------------------*/
 void MessageHandler::sendNotChannelOpErrorMessage(Channel *channel)
 {
-	std::string prefix = _client.getNick() + "!" + _client.getUsername()
-				+ "@" + _client.getHostname() + " PRIVMSG " + channel->getName() + " :";
-	_client.sendError(prefix, IrcErrorCode::ERR_CHANOPRIVSNEEDED,
-				channel->getName() + " You're not a channel operator");
+	_client.sendError(_server.getName(), IrcErrorCode::ERR_CHANOPRIVSNEEDED,
+				channel->getName() + " :You're not a channel operator.");
 }
 
 /*------------------------------------------------------------------------------
