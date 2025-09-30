@@ -67,16 +67,15 @@ void	MessageHandler::handleQuit2(void)
 }
 
 // PART
+// could split further into smaller methods
+// could refactor thelogic with getting the channel at the beginning and saving the extra validation check for nullptr
 void MessageHandler::handlePart(void)
 {
-	std::cout << MAGENTA << "HANDLE PART" WHITE << std::endl;
-
 	if (_message.params.size() < 2)
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS, "Not enough parameters");
 		return ;
 	}
-
 	std::string reason;
 	if (_message.params.size() > 2)
 		reason = _message.params[2];
@@ -88,37 +87,48 @@ void MessageHandler::handlePart(void)
 	while (it != end)
 	{
 		std::string channelName = *it;
-
-		std::cout << "[Debug]: " << channelName << std::endl;
 		if (!_server.isChannel(channelName))
-		{
-			std::cout << "[Debug]: Channel does not exist" << std::endl;
-			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL, channelName); // problem with formating look in ir protocol
-		}
+			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL, channelName);
 		else if (!_client.isJoinedChannel(channelName))
-		{
-			std::cout << "[Debug]: Not on Channel:" << std::endl;
-			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOTONCHANNEL, channelName + ":You're not on that channel");
+			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOTONCHANNEL, channelName + ":You're not on that channel"); // this is not sending correct format
 			// 10:43 -!- #test You're not on that channel || is response on IRCnet but on server page not channel
-		}
 		else
 		{
 			_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "PART " + channelName + " " + reason);
-			std::cout << "[Debug]: Removing from Channel " << channelName << std::endl;
 			_client.removeFromJoinedChannels(channelName);
 			Channel* channel = _server.getChannel(channelName);
 			if (channel)
 			{
-				std::cout << "[Debug]: channel exists" << std::endl;
 				channel->broadcastUpdated(reason, &_client, "PART " + channelName);
 				channel->removeUser(&_client);
 				if (channel->getNbrUsers() == 0)
 					_server.removeChannel(channel);
 			}
-			else
-				std::cout << "[Debug]: channel does not exists" << std::endl;
-			// currently I get the status log but the ui is not changing back
 		}
 		++it;
 	}
+}
+
+// KICK
+void	MessageHandler::handleKick(void)
+{
+	for (auto it = _message.params.begin(); it != _message.params.end(); ++it)
+		std::cout << YELLOW << "[DEBUG] params: " << *it << WHITE << std::endl;
+
+	if (_message.params.size() < 2)
+	{
+		std::cout << RED << "[DEBUG] not enough params" WHITE << std::endl;
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS, "Not enough parameters");
+		return ;
+	}
+
+	//  ERR_NOSUCHCHANNEL (403) 
+	//  ERR_CHANOPRIVSNEEDED (482) 
+	//  ERR_USERNOTINCHANNEL (441) 
+	//  ERR_NOTONCHANNEL (442)
+
+
+
+	// kick user from Channel and check if kicker has priviledges to do so
+	// 	void	Channel::kickUser(Client* kicker, std::string kicked)
 }

@@ -12,14 +12,14 @@
 
 #include "Server.hpp"
 
-/*--------------------------------------------------------*/
-/* sig_atomic_t	*/
-/*	-> the signal handler won't interrupt a write and leave the varialbe in a corrupted state*/
-/* volatile	*/
-/* 	-> tells compiler to always go into memory when reading/writing */
-/*	-> otherwise compile can assume that the variable will nerver change */
-/*	-> caches the value */
-/*--------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------*/
+/* sig_atomic_t																					*/
+/*	-> the signal handler won't interrupt a write and leave the varialbe in a corrupted state	*/
+/* volatile																						*/
+/* 	-> tells compiler to always go into memory when reading/writing								*/
+/*	-> otherwise compile can assume that the variable will nerver change						*/
+/*	-> caches the value																			*/
+/*----------------------------------------------------------------------------------------------*/
 static volatile sig_atomic_t shouldExit = 0;
 
 //================================> Constructor & Destructor <================================//
@@ -174,7 +174,7 @@ void	Server::newClient()
 	{
 		Client* client = new Client(newConnection.fd, this);
 		_clientfd[newConnection.fd] = client;
-		_clientList[toLower(client->getNick())] = client;
+		// _clientList[toLower(client->getNick())] = client;
 		_sockets.push_back(newConnection);
 	}
 }
