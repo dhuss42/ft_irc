@@ -61,7 +61,7 @@ class Channel
 		// ======= send Messages =======//
 		void	broadcast(const std::string& msg, Client* sender);
 		void	broadcastUpdated(const std::string& content, Client* sender, const std::string& command);
-
+		
 		void	changeTopic(const std::string& topic, const Client* client);
 
 		// ======= verify Clients =======//

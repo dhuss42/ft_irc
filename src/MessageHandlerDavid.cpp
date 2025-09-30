@@ -155,11 +155,8 @@ void	MessageHandler::handleKick(void)
 		if (_message.params.size() == 4)
 			reason = _message.params[3];
 
-		// std::string kickMsg = ":" + _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " KICK " + _message.params[1] + " " + kicked->getNick();
-
 		channel->broadcastUpdated(reason, &_client, "KICK " + _message.params[1] + " " + kicked->getNick());
-		// :maustel!david@david KICK #test david :bye bye
-		_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "KICK " + _message.params[1] + " " + kicked->getNick() + " :" + reason);
+		_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "KICK " + _message.params[1] + " " + kicked->getNick() + " " + reason);
 		std::cout << RED "[DEBUG] removing :" << kicked->getNick() << WHITE << std::endl;
 		channel->kickUser(&_client, _message.params[2]);
 		kicked->removeFromJoinedChannels(_message.params[1]);

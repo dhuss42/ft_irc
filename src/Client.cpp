@@ -102,7 +102,9 @@ void	Client::updateNickInChannels(const std::string& newNick)
 			channelUsers.erase(_nick);
 			channelUsers[newNick] = clientPtr;
 		}
+		std::cout << "[DEBUG] printing all users in Channel: " << it->first << "\n\t" << it->second->getJoinedUsers();
 	}
+
 }
 
 
