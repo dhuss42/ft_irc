@@ -12,7 +12,7 @@
 
 #include "MessageHandler.hpp"
 
-void MessageHandler::updateNicknameInChannels(std::string &newNick)
+void MessageHandler::broadcastNicknameInChannels(std::string &newNick)
 {
 	std::unordered_map<std::string, Channel*> joinedChannels = _client.getJoinedChannels();
 	for (auto it = joinedChannels.begin(); it != joinedChannels.end(); ++it)

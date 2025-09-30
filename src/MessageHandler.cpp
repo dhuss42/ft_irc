@@ -222,23 +222,20 @@ void MessageHandler::handleNick(void)
 		return ;
 	if (_server.isClient(newNick))
 	{
-		std::cout << "[DEBUG] nick is already in use! " << newNick << std::endl;
-		_client.sendError(_server.getName(), IrcErrorCode::ERR_NICKNAMEINUSE,		//need clientList here
-						newNick + " :Nickname is already in use, choose another one");
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_ERRONEUSNICKNAME,
+						newNick + " Nickname is already in use, choose another one");
 		if (!_client.getNickSet())
 			_client.setDisconnect(true);
 		return;
 	}
-	if (!_server.isClient(newNick))
-		std::cout << "[DEBUG] nick is not yet in use! " << newNick << std::endl;
 
 	if (_client.getNickSet())//send something to client so he knows the new nickname?
 	{
 		std::cout << "[DEBUG] NICK change nickname " << newNick << std::endl;
 		std::string oldNick = _client.getNick();
 		std::string prefix = oldNick + "!" + _client.getUsername() + "@" + _client.getHostname() + " NICK " + newNick + " :";
-		updateNicknameInChannels(newNick);
-		// server.broadcastMessage(client, "", nickChangeMsg);	//??
+		// updateNicknameInChannels();
+		broadcastNicknameInChannels(newNick);
 		_client.sendMsg(prefix, "");
 	}
 
