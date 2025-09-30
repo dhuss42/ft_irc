@@ -45,9 +45,21 @@ void MessageHandler::sendJoinTopicUserlistMsg(Channel *channel)
 	{
 		std::string prefix = _client.getNick() + "!@" + _client.getHostname();
 		_client.sendResponse(prefix, IrcResponseCode::RPL_NAMREPLY,
-							"* " + _message.params[1] + " " + users);
+							"* " + channel->getName() + " " + users);
 		_client.sendResponse(prefix, IrcResponseCode::RPL_ENDOFNAMES,
-							_message.params[1] + " :End of /NAMES list.");
+							channel->getName() + " :End of /NAMES list.");
 	}
 	//maybe send also creation time
+}
+
+void MessageHandler::splitString(const std::string& str, char delimiter,
+					std::vector<std::string>& tokens)
+{
+	std::stringstream ss(str);
+	std::string token;
+
+	while (std::getline(ss, token, delimiter))
+	{
+		tokens.push_back(token);
+	}
 }

@@ -87,7 +87,14 @@ void MessageHandler::handleCap(void)
 }
 
 /*------------------------------------------------------------------------------
-
+JOIN <channel>[,<channel>] [<key>[,<key>]]
+	- Joins one or more channels in a single command
+	- Each channel can optionally require a key
+	- Returns error if insufficient parameters
+	- Creates new channels if they don't exist
+	- Adds user to all valid channels with proper keys
+	- Continues processing remaining channels even if some fail
+	example: JOIN #channel1,#channel2,#channel3 key1,key2
 ------------------------------------------------------------------------------*/
 void MessageHandler::handleJoin(void)
 {
@@ -104,27 +111,39 @@ void MessageHandler::handleJoin(void)
 		_client.sendMsg(_server.getName(), _message.params[0] + _message.params[1]);
 		return ;
 	}
-	std::string chan = _message.params[1];
-	std::string key;
-	if (_message.params.size() > 2)
-		key = _message.params[2];
-	Channel* channel;
-	if (_server.isChannel(chan))
-		channel = _server.getChannel(chan);
-	else
-	{
-		channel = _server.createChannel(chan, &_client);
-		if (!channel)
-		{
-			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL,
-							chan);
-			return;
-		}
-	}
-	if (!channel->addUser(&_client, key))
-		return ;
 
-	sendJoinTopicUserlistMsg(channel);
+	std::vector<std::string> channels;
+	splitString(_message.params[1], ',', channels);
+
+	std::vector<std::string> keys;
+	if (_message.params.size() > 2 && _message.params[2] != "")
+		splitString(_message.params[2], ',', keys);
+
+	for (size_t i = 0; i < channels.size(); ++i)
+	{
+		std::string& channelName = channels[i];
+		if (channelName.empty())
+			continue;
+		Channel* channel;
+		if (_server.isChannel(channelName))
+			channel = _server.getChannel(channelName);
+		else
+		{
+			channel = _server.createChannel(channelName, &_client);
+			if (!channel)
+			{
+				_client.sendError(_server.getName(),
+						IrcErrorCode::ERR_NOSUCHCHANNEL, channelName);
+				continue;
+			}
+		}
+		std::string key;
+		if (!keys.empty() && i < keys.size())
+			key = keys[i];
+		if (!channel->addUser(&_client, key))
+			continue;
+		sendJoinTopicUserlistMsg(channel);
+	}
 }
 
 /*------------------------------------------------------------------------------

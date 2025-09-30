@@ -75,6 +75,7 @@ class MessageHandler
 	//JOIN utils
 
 	void sendJoinTopicUserlistMsg(Channel* channel);
+	void splitString(const std::string& str, char delimiter, std::vector<std::string>& tokens);
 };
 
 
