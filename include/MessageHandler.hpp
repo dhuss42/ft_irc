@@ -42,17 +42,17 @@ class MessageHandler
 	~MessageHandler();
 
 	void handleCap(void);	//done
-	void handleJoin(void);	//not yet ready
+	void handleJoin(void);	//done
 	void handlePass(void);	//re-check
 	void handleNick(void);	//re-check
 	void handleUser(void);	//re-check
 	void handleMode(void);	//done
-	void handleWho(void);
-	void handlePing(void);
+	void handleWho(void);	//in process
+	void handlePing(void);	//done
 	void handlePrivmsg(void);	//done
 	void handlePart(void);	//will do david
 	void handleQuit(void);	//will do david
-	void handleQuit2(void);
+	void handleQuit2(void);	//david
 	void handleKick(void);
 	void handleInvite(void);
 	void handleTopic(void);
@@ -68,6 +68,7 @@ class MessageHandler
 	bool processUserLimitMode(Channel* channel, size_t i, bool setMode, bool setModeHasChanged);
 	bool processOperatorMode(Channel* channel, size_t i, bool setMode, bool setModeHasChanged);
 	void processChannelModes(Channel* channel, char mode, bool setMode, size_t i, bool setModeHasChanged);
+	void processBanlistMode(Channel* channel);
 	void sendActiveChannelModes(Channel* channel);
 	void sendNotChannelOpErrorMessage(Channel* channel);
 	void sendChangedModes(std::string returnMsg, Channel* channel);

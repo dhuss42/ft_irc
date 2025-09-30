@@ -327,11 +327,6 @@ void MessageHandler::handleMode()
 		sendActiveChannelModes(channel);
 		return ;
 	}
-	if (!channel->isOperator(&_client))
-	{
-		sendNotChannelOpErrorMessage(channel);
-		return;
-	}
 	if (!validateModeParameters())
 		return;
 	processModes(channel);
@@ -416,14 +411,23 @@ void MessageHandler::handleWho()
 }
 
 /*------------------------------------------------------------------------------
-
+The PING command is sent by clients to check the other side of
+the connection is still connected and/or to check for connection latency,
+at the application layer.
+Servers must reply to it with a PONG message with the same <token> value.
 ------------------------------------------------------------------------------*/
 void MessageHandler::handlePing()
 {
 	std::cout << "[DEBUG] PING: " << std::endl;
-	if (_message.params[1].empty())
-		return ;	//Send error message
-	_client.sendMsg("irc_custom", "PONG " + _message.params[1]);
+
+	if (_message.params.size() < 2 || _message.params[1].empty())
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
+						"Not enough parameters");
+		return;
+	}
+
+	_client.sendMsg(_server.getName(), "PONG " + _message.params[1]);
 }
 
 /*------------------------------------------------------------------------------

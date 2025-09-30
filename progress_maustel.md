@@ -378,6 +378,13 @@ todo:
     -  MODE #chan b -> handle it
 
 ## ====== Day 18 == 30.09.2025 ======
+- finished PING
+- added chan b banlist
+- finsihed join (mor than one channel)
+
+- todo:
+    - when entering in channel [users] only me
+    - /mode -o me -> i can still operate
 
 ## ==== QUESTIONS ====
 - Parser job:

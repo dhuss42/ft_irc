@@ -41,7 +41,7 @@ Send all changed modes and parameters into channel to all users in that channel
 ------------------------------------------------------------------------------*/
 void MessageHandler::sendChangedModes(std::string returnMsg, Channel *channel)
 {
-	std::string activeModes = channel->getActiveChannelModes() + channel->getActiveChannelParameters();
+	std::string activeModes = channel->getActiveChannelModes() + " " + channel->getActiveChannelParameters();
 	_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(),
 		"Mode " + channel->getName() + " " + returnMsg);
 }
@@ -197,10 +197,28 @@ bool MessageHandler::processOperatorMode(Channel* channel, size_t i, bool setMod
 }
 
 /*------------------------------------------------------------------------------
+Client automatically sends /mode #chan b to get banlist
+We dont have any banlist, so we send empty reply
+------------------------------------------------------------------------------*/
+void MessageHandler::processBanlistMode(Channel *channel)
+{
+	std::string prefix = _client.getNick() + "!@" + _client.getHostname();
+	_client.sendResponse(prefix, IrcResponseCode::RPL_BANLIST,
+							channel->getName());
+	_client.sendResponse(prefix, IrcResponseCode::RPL_ENDOFBANLIST,
+							channel->getName() + " :End of Channel Ban List.");
+}
+
+/*------------------------------------------------------------------------------
 Main orchestrator function to devide in explicit modes
 ------------------------------------------------------------------------------*/
 void MessageHandler::processChannelModes(Channel* channel, char mode, bool setMode, size_t i, bool setModeHasChanged)
 {
+	if (mode != 'b' && !channel->isOperator(&_client))
+	{
+		sendNotChannelOpErrorMessage(channel);
+		return ;
+	}
 	switch (mode)
 	{
 		case 'i':
@@ -218,6 +236,9 @@ void MessageHandler::processChannelModes(Channel* channel, char mode, bool setMo
 		case 'o':
 			processOperatorMode(channel, i, setMode, setModeHasChanged);
 			break;
+		case 'b':
+			processBanlistMode(channel);
+			break;
 	}
 }
 
@@ -228,10 +249,11 @@ iterates through parameter and mode characters and calls corresponding modeFunct
 	- k
 	- l
 	- o
+	- b
 ------------------------------------------------------------------------------*/
 void MessageHandler::processModes(Channel* channel)
 {
-	const std::string modeChars = "ikolt";
+	const std::string modeChars = "ikoltb";
 	bool setMode = true;
 	bool setModeHasChanged = true;
 	for(size_t i = 2; i < _message.params.size(); i++)
@@ -273,7 +295,7 @@ Checks for enough parameters and unknown mode characters
 ------------------------------------------------------------------------------*/
 bool MessageHandler::validateModeParameters()
 {
-	const std::string allowedChars = "-+ikolt";
+	const std::string allowedChars = "-+ikoltb";
 	for(size_t i = 2; i < _message.params.size(); i++)
 	{
 		std::string mode = _message.params[i];
