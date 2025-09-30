@@ -234,7 +234,7 @@ void MessageHandler::handleNick(void)
 		std::cout << "[DEBUG] NICK change nickname " << newNick << std::endl;
 		std::string oldNick = _client.getNick();
 		std::string prefix = oldNick + "!" + _client.getUsername() + "@" + _client.getHostname() + " NICK " + newNick + " :";
-		// updateNicknameInChannels();
+		_client.updateNickInChannels(newNick);
 		broadcastNicknameInChannels(newNick);
 		_client.sendMsg(prefix, "");
 	}
@@ -294,7 +294,6 @@ void MessageHandler::handleUser()
 	{
 		_client.sendResponse(_server.getName(), IrcResponseCode::RPL_WELCOME, "Welcome to our super nice IRC server!");
 		_server.addToClientList(&_client);
-		//initialize clientlist
 	}
 }
 

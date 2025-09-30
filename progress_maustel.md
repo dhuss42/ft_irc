@@ -369,8 +369,8 @@ todo:
     [x] irssi sends after join #chan an automatic MODE #chan and then WHO #chan -> is standard in IRC clients
     - sometimes also MODE #chan b
     [x] 15:59 [Users #cha] 15:59 [ albi] and in server window: 15:59 -!- [Users @albi] -> was symbol of "* "
-    - rework on nick -> nickname already exists -> need clientlist earlier
-    - need updateNicknameInChannels
+    [x] rework on nick -> nickname already exists
+    [x] need updateNicknameInChannels
     - sometimes happens -!- Irssi: Removed reconnection to server localhost port 1111
             18:27 [david4] -!- Irssi: Looking up localhost
     [x] _server.getClient(cleanNick);	//not working anymore ?!
