@@ -41,9 +41,10 @@ Send all changed modes and parameters into channel to all users in that channel
 ------------------------------------------------------------------------------*/
 void MessageHandler::sendChangedModes(std::string returnMsg, Channel *channel)
 {
-	std::string activeModes = channel->getActiveChannelModes() + " " + channel->getActiveChannelParameters();
-	_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(),
-		"Mode " + channel->getName() + " " + returnMsg);
+	std::string modeMsg = channel->getName() + " " + returnMsg;
+	_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), + "Mode " + modeMsg);
+		// "Mode " + channel->getName() + " " + returnMsg);
+	channel->broadcastUpdated(returnMsg, &_client, "MODE " + channel->getName());
 }
 
 /*------------------------------------------------------------------------------

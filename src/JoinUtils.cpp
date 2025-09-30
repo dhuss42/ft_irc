@@ -24,7 +24,7 @@ void MessageHandler::sendJoinTopicUserlistMsg(Channel *channel)
 	std::string joinMsg = _client.getNick() + " [~" +
 						_client.getUsername() + "@" +
 						_client.getHostname() + "] has joined " + channel->getName() + "\n";
-	channel->broadcast(joinMsg, &_client);
+	channel->broadcastUpdated(joinMsg, &_client, "JOIN " + channel->getName());
 	std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@"
 						+ _client.getHostname() + " JOIN " + channel->getName() + " :";
 	_client.sendMsg(prefix, joinMsg);
