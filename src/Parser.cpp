@@ -46,7 +46,7 @@ void parseHandler(std::string rawMessage, Client &client, Server &server)
 	else if (message.command == "PART")
 		handler.handlePart();
 	else if (message.command == "QUIT")
-		handler.handleQuit2();
+		handler.handleQuit();
 	else if (message.command == "KICK")
 		handler.handleKick();
 

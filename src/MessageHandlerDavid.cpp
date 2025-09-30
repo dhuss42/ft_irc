@@ -1,40 +1,7 @@
 
 #include "MessageHandler.hpp"
 
-// Parse Handler if Check
-// into MessageHandler
-
-	// void handleQuit(void);
-	// void handleQuit2(void);
-	// void handlePart(void);
-
-// when pushing delete method declaration & parse Handler check
-	// else if (message.command == "QUIT")
-	// 	handler.handleQuit();
-	// else if (message.command == "PART")
-	// 	handler.handlePart();
-
-void MessageHandler::handleQuit(void)
-{
-	std::cout << "[DEBUG] QUIT: " << std::endl;
-
-	if (_message.params.size() > 2)
-		return ;
-	std::string msg = _client.getNick() + " [~" + _client.getUsername() + "@" + _client.getHostname() + "] has quit ";
-	if (_message.params.size() == 2)
-		msg += "[\"" + _message.params[1] + "\"]";
-
-	std::unordered_map<std::string, Channel*> joinedChannels = _client.getJoinedChannels();
-	for (auto it = joinedChannels.begin(); it != joinedChannels.end(); ++it)
-		it->second->broadcast(msg, &_client);
-	_client.setDisconnect(true);
-}
-
-// 12:34 -!- paikka [~david@ip-005-146-193-175.um05.pools.vodafone-ip.de] has quit
-//       ["ciao"]
-
-// I channel is never added to _joined channels
-void	MessageHandler::handleQuit2(void)
+void	MessageHandler::handleQuit(void)
 {
 	std::cout << MAGENTA << "HANDLE QUIT2" WHITE << std::endl;
 	std::string	reason;
