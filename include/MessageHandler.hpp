@@ -47,7 +47,7 @@ class MessageHandler
 	void handleNick(void);	//re-check
 	void handleUser(void);	//re-check
 	void handleMode(void);	//done
-	void handleWho(void);	//in process
+	void handleWho(void);	//done
 	void handlePing(void);	//done
 	void handlePrivmsg(void);	//done
 	void handlePart(void);	//will do david

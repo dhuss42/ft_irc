@@ -369,12 +369,12 @@ todo:
     [x] irssi sends after join #chan an automatic MODE #chan and then WHO #chan -> is standard in IRC clients
     - sometimes also MODE #chan b
     [x] 15:59 [Users #cha] 15:59 [ albi] and in server window: 15:59 -!- [Users @albi] -> was symbol of "* "
-    - rework on nick -> nickname already exists -> not working davids check
+    - rework on nick -> nickname already exists -> need clientlist earlier
     - need updateNicknameInChannels
     - sometimes happens -!- Irssi: Removed reconnection to server localhost port 1111
             18:27 [david4] -!- Irssi: Looking up localhost
-    - _server.getClient(cleanNick);	//not working anymore ?!
-    - finish WHO
+    [x] _server.getClient(cleanNick);	//not working anymore ?!
+    [x] finish WHO
     [x] MODE #chan b -> handle it
 
 ## ====== Day 18 == 30.09.2025 ======
@@ -383,10 +383,10 @@ todo:
 - finsihed join (mor than one channel)
 
 - todo:
-    - when entering in channel [users] only me
+    [x] when entering in channel [users] only me
     [x] /mode -o me -> i can still operate
     [x] changed modes not to all users
-    - You're not a channel operator message -> wrong format and in server window now
+    [x] You're not a channel operator message -> wrong format and in server window now
     - check all messages in right format (broadcast, error, respnse, msg, PRIVMSG)
 
 ## ==== QUESTIONS ====

@@ -215,18 +215,18 @@ void MessageHandler::handleNick(void)
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_ERRONEUSNICKNAME,
 						newNick + " Erroneous Nickname");
 		if (!_client.getNickSet())
-			_client.setDisconnect(true); //only at first call
+			_client.setDisconnect(true);
 		return;
 	}
 	if (_client.getNickSet() && _client.getNick() == newNick)
 		return ;
-	if (_server.isClient(newNick))	//not working -> david
+	if (_server.isClient(newNick))
 	{
 		std::cout << "[DEBUG] nick is already in use! " << newNick << std::endl;
-		_client.sendError(_server.getName(), IrcErrorCode::ERR_NICKNAMEINUSE,
-						"Nickname is already in use, choose another one");
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NICKNAMEINUSE,		//need clientList here
+						newNick + " :Nickname is already in use, choose another one");
 		if (!_client.getNickSet())
-		_client.setDisconnect(true); //only at first call
+			_client.setDisconnect(true);
 		return;
 	}
 	if (!_server.isClient(newNick))
@@ -360,11 +360,8 @@ void MessageHandler::handleWho()
 		channel = _server.getChannel(mask);
 		const std::string users = channel->getJoinedUsers();
 
-		// Split the users string by spaces
 		std::istringstream iss(users);
 		std::string nick;
-
-		std::cout << "[DEBUG] users = : " << users << std::endl;
 
 		while (iss >> nick)
 		{
@@ -373,7 +370,6 @@ void MessageHandler::handleWho()
 				cleanNick = cleanNick.substr(1);
 
 			Client* client = _server.getClient(cleanNick);	//not working anymore ?!
-			std::cout << "[DEBUG] cleannick = '" << cleanNick << "'" << std::endl;
 			if (client != nullptr)
 			{
 				std::string reply = channel->getName() + " " +
@@ -382,33 +378,14 @@ void MessageHandler::handleWho()
 					_server.getName() + " " +
 					client->getNick() + " " +
 					(channel->isOperator(client) ? "H@" : "H") + " " +
-					"1 " +
+					":1 " +
 					client->getRealname();
 
-				std::cout << "[DEBUG] reply = : " << reply << std::endl;
-
-				client->sendResponse(_server.getName(),
+				_client.sendResponse(_server.getName(),
 					IrcResponseCode::RPL_WHOREPLY, reply);
-					// channel->getName() + " " +
-					// client->getUsername() + " " +
-					// client->getHostname() + " " +
-					// _server.getName() + " " +
-					// client->getNick() + " " +
-					// (channel->isOperator(client) ? "H@" : "H") + " " +
-					// "1 " +
-					// client->getRealname());
 			}
 		}
 	}
-
-	// if (_server.isChannel(mask))
-	// {
-		// _client.sendResponse(_server.getName(),
-		// 		IrcResponseCode::RPL_WHOREPLY,
-		// 		channel->getName() + " " + _client.getUsername() + " " + _client.getHostname()
-		// 		+ " " + _server.getName() + " " + _client.getNick() + " something"  " :1 realname");
-		// 		//"something" should be: H@ - User modes (H = here, @ = channel operator)
-	// }
 	_client.sendResponse(_server.getName(),
 				IrcResponseCode::RPL_ENDOFWHO,
 				mask);
