@@ -467,6 +467,13 @@ bool	Server::isChannel(const std::string& name) const
 }
 
 //================ Client management ================//
+
+void	Server::addToClientList(Client* client)
+{
+	if (client)
+		_clientList[toLower(client->getNick())] = client;
+}
+
 //<<<<<<<<<<<<<<<NICK>>>>>>>>>>>>//
 /*------------------------------------------------------------------*/
 /* Checks if the passed nick already exists on the server			*/

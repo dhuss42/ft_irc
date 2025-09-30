@@ -62,8 +62,6 @@ void	Channel::broadcast(const std::string& msg, Client* sender)
 			if (it->second != sender)
 			{
 				std::string prefix;
-				// if (isOperator(sender))
-				// 	prefix = "@";
 				prefix += sender->getNick() + "!" + sender->getUsername() + "@" + sender->getHostname() + " PRIVMSG " + getName() + " :";
 				it->second->sendMsg(prefix, msg);
 			}

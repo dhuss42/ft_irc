@@ -73,6 +73,7 @@ class Server
 		void	uniqueNick(std::string& nick);
 		bool	isClient(const std::string& name) const;
 		Client*	getClient(const std::string& nick);
+		void	addToClientList(Client* client);
 
 		const	std::string& getName(void) const;
 		const	std::string& getPassword(void) const;

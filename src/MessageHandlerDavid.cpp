@@ -69,6 +69,7 @@ void	MessageHandler::handleQuit2(void)
 // PART
 // could split further into smaller methods
 // could refactor thelogic with getting the channel at the beginning and saving the extra validation check for nullptr
+// in join names are in CYAN but in PART username@hostname are not in CYAN ask leni
 void MessageHandler::handlePart(void)
 {
 	if (_message.params.size() < 2)
@@ -112,23 +113,57 @@ void MessageHandler::handlePart(void)
 // KICK
 void	MessageHandler::handleKick(void)
 {
+	// two separte calls when two users separate by comma
 	for (auto it = _message.params.begin(); it != _message.params.end(); ++it)
 		std::cout << YELLOW << "[DEBUG] params: " << *it << WHITE << std::endl;
 
-	if (_message.params.size() < 2)
+
+	if (_message.params.size() < 3)
 	{
 		std::cout << RED << "[DEBUG] not enough params" WHITE << std::endl;
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS, "Not enough parameters");
 		return ;
 	}
 
-	//  ERR_NOSUCHCHANNEL (403) 
-	//  ERR_CHANOPRIVSNEEDED (482) 
-	//  ERR_USERNOTINCHANNEL (441) 
-	//  ERR_NOTONCHANNEL (442)
+	Client* kicked = _server.getClient(_message.params[2]);
+	Channel* channel = _server.getChannel(_message.params[1]);
+	if (!channel)
+	{
+		std::cout << RED "[DEBUG] no such channel" << WHITE << std::endl;
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL, _message.params[1]); // -> works fine
+	}
+	else if (!_client.isJoinedChannel(_message.params[1]))
+	{
+		std::cout << RED "[DEBUG] kicker not on channel" << WHITE << std::endl;
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOTONCHANNEL, _message.params[1] + ":You're not on that channel"); // this is not sending correct format
+		// 15:24 -!- #test:You're not on that channel 
+		// nothing is printed in bold
+	}
+	else if (!channel->isOperator(&_client))
+	{
+		std::cout << RED "[DEBUG] not operator" << WHITE << std::endl;
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_CHANOPRIVSNEEDED, _message.params[1]); // check what needs to be send -> only prints test right now
+	}
+	else if (!kicked || !channel->isUser(kicked))
+	{
+		std::cout << RED "[DEBUG] kicked not on channel" << WHITE << std::endl;
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_USERNOTINCHANNEL, _message.params[1]); // check what needs to be send -> only prints test right now
+	}
+	else
+	{
+		std::string reason;
+		if (_message.params.size() == 4)
+			reason = _message.params[3];
 
+		// std::string kickMsg = ":" + _client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname() + " KICK " + _message.params[1] + " " + kicked->getNick();
 
-
+		channel->broadcastUpdated(reason, &_client, "KICK " + _message.params[1] + " " + kicked->getNick());
+		// :maustel!david@david KICK #test david :bye bye
+		_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "KICK " + _message.params[1] + " " + kicked->getNick() + " :" + reason);
+		std::cout << RED "[DEBUG] removing :" << kicked->getNick() << WHITE << std::endl;
+		channel->kickUser(&_client, _message.params[2]);
+		kicked->removeFromJoinedChannels(_message.params[1]);
+	}
 	// kick user from Channel and check if kicker has priviledges to do so
 	// 	void	Channel::kickUser(Client* kicker, std::string kicked)
 }

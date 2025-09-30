@@ -296,7 +296,7 @@ void MessageHandler::handleUser()
 	if (_client.getRegistered() && _client.getNickSet())
 	{
 		_client.sendResponse(_server.getName(), IrcResponseCode::RPL_WELCOME, "Welcome to our super nice IRC server!");
-
+		_server.addToClientList(&_client);
 		//initialize clientlist
 	}
 }
