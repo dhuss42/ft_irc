@@ -53,6 +53,7 @@ class Channel
 
 		void	inviteUser(Client* inviter, Client* invited);
 		void	kickUser(Client* kicker, const std::string& kicked);
+		void	updateNickOnChannel(const std::string& newNick);
 
 		void	removeUser(Client* client);
 		void	removeOperator(Client* client);
@@ -76,7 +77,7 @@ class Channel
 		std::size_t	getUserLimit(void);
 
 		const std::string	getJoinedUsers(void) const;
-		size_t	getNbrUsers(void) const; // not sure if needed
+		size_t		getNbrUsers(void) const; // not sure if needed
 		bool		isEmpty(void) const;
 
 		void		setName(std::string name); // might not need this as channel names are fixed

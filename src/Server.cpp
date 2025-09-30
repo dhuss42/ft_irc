@@ -468,6 +468,17 @@ bool	Server::isChannel(const std::string& name) const
 
 //================ Client management ================//
 
+void	Server::updateNickOnServer(const std::string& newNick)
+{
+	auto it = _clientList.find(newNick);
+	if (it != _clientList.end())
+	{
+		Client* client = it->second;
+		_clientList.erase(client->getNick());
+		addToClientList(client);
+	}
+}
+
 void	Server::addToClientList(Client* client)
 {
 	if (client)

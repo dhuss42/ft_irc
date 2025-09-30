@@ -493,3 +493,12 @@ For leak check at School start Dockerfile in directory
 - worked on Quit and Part
 	- quit does sent the status message, maybe because of broadcasting not to client self?
 	- part is currently sending status message but only to the client parting and it is not updating the UI correctly
+
+## ====== Day 27 == 29.09 ====== (6h)
+- finished Quit and Part
+- got eval Points
+
+## ====== Day 28 == 30.09 ====== (6h)
+- nearly finished kick
+	- problem with ui not responding properly
+- lots of small patches for different function to make everything work

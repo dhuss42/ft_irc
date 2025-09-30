@@ -193,16 +193,16 @@ bool	Channel::addUser(Client* client, const std::string& password)
 		auto it = _users.find(client->getNick());
 		if (it == _users.end())
 		{
-			std::cout << "[DEBUG] Client added ! " << client->getNick() << " to " << this->getName() << std::endl;
-			_users[client->getNick()] = client;
+			// std::cout << "[DEBUG] Client added ! " << client->getNick() << " to " << this->getName() << std::endl;
+			_users[toLower(client->getNick())] = client;
 			client->addToJoinedChannels(this);
 			if (_invOnly)
 				removeInvUsers(client);
 			client->sendMsg("irc_custom", "available commands: JOIN, MODE, KICK, PART, QUIT, PRIVMSG/NOTICE"); // not correct format and more needs to be sent maybe outside the method
 		}
-		else
-			std::cout << "[DEBUG] Client is already part of the Channel!" << std::endl;
-		std::cout << "[DEBUG] " << getJoinedUsers() << std::endl;
+		// else
+		// 	std::cout << "[DEBUG] Client is already part of the Channel!" << std::endl;
+		// std::cout << "[DEBUG] " << getJoinedUsers() << std::endl;
 	}
 	return (true);
 }
@@ -262,6 +262,18 @@ void	Channel::kickUser(Client* kicker, const std::string& kicked)
 	}
 }
 
+void	Channel::updateNickOnChannel(const std::string& newNick)
+{
+	auto it = _users.find(newNick);
+	if (it != _users.end())
+	{
+		Client* client = it->second;
+		_users.erase(client->getNick());
+		_users[toLower(client->getNick())] = client;
+	}
+}
+
+
 //<<<<<<<<<<<<<<<PART & JOIN & KICK>>>>>>>>>>>>//
 /*----------------------------------------------------------------------*/
 /* removes user from Channel for KICK and PART and client disconnect	*/
@@ -270,19 +282,19 @@ void	Channel::removeUser(Client* client)
 {
 	if (client)
 	{
-		std::cout << "[DEBUG] Removing client with nick: " << client->getNick() << std::endl;
-		std::cout << "[DEBUG] Before removing users_size: " << _users.size() << std::endl;
-		std::cout << "[DEBUG] Before removing operators_size: " << _operators.size() << std::endl;
+		// std::cout << "[DEBUG] Removing client with nick: " << client->getNick() << std::endl;
+		// std::cout << "[DEBUG] Before removing users_size: " << _users.size() << std::endl;
+		// std::cout << "[DEBUG] Before removing operators_size: " << _operators.size() << std::endl;
 		if (_users.find(client->getNick()) != _users.end())
 		{
 			// client->removeFromJoinedChannels(_name);
 			_users.erase(client->getNick());
-			std::cout << GREEN "[DEBUG] Removed client with nick: " RESET << client->getNick() << std::endl;
+			// std::cout << GREEN "[DEBUG] Removed client with nick: " RESET << client->getNick() << std::endl;
 		}
 		if (_operators.find(client->getNick()) != _operators.end())
 			_operators.erase(client->getNick());
-		std::cout << "[DEBUG] After removing users_size: " << _users.size() << std::endl;
-		std::cout << "[DEBUG] [DEBUG] After removing users_size: " << _operators.size() << std::endl;
+		// std::cout << "[DEBUG] After removing users_size: " << _users.size() << std::endl;
+		// std::cout << "[DEBUG] [DEBUG] After removing users_size: " << _operators.size() << std::endl;
 	}
 	// check outside if Channel has 0 members now
 	// if so delete the channel object

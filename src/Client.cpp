@@ -100,9 +100,9 @@ void	Client::updateNickInChannels(const std::string& newNick)
 		{
 			Client* clientPtr = iter->second;
 			channelUsers.erase(_nick);
-			channelUsers[newNick] = clientPtr;
+			channelUsers[toLower(newNick)] = clientPtr;
 		}
-		std::cout << "[DEBUG] printing all users in Channel: " << it->first << "\n\t" << it->second->getJoinedUsers();
+		std::cout << MAGENTA "[DEBUG] printing all users in Channel: " << it->first << "\n\t" << it->second->getJoinedUsers() << WHITE << std::endl;
 	}
 
 }
@@ -169,7 +169,7 @@ int	Client::receiveMsg()
 /*------------------------------------------------------------------*/
 void	Client::sendRaw(std::string msg)
 {
-	std::cout << GREEN "[DEBUG] socket: " << _socket << "\nnick: " << _nick << std::endl;
+	std::cout << GREEN "[DEBUG] socket: " << _socket << "\nnick: " WHITE << _nick << std::endl;
 
 	ssize_t sent = send(_socket, msg.c_str(), msg.size(), 0);
 	if (sent <= 0)
@@ -190,7 +190,7 @@ void	Client::sendRaw(std::string msg)
 void	Client::sendMsg(std::string name, std::string reply)
 {
 	reply = ":" + name + " " + reply + "\r\n";
-	std::cout << YELLOW "[DEBUG] reply - " << reply << std::endl;
+	std::cout << YELLOW "[DEBUG] reply - " WHITE << reply << std::endl;
 	if (send(_socket, reply.c_str(), reply.size(), 0) <= 0) // uncertain about the zero at the moment
 	{
 		throw (Errors(ErrorCode::E_SND)); // uncertain about wether it bubbles up correctly to the next catch
