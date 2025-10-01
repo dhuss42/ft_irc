@@ -520,6 +520,8 @@ For leak check at School start Dockerfile in directory
 - fixed bugs with portnbr and password parsing
 	- max len = 15 for password
 	- both cannot be empty anymore
-[] check multiple users kick
-[] refactor part
-[] check multiple users part
+[x] check multiple users kick
+[x] refactor part
+[x] check multiple users part
+[x] check error responses for kick with multiple users
+[x] check part error responses

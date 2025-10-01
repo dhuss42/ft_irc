@@ -31,9 +31,16 @@ void	MessageHandler::handleQuit(void)
 	_client.setDisconnect(true);
 }
 
-// PART
-// could split further into smaller methods
-// could refactor thelogic with getting the channel at the beginning and saving the extra validation check for nullptr
+/*----------------------------------------------------------------------*/
+/* Part																	*/
+/*	- if there are enough parameters									*/
+/*	- check if client send reason										*/
+/*	- split channel parameters separated by ","							*/
+/* 	- loop over channels to part from									*/
+/*	- send part message to clients in channel							*/
+/*	- update all Containers												*/
+/*	- if channel is now empty delete channel object						*/
+/*----------------------------------------------------------------------*/
 void MessageHandler::handlePart(void)
 {
 	if (_message.params.size() < 2)
@@ -52,23 +59,19 @@ void MessageHandler::handlePart(void)
 	while (it != end)
 	{
 		std::string channelName = *it;
-		if (!_server.isChannel(channelName))
+		Channel* channel = _server.getChannel(channelName);
+		if (!channel)
 			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL, channelName);
 		else if (!_client.isJoinedChannel(channelName))
-			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOTONCHANNEL, channelName + ":You're not on that channel"); // this is not sending correct format
-			// 10:43 -!- #test You're not on that channel || is response on IRCnet but on server page not channel
+			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOTONCHANNEL, channelName + " :You're not on that channel"); // this is not sending correct format
 		else
 		{
 			_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "PART " + channelName + " " + reason);
 			_client.removeFromJoinedChannels(channelName);
-			Channel* channel = _server.getChannel(channelName);
-			if (channel)
-			{
-				channel->broadcastUpdated(reason, &_client, "PART " + channelName);
-				channel->removeUser(&_client);
-				if (channel->getNbrUsers() == 0)
-					_server.removeChannel(channel);
-			}
+			channel->broadcastUpdated(reason, &_client, "PART " + channelName);
+			channel->removeUser(&_client);
+			if (channel->getNbrUsers() == 0)
+				_server.removeChannel(channel);
 		}
 		++it;
 	}
