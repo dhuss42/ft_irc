@@ -36,6 +36,24 @@ Channel::~Channel()
 /*------------------------------------------------------*/
 /* Sends message to all users in channel except sender	*/
 /*------------------------------------------------------*/
+void	Channel::broadcastAll(const std::string& content, Client* sender, Client* kicked, const std::string& command)
+{
+	if (sender)
+	{
+		std::string msg = ":" + sender->getNick() + "!" + sender->getUsername() + "@" + sender->getHostname() + " " + command + " :" + content + "\r\n";
+		std::cout << YELLOW "[Debug] broadcastUpdated " << msg << WHITE << std::endl;
+		for (auto it = _users.begin(); it != _users.end(); ++it)
+		{
+			if (it->second != kicked)
+				it->second->sendRaw(msg);
+		}
+		kicked->sendRaw(msg);
+	}
+}
+
+/*------------------------------------------------------*/
+/* Sends message to all users in channel except sender	*/
+/*------------------------------------------------------*/
 void	Channel::broadcastUpdated(const std::string& content, Client* sender, const std::string& command)
 {
 	if (sender)
@@ -282,19 +300,18 @@ void	Channel::removeUser(Client* client)
 {
 	if (client)
 	{
-		// std::cout << "[DEBUG] Removing client with nick: " << client->getNick() << std::endl;
-		// std::cout << "[DEBUG] Before removing users_size: " << _users.size() << std::endl;
-		// std::cout << "[DEBUG] Before removing operators_size: " << _operators.size() << std::endl;
+		std::cout << "[DEBUG] Removing client with nick: " << client->getNick() << std::endl;
+		std::cout << "[DEBUG] Before removing users_size: " << _users.size() << std::endl;
+		std::cout << "[DEBUG] Before removing operators_size: " << _operators.size() << std::endl;
 		if (_users.find(client->getNick()) != _users.end())
 		{
-			// client->removeFromJoinedChannels(_name);
 			_users.erase(client->getNick());
-			// std::cout << GREEN "[DEBUG] Removed client with nick: " RESET << client->getNick() << std::endl;
+			std::cout << GREEN "[DEBUG] Removed client with nick: " RESET << client->getNick() << std::endl;
 		}
 		if (_operators.find(client->getNick()) != _operators.end())
 			_operators.erase(client->getNick());
-		// std::cout << "[DEBUG] After removing users_size: " << _users.size() << std::endl;
-		// std::cout << "[DEBUG] [DEBUG] After removing users_size: " << _operators.size() << std::endl;
+		std::cout << "[DEBUG] After removing users_size: " << _users.size() << std::endl;
+		std::cout << "[DEBUG] [DEBUG] After removing users_size: " << _operators.size() << std::endl;
 	}
 	// check outside if Channel has 0 members now
 	// if so delete the channel object

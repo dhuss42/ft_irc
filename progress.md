@@ -2,6 +2,9 @@
 
 ## To dos
 
+### Makefile
+[] include -Werror
+
 ### lowerCase names
 [] could be that more bugs occur where names have not been changed to lowercase resulting in segfaults
 
@@ -10,7 +13,6 @@
 	[] think about implementing a cap for users to Join since the server is not allowed to shutdown
 [] when server is stopped with ctrl + c should every client receive quit?
 	-> maybe an error message so irssi doesn't freeze in it's state?
-
 
 ### Channels
 [] How Many Channels can 1 user join?
@@ -53,6 +55,9 @@
 ### part / kick / quit
 [] what happens when last Operator leaves channel but there are other clients still in the channel
 	-> make one an operator?
+[] when operator kicks himself and rejoins the 11:18 -!- Irssi: #dhuss: Total of 1 nicks [0 ops, 0 halfops, 0 voices, 1 normal] is not updated correctly
+	-> here there were two users and no operators in channel
+	-> should be 2 normal
 
 ### quit
 [x] clients send quit to all channels when closing the window
@@ -506,4 +511,8 @@ For leak check at School start Dockerfile in directory
 - nearly finished kick
 	- problem with ui not responding properly
 - lots of small patches for different function to make everything work
-- fixed but for quit where the recipients name was displayed in quit message in channel
+- fixed bug for quit where the recipients name was displayed in quit message in channel
+
+## ====== Day 29 == 01.10 ====== (2h)
+- kick was fully functional
+- now added correct Error Respones for kick
