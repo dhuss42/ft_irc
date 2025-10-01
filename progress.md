@@ -48,9 +48,10 @@
 ### parssing
 [x] when password is empty string the client is able to connect with providing no password and also with "", but is never disconnected -> remains in limbo
 	-> empty, "", '', "'
-[] think about further problematic things password
+[x] think about further problematic things password
 	- max length for password
-[] currently when passing "" as portnbr server is stuck in Error message
+[x] currently when passing "" as portnbr server is stuck in Error message
+[x] ./ircserv "891723871293719" "a" -> Error: stoi: out of range
 
 ### part / kick / quit
 [] what happens when last Operator leaves channel but there are other clients still in the channel
@@ -516,3 +517,9 @@ For leak check at School start Dockerfile in directory
 ## ====== Day 29 == 01.10 ====== (2h)
 - kick was fully functional
 - now added correct Error Respones for kick
+- fixed bugs with portnbr and password parsing
+	- max len = 15 for password
+	- both cannot be empty anymore
+[] check multiple users kick
+[] refactor part
+[] check multiple users part

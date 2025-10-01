@@ -94,13 +94,13 @@ void	Errors::handleErrors(const std::exception& e, Server* server)
 			// errors fatal
 
 			case ErrorCode::E_PRT:
-				fatal(BOLDCYAN "\tPort number may only consist of digits" RESET, server);
+				fatal(BOLDCYAN "\tPort number may only consist of digits and musst be between 1024 and 65535" RESET, server);
 				break ;
 			case ErrorCode::E_PRTNBR:
 				fatal(BOLDCYAN "\tUsable ports range from 1024 - 65535" RESET, server);
 				break ;
 			case ErrorCode::E_PSSWRD:
-				fatal(BOLDCYAN "\tPassword may only be printable chars" RESET, server);
+				fatal(BOLDCYAN "\tPassword may only consist of printable characters and cannot be empty or more than 15 characters" RESET, server);
 				break ;
 			case ErrorCode::E_SCKFD:
 			case ErrorCode::E_FCNTL:

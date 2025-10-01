@@ -66,7 +66,7 @@ Server::~Server()
 void	Server::parseArgs(const std::string& portNbr, const std::string& password)
 {
 	try {
-		if (all_of(portNbr.begin(), portNbr.end(), ::isdigit))
+		if (!portNbr.empty() && portNbr.size() <= 5 && all_of(portNbr.begin(), portNbr.end(), ::isdigit))
 		{
 			int port = std::stoi(portNbr);
 			if (port >= 1024 && port <= 65535)
@@ -76,7 +76,7 @@ void	Server::parseArgs(const std::string& portNbr, const std::string& password)
 		}
 		else
 			throw (Errors(ErrorCode::E_PRT));
-		if (!password.empty() && all_of(password.begin(), password.end(), ::isprint))
+		if (!password.empty() && password.size() <= 15 && all_of(password.begin(), password.end(), ::isprint))
 			_password = password;
 		else
 			throw (Errors(ErrorCode::E_PSSWRD));

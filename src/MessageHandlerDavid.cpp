@@ -34,7 +34,6 @@ void	MessageHandler::handleQuit(void)
 // PART
 // could split further into smaller methods
 // could refactor thelogic with getting the channel at the beginning and saving the extra validation check for nullptr
-// in join names are in CYAN but in PART username@hostname are not in CYAN ask leni
 void MessageHandler::handlePart(void)
 {
 	if (_message.params.size() < 2)
