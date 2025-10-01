@@ -79,7 +79,7 @@ void MessageHandler::handlePart(void)
 
 /*----------------------------------------------------------------------*/
 /* Kick																	*/
-/*	- if there are enough parameters									*/
+/*	- check if there are enough parameters								*/
 /*	- check if client send reason										*/
 /*	- check if channel exists											*/
 /*	- check if kicker is on channel										*/
@@ -114,7 +114,6 @@ void	MessageHandler::handleKick(void)
 			reason = _message.params[3];
 		channel->broadcastUpdated(reason, &_client, "KICK " + _message.params[1] + " " + kicked->getNick());
 		_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "KICK " + _message.params[1] + " " + kicked->getNick() + " :" + reason);
-		// kicked->sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "KICK " + _message.params[1] + " " + kicked->getNick() + " :" + reason);
 		channel->removeUser(kicked);
 		kicked->removeFromJoinedChannels(_message.params[1]);
 		if (channel->getNbrUsers() == 0)
@@ -122,26 +121,39 @@ void	MessageHandler::handleKick(void)
 	}
 }
 
-
+/*----------------------------------------------------------------------*/
+/* Invite																*/
+/*	- check if there are enough parameters								*/
+/*	- check if channel exists											*/
+/*	- check if inviter is on channel									*/
+/*	- check if inviter is operator										*/
+/*	- check if invited is on channel									*/
+/*	- send invite message to invited 									*/
+/*	- send response to inviter											*/
+/*	- add invited to invite List										*/
+/*----------------------------------------------------------------------*/
 void	MessageHandler::handleInvite(void)
 {
-	for (auto it = _message.params.begin(); it != _message.params.end(); ++it)
-		std::cout << YELLOW << "[DEBUG] params: " << *it << WHITE << std::endl;
-
 	if (_message.params.size() < 3)
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS, "Not enough parameters");
 		return ;
 	}
-	// check params
 
-	// check if channel exists
-	// check if inviter is on channel
-	// check if invite-only and inviter is operator
-	// if user is on channel already
-		// ERR_USERONCHANNEL 
-	
-	// success
-	// RPL_INVITING -> command issuer
-	// Invite message -> target
+	Client* invited = _server.getClient(_message.params[1]);
+	Channel* channel = _server.getChannel(_message.params[2]);
+	if (!channel)
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL, _message.params[2]);
+	else if (!_client.isJoinedChannel(_message.params[2]))
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOTONCHANNEL, _message.params[2] + " :You're not on that channel");
+	else if (channel->getInvOnly() && !channel->isOperator(&_client))
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_CHANOPRIVSNEEDED, _message.params[2] + " :You're not channel operator");
+	else if (!invited || channel->isUser(invited))
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_USERONCHANNEL, _message.params[1] + " " + _message.params[2] + " :is already on channel");
+	else
+	{
+		_client.sendResponse(_server.getName(), IrcResponseCode::RPL_INVITING, invited->getNick() + " " + channel->getName());
+		invited->sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "INVITE " + invited->getNick() + " " + _message.params[2]);
+		channel->addInvUsers(invited);
+	}
 }
