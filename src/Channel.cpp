@@ -396,6 +396,7 @@ bool	Channel::isOperator(const Client* client) const
 	return (false);
 }
 
+// 
 /*--------------------------*/
 /* Check if User in Channel	*/
 /*--------------------------*/

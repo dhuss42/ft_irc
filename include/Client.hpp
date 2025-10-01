@@ -61,7 +61,7 @@ class Client
 	void	addToJoinedChannels(Channel* channel);
 	void	removeFromJoinedChannels(const std::string& name);
 	void	removeFromAllJoinedChannels();
-	void	updateNick(const std::string& newNick);
+	void	updateNick(const std::string& oldNick, const std::string& newNick);
 	std::unordered_map<std::string, Channel*> getJoinedChannels(void);
 
 	void	sendResponse(std::string name, IrcResponseCode code, std::string reply);
