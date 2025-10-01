@@ -52,8 +52,8 @@ class MessageHandler
 	void handlePrivmsg(void);	//done
 	void handlePart(void);	//will do david
 	void handleQuit(void);	//will do david
-	void handleKick(void);
-	void handleInvite(void);
+	void handleKick(void);	//david
+	void handleInvite(void); //david
 	void handleTopic(void);
 	void handleNotice(void);
 

@@ -367,7 +367,7 @@ todo:
     [x] how to nickname change -> tell it ui
     [x] in User function server: sends welcome message
     [x] irssi sends after join #chan an automatic MODE #chan and then WHO #chan -> is standard in IRC clients
-    - sometimes also MODE #chan b
+    [x] sometimes also MODE #chan b
     [x] 15:59 [Users #cha] 15:59 [ albi] and in server window: 15:59 -!- [Users @albi] -> was symbol of "* "
     [x] rework on nick -> nickname already exists
     [x] need updateNicknameInChannels
@@ -387,11 +387,11 @@ todo:
     [x] /mode -o me -> i can still operate
     [x] changed modes not to all users
     [x] You're not a channel operator message -> wrong format and in server window now
-    - check all messages in right format (broadcast, error, respnse, msg, PRIVMSG)
-    - test privmsg
+    [x] check all messages in right format (broadcast, error, respnse, msg, PRIVMSG)
+    [x] test privmsg
     [x] test /mode o nosuchnick
     [x] test /mode Not enough parameters
-    [???] join: users sometimes dont get listet all of them
+    [x] join: users sometimes dont get listet all of them -> needed to add : in sendResponseMesasge before userlist
 
 ## ==== QUESTIONS ====
 - Parser job:
