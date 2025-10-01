@@ -299,7 +299,17 @@ void MessageHandler::handleUser()
 }
 
 /*------------------------------------------------------------------------------
-
+Handles mode changes in channel and also /mode nick +i at registration phase
+	- can handle a row of mode changes
+	- /mode #chan without parameters -> tells current active modes
+	- example: /mode #chan +ilk 5 key
+		-> activates inviteOnlyChannel
+		-> sets Userlimit to 5
+		-> sets channel key to "key"
+	- sends response with changed modes
+	- handles i, t, k, l, o, b
+	- /mode #chan b is asked automatically by the client when joined to a channel
+		(ban list) -> we dont have ban list, so we send empty response
 ------------------------------------------------------------------------------*/
 void MessageHandler::handleMode()
 {
