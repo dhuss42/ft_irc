@@ -45,7 +45,7 @@ void MessageHandler::sendJoinTopicUserlistMsg(Channel *channel)
 	{
 		std::string prefix = _client.getNick() + "!@" + _client.getHostname();
 		_client.sendResponse(prefix, IrcResponseCode::RPL_NAMREPLY,
-							"* " + channel->getName() + " " + users);
+							"* " + channel->getName() + " :" + users);
 		_client.sendResponse(prefix, IrcResponseCode::RPL_ENDOFNAMES,
 							channel->getName() + " :End of /NAMES list.");
 	}

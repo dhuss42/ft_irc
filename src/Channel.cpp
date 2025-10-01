@@ -6,12 +6,12 @@
 /*   By: maustel <maustel@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/19 14:00:35 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/01 13:17:42 by maustel          ###   ########.fr       */
+/*   Updated: 2025/10/01 16:06:40 by maustel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
- 
+
 //================================> Constructor and Destructor <================================//
 
 /*----------------------*/
@@ -148,16 +148,16 @@ void	Channel::changeTopic(const std::string& topic, const Client* client)
 const std::string Channel::getJoinedUsers(void) const
 {
 	std::string userList;
-	for (auto it = _users.rbegin(); it != _users.rend(); it++)
+
+	for (const auto& userPair : _users)
 	{
-		if (isOperator(it->second))
-			userList += "@";
-		else
-			userList += " ";
-		userList += it->first + " ";
+		if (!userList.empty())
+			userList += ' ';
+		if (isOperator(userPair.second)) {
+			userList += '@';
+		}
+		userList += userPair.first;
 	}
-	if (!userList.empty())
-		userList.pop_back();
 	return (userList);
 }
 
@@ -396,7 +396,7 @@ bool	Channel::isOperator(const Client* client) const
 	return (false);
 }
 
-// 
+//
 /*--------------------------*/
 /* Check if User in Channel	*/
 /*--------------------------*/

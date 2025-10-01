@@ -60,28 +60,18 @@ void MessageHandler::handleCap(void)
 	std::cout << "[DEBUG] CAP: " << std::endl;
 
 	if (_message.params[1] == "LS")
-	{
-		std::cout << "[DEBUG] LS: " << std::endl;
 		_client.sendMsg(_server.getName(), "CAP * LS :multi-prefix sasl message-tags");
-	}
 	else if (_message.params[1] == "REQ")
 	{
-		std::cout << "[DEBUG] REQ: " << std::endl;
 		std::string reply = "CAP * ACK ";
-		bool hasMultiPrefix = false;	//do i need this??
 		for (size_t i = 2; i < _message.params.size(); i++)
 		{
-			if (_message.params[i] == "multi-prefix")
-				hasMultiPrefix = true;
 			reply += _message.params[i] + " ";
 		}
 		_client.sendMsg(_server.getName(), reply);
 	}
 	else if (_message.params[1] == "END")
-	{
-		std::cout << "[DEBUG] Capability negotiation completed" << std::endl;
 		return ;
-	}
 	else
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_INVALIDCAPCMD, _message.params[1] + ":Invalid or missing CAP subcommand" );
 }
@@ -234,7 +224,7 @@ void MessageHandler::handleNick(void)
 		std::cout << "[DEBUG] NICK change nickname " << newNick << std::endl;
 		std::string oldNick = _client.getNick();
 		std::string prefix = oldNick + "!" + _client.getUsername() + "@" + _client.getHostname() + " NICK " + newNick + " :";
-		_client.updateNick(newNick);
+		_client.updateNick(oldNick, newNick);
 		_server.updateNickOnServer(oldNick, newNick);
 		broadcastNicknameInChannels(newNick);
 		_client.sendMsg(prefix, "");
