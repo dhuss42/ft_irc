@@ -71,7 +71,7 @@ class Server
 		std::unordered_map<std::string, Channel*> getChannelUnoMap(void);
 
 		void	uniqueNick(std::string& nick);
-		void	updateNickOnServer(const std::string& newNick);
+		void	updateNickOnServer(const std::string& oldNick, const std::string& newNick);
 		bool	isClient(const std::string& name) const;
 		Client*	getClient(const std::string& nick);
 		void	addToClientList(Client* client);

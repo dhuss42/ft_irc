@@ -53,7 +53,7 @@ class Channel
 
 		void	inviteUser(Client* inviter, Client* invited);
 		void	kickUser(Client* kicker, const std::string& kicked);
-		void	updateNickOnChannel(const std::string& newNick);
+		void	updateNickOnChannel(const std::string& oldNick, const std::string& newNick);
 
 		void	removeUser(Client* client);
 		void	removeOperator(Client* client);

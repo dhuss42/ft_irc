@@ -280,14 +280,15 @@ void	Channel::kickUser(Client* kicker, const std::string& kicked)
 	}
 }
 
-void	Channel::updateNickOnChannel(const std::string& newNick)
+void	Channel::updateNickOnChannel(const std::string& oldNick, const std::string& newNick)
 {
-	auto it = _users.find(newNick);
+	auto it = _users.find(oldNick);
 	if (it != _users.end())
 	{
 		Client* client = it->second;
 		_users.erase(client->getNick());
-		_users[toLower(client->getNick())] = client;
+		if (client)
+			_users[toLower(newNick)] = client;
 	}
 }
 

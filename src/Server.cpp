@@ -468,14 +468,18 @@ bool	Server::isChannel(const std::string& name) const
 
 //================ Client management ================//
 
-void	Server::updateNickOnServer(const std::string& newNick)
+// problem here is that I am searching for newNick
+// should be searching for oldNick
+// addToClientList
+void	Server::updateNickOnServer(const std::string& oldNick, const std::string& newNick)
 {
-	auto it = _clientList.find(newNick);
+	auto it = _clientList.find(oldNick);
 	if (it != _clientList.end())
 	{
 		Client* client = it->second;
 		_clientList.erase(client->getNick());
-		addToClientList(client);
+		if (client)
+			_clientList[toLower(newNick)] = client;
 	}
 }
 

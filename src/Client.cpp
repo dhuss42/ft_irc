@@ -89,7 +89,7 @@ void	Client::removeFromAllJoinedChannels()
 	_joinedChannels.clear();
 }
 
-void	Client::updateNickInChannels(const std::string& newNick)
+void	Client::updateNick(const std::string& newNick)
 {
 	std::map<std::string, Client*> channelUsers;
 	for (auto it = _joinedChannels.begin(); it != _joinedChannels.end(); ++it)
@@ -99,10 +99,14 @@ void	Client::updateNickInChannels(const std::string& newNick)
 		if (iter != channelUsers.end())
 		{
 			Client* clientPtr = iter->second;
+			const std::string oldNick = iter->first;
 			channelUsers.erase(_nick);
 			channelUsers[toLower(newNick)] = clientPtr;
+			// std::cout << YELLOW "[DEBUG] newNick of client " WHITE << clientPtr->getNick() << std::endl; 
+			_server->updateNickOnServer(oldNick, newNick);
+			it->second->updateNickOnChannel(oldNick, newNick);
 		}
-		std::cout << MAGENTA "[DEBUG] printing all users in Channel: " << it->first << "\n\t" << it->second->getJoinedUsers() << WHITE << std::endl;
+		// std::cout << MAGENTA "[DEBUG] printing all users in Channel: " << it->first << "\n\t" << it->second->getJoinedUsers() << WHITE << std::endl;
 	}
 
 }
