@@ -347,7 +347,13 @@ void MessageHandler::handleMode()
 }
 
 /*------------------------------------------------------------------------------
-
+Handles WHO command to list channel members with their details.
+ Cient automatically asks for it when joined to a channel
+ 	- Format: WHO <channel>
+ 	- Returns RPL_WHOREPLY for each user with format:
+ 	- :server channel username hostname server nick mode :realname
+	- the 0 indicates that its the local server
+ 	- Ends with RPL_ENDOFWHO to mark completion.
 ------------------------------------------------------------------------------*/
 void MessageHandler::handleWho()
 {
