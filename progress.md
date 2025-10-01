@@ -514,7 +514,7 @@ For leak check at School start Dockerfile in directory
 - lots of small patches for different function to make everything work
 - fixed bug for quit where the recipients name was displayed in quit message in channel
 
-## ====== Day 29 == 01.10 ====== (2h)
+## ====== Day 29 == 01.10 ====== (7h)
 - kick was fully functional
 - now added correct Error Respones for kick
 - fixed bugs with portnbr and password parsing
@@ -525,3 +525,4 @@ For leak check at School start Dockerfile in directory
 [x] check multiple users part
 [x] check error responses for kick with multiple users
 [x] check part error responses
+- finished invite
