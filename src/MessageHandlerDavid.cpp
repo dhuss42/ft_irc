@@ -34,7 +34,7 @@ void	MessageHandler::handleQuit(void)
 /*----------------------------------------------------------------------*/
 /* Part																	*/
 /*	- if there are enough parameters									*/
-/*	- check if client send reason										*/
+/*	- check if client sent reason										*/
 /*	- split channel parameters separated by ","							*/
 /* 	- loop over channels to part from									*/
 /*	- send part message to clients in channel							*/
@@ -77,7 +77,19 @@ void MessageHandler::handlePart(void)
 	}
 }
 
-// KICK
+/*----------------------------------------------------------------------*/
+/* Kick																	*/
+/*	- if there are enough parameters									*/
+/*	- check if client send reason										*/
+/*	- check if channel exists											*/
+/*	- check if kicker is on channel										*/
+/*	- check if kicker is operator										*/
+/*	- check if to be kicked is on channel								*/
+/* 	- loop over channels to part from									*/
+/*	- send kick message to clients in channel							*/
+/*	- update all Containers												*/
+/*	- if channel is now empty delete channel object						*/
+/*----------------------------------------------------------------------*/
 void	MessageHandler::handleKick(void)
 {
 	if (_message.params.size() < 3)
@@ -102,10 +114,34 @@ void	MessageHandler::handleKick(void)
 			reason = _message.params[3];
 		channel->broadcastUpdated(reason, &_client, "KICK " + _message.params[1] + " " + kicked->getNick());
 		_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "KICK " + _message.params[1] + " " + kicked->getNick() + " :" + reason);
-		kicked->sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "KICK " + _message.params[1] + " " + kicked->getNick() + " :" + reason);
+		// kicked->sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "KICK " + _message.params[1] + " " + kicked->getNick() + " :" + reason);
 		channel->removeUser(kicked);
 		kicked->removeFromJoinedChannels(_message.params[1]);
 		if (channel->getNbrUsers() == 0)
 			_server.removeChannel(channel);
 	}
+}
+
+
+void	MessageHandler::handleInvite(void)
+{
+	for (auto it = _message.params.begin(); it != _message.params.end(); ++it)
+		std::cout << YELLOW << "[DEBUG] params: " << *it << WHITE << std::endl;
+
+	if (_message.params.size() < 3)
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS, "Not enough parameters");
+		return ;
+	}
+	// check params
+
+	// check if channel exists
+	// check if inviter is on channel
+	// check if invite-only and inviter is operator
+	// if user is on channel already
+		// ERR_USERONCHANNEL 
+	
+	// success
+	// RPL_INVITING -> command issuer
+	// Invite message -> target
 }
