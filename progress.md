@@ -43,6 +43,9 @@
 [] maybe implement clientSendBuffer because if segfault
 	- try to replicate segfault first
 
+### error
+[] milenas error messages
+
 ### Authentication
 [] what do we do when a Client connects and only sends part of the Authentication?
 	-> PASS but not NICK and USER
@@ -64,22 +67,22 @@
 [x] ./ircserv "891723871293719" "a" -> Error: stoi: out of range
 
 ### part / kick / quit
-[] what happens when last Operator leaves channel but there are other clients still in the channel
-	-> make one an operator?
+[x] what happens when last Operator leaves channel but there are other clients still in the channel
+	-> do nothing
 [x] when operator kicks himself and rejoins the 11:18 -!- Irssi: #dhuss: Total of 1 nicks [0 ops, 0 halfops, 0 voices, 1 normal] is not updated correctly
 	-> here there were two users and no operators in channel
 	-> should be 2 normal
 
 ### quit
 [x] clients send quit to all channels when closing the window
-[] when client quits and is last client in channel is it possible to join that channel and not be creator?
+[x] when client quits and is last client in channel is it possible to join that channel and not be creator?
 	-> quit does not delete channel object if last member
 	-> maybe quit should remove user from channels and then also just check if the channel is now empty
 
 ### join
 [x] during first join
 	-> 12:37 -!- : No such channel
-[] 11:25 -!- available commands: JOIN, MODE, KICK, PART, QUIT, PRIVMSG/NOTICE
+[x] 11:25 -!- available commands: JOIN, MODE, KICK, PART, QUIT, PRIVMSG/NOTICE
 	-> in server "menu"
 
 ### all commands that take reason or custom user input
@@ -87,9 +90,11 @@
 	-> irssi seems to have a limit and characters that are sent
 		-> only checked: kick, topic
 	-> should also check with valgrind here
-[] also check what other channels do in that case
+[] also check what other servers do in that case
 
 ### ctrl + z
+- poll error with valgrind
+- no poll error without valgrind
 
 ## ====== Day 1 == 25.06 ======
 - started reading subject (30min)
@@ -553,3 +558,11 @@ For leak check at School start Dockerfile in directory
 
 ## ====== Day 30 == 02.10 ====== (2h)
 - finished topic
+- fixed double free in quit
+- tested with 1000 users in 1 Channel sending a message every 5 seconds
+- tested ctrl + D
+- tested ctrl + z with high trafic
+- commented debug out
+	-> test server output responsiveness with high traffic
+- waitet multiple minutes to see if Clients send another registration but they do not
+- found Segfault where sending an empty message (just ctrl +v and ctrl +m) crashes server

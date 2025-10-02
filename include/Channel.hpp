@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/25 14:42:44 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/25 16:56:20 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/02 14:20:54 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,6 @@ class Channel
 		void	addInvUsers(Client* client);
 		std::map<std::string, Client*> getUsers(void);
 
-		void	inviteUser(Client* inviter, Client* invited);
-		void	kickUser(Client* kicker, const std::string& kicked);
 		void	updateNickOnChannel(const std::string& oldNick, const std::string& newNick);
 
 		void	removeUser(Client* client);
@@ -62,8 +60,6 @@ class Channel
 		// ======= send Messages =======//
 		void	broadcast(const std::string& msg, Client* sender);
 		void	broadcastUpdated(const std::string& content, Client* sender, const std::string& command);
-		void	broadcastAll(const std::string& content, Client* sender, Client* kicked, const std::string& command);		
-		void	changeTopic(const std::string& topic, const Client* client);
 
 		// ======= verify Clients =======//
 		bool	isOperator(const Client* client) const;
@@ -77,7 +73,7 @@ class Channel
 		std::size_t	getUserLimit(void);
 
 		const std::string	getJoinedUsers(void) const;
-		size_t		getNbrUsers(void) const; // not sure if needed
+		size_t		getNbrUsers(void) const;
 		bool		isEmpty(void) const;
 
 		void		setName(std::string name); // might not need this as channel names are fixed

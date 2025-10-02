@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maustel <maustel@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/25 14:41:49 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/27 16:19:49 by maustel          ###   ########.fr       */
+/*   Updated: 2025/10/02 15:09:09 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@ std::string toLower(const std::string& str)
 		lowerCase[i] = std::tolower(str[i]);
 	return (lowerCase);
 }
-
-//==================NICK==================//
 
 /*------------------------------------------------------------------*/
 /*	used for NICK command to verify name							*/

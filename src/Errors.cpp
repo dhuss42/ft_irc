@@ -6,13 +6,9 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:41 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/02 12:19:23 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/02 14:22:31 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-// should slipt into errors critical for server infrastructure
-// which should result in closing the program
-// and errors that should simple be handled gracefully without a shutdown
 
 #include "Errors.hpp"
 

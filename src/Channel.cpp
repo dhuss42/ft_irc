@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/19 14:00:35 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/02 12:29:07 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/02 14:22:00 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,30 +36,12 @@ Channel::~Channel()
 /*------------------------------------------------------*/
 /* Sends message to all users in channel except sender	*/
 /*------------------------------------------------------*/
-void	Channel::broadcastAll(const std::string& content, Client* sender, Client* kicked, const std::string& command)
-{
-	if (sender)
-	{
-		std::string msg = ":" + sender->getNick() + "!" + sender->getUsername() + "@" + sender->getHostname() + " " + command + " :" + content + "\r\n";
-		std::cout << YELLOW "[Debug] broadcastUpdated " << msg << WHITE << std::endl;
-		for (auto it = _users.begin(); it != _users.end(); ++it)
-		{
-			if (it->second != kicked)
-				it->second->sendRaw(msg);
-		}
-		kicked->sendRaw(msg);
-	}
-}
-
-/*------------------------------------------------------*/
-/* Sends message to all users in channel except sender	*/
-/*------------------------------------------------------*/
 void	Channel::broadcastUpdated(const std::string& content, Client* sender, const std::string& command)
 {
 	if (sender)
 	{
 		std::string msg = ":" + sender->getNick() + "!" + sender->getUsername() + "@" + sender->getHostname() + " " + command + " :" + content + "\r\n";
-		std::cout << YELLOW "[Debug] broadcastUpdated " << msg << WHITE << std::endl;
+		// std::cout << YELLOW "[Debug] broadcastUpdated " << msg << WHITE << std::endl;
 		for (auto it = _users.begin(); it != _users.end(); ++it)
 		{
 			if (it->second != sender)
@@ -89,7 +71,6 @@ void	Channel::broadcast(const std::string& msg, Client* sender)
 
 //================ Channel Operations ================//
 
-//<<<<<<<<<<<<<<<MODE>>>>>>>>>>>>//
 /*--------------------------------------------------*/
 /* returns "+" and every identifier for active mode	*/
 /*--------------------------------------------------*/
@@ -108,7 +89,6 @@ std::string	Channel::getActiveChannelModes(void) const
 	return (activeModes);
 }
 
-//<<<<<<<<<<<<<<<MODE>>>>>>>>>>>>//
 /*--------------------------------------------------*/
 /* returns active parameters as string				*/
 /*--------------------------------------------------*/
@@ -123,25 +103,6 @@ std::string	Channel::getActiveChannelParameters(void) const
 	return (parameters);
 }
 
-//<<<<<<<<<<<<<<<TOPIC>>>>>>>>>>>>//
-// the return value can be changed to adjust to the parsing logic
-/*--------------------------------------------------*/
-/* checks if only Operator can change topic			*/
-/*	-	checks if client is Operator				*/
-/* changes the topic								*/
-/*--------------------------------------------------*/
-void	Channel::changeTopic(const std::string& topic, const Client* client)
-{
-	if (_topicOp && !isOperator(client))
-	{
-		std::cout << "[DEBUG] only Operator can change topic and " << client->getNick() << " is not an operator for this channel" << std::endl;
-		return ;
-	}
-	else
-		setTopic(topic);
-}
-
-//<<<<<<<<<<<<<<<JOIN>>>>>>>>>>>>//
 /*--------------------------------------------------*/
 /* returns a string of all joined Users				*/
 /*--------------------------------------------------*/
@@ -170,8 +131,6 @@ bool	Channel::isEmpty(void) const
 	return (_users.empty());
 }
 
-
-//<<<<<<<<<<<<<<<NOT SURE IF NEEDED>>>>>>>>>>>>//
 /*--------------------------------------------------*/
 /* returns amount of users in channel				*/
 /*--------------------------------------------------*/
@@ -182,8 +141,6 @@ size_t Channel::getNbrUsers(void) const
 
 //================ Adding & Removing clients ================//
 
-//<<<<<<<<<<<<<<<JOIN>>>>>>>>>>>>//
-// the return value can be changed to adjust to the parsing logic
 /*--------------------------------------------------*/
 /* adds users to channel							*/
 /* - checks for different modes						*/
@@ -220,60 +177,6 @@ bool	Channel::addUser(Client* client, const std::string& password)
 	return (true);
 }
 
-//<<<<<<<<<<<<<<<INVITE>>>>>>>>>>>>//
-// the return value can be changed to adjust to the parsing logic
-/*--------------------------------------------------*/
-/* invite user to channel							*/
-/*--------------------------------------------------*/
-void	Channel::inviteUser(Client* inviter, Client* invited)
-{
-	if (!isOperator(inviter))
-	{
-		std::cout << GREEN "[DEBUG] " << inviter->getNick() << "[inviter] is not a channel operator"  WHITE << std::endl;
-		return ;
-	}
-	if (!inviter->getServer()->isClient(invited->getNick()))
-	{
-		std::cout << GREEN "[DEBUG] " << invited->getNick() << "[invited] is not on the server"  WHITE << std::endl;
-		return ;
-	}
-	if (!isUser(inviter))
-	{
-		std::cout << GREEN "[DEBUG] " << invited->getNick() << "[invited] is not in the channel"  WHITE << std::endl;
-		return ;
-	}
-	auto it = _users.find(invited->getNick());
-	if (it == _users.end())
-	{
-		std::cout << GREEN "[DEBUG] " << invited->getNick() << " is not in channel. Inviting now..." WHITE << std::endl;
-		addInvUsers(invited);
-	}
-}
-
-//<<<<<<<<<<<<<<<KICK>>>>>>>>>>>>//
-// the return value can be changed to adjust to the parsing logic
-/*--------------------------------------------------*/
-/* kicks User out of channel						*/
-/*--------------------------------------------------*/
-void	Channel::kickUser(Client* kicker, const std::string& kicked)
-{
-	auto it = _users.find(kicked);
-	if (it == _users.end())
-	{
-		std::cout << GREEN "[DEBUG] " << kicked << " is not in channel " << std::endl;
-		return ;
-	}
-	if (!isOperator(kicker))
-	{
-		std::cout << GREEN "[DEBUG] " << kicker->getNick() << " is not an operator" << std::endl;
-		return ;
-	}
-	else
-	{
-		std::cout << GREEN "[DEBUG] " << kicker->getNick() << " is kicking " << kicked << std::endl;
-		removeUser(_users[kicked]);
-	}
-}
 
 void	Channel::updateNickOnChannel(const std::string& oldNick, const std::string& newNick)
 {
@@ -287,8 +190,6 @@ void	Channel::updateNickOnChannel(const std::string& oldNick, const std::string&
 	}
 }
 
-
-//<<<<<<<<<<<<<<<PART & JOIN & KICK>>>>>>>>>>>>//
 /*----------------------------------------------------------------------*/
 /* removes user from Channel for KICK and PART and client disconnect	*/
 /*----------------------------------------------------------------------*/
@@ -296,21 +197,11 @@ void	Channel::removeUser(Client* client)
 {
 	if (client)
 	{
-		std::cout << "[DEBUG] Removing client with nick: " << client->getNick() << std::endl;
-		std::cout << "[DEBUG] Before removing users_size: " << _users.size() << std::endl;
-		std::cout << "[DEBUG] Before removing operators_size: " << _operators.size() << std::endl;
 		if (_users.find(client->getNick()) != _users.end())
-		{
 			_users.erase(client->getNick());
-			std::cout << GREEN "[DEBUG] Removed client with nick: " RESET << client->getNick() << std::endl;
-		}
 		if (_operators.find(client->getNick()) != _operators.end())
 			_operators.erase(client->getNick());
-		std::cout << "[DEBUG] After removing users_size: " << _users.size() << std::endl;
-		std::cout << "[DEBUG] [DEBUG] After removing users_size: " << _operators.size() << std::endl;
 	}
-	// check outside if Channel has 0 members now
-	// if so delete the channel object
 }
 
 /*----------------------------------------------------------------------*/

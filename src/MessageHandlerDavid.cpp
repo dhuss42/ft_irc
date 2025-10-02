@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 11:49:11 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/02 12:46:12 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/02 14:11:49 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,6 @@ void	MessageHandler::handleQuit(void)
 			if (iter->second != &_client)
 				recipients.insert(iter->second);
 		}
-		it->second->removeUser(&_client); // here problems
-		if (it->second->getNbrUsers() == 0)
-			_server.removeChannel(it->second);
 	}
 	for (auto iterate = recipients.begin(); iterate != recipients.end(); ++iterate)
 		(*iterate)->sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "QUIT :" + reason);

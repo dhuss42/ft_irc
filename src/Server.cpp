@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/02 12:44:39 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/02 15:15:51 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ void	Server::parseArgs(const std::string& portNbr, const std::string& password)
 /*--------------------------------------*/
 pollfd	Server::createPollfd()
 {
-	pollfd sock;
+	pollfd	sock;
 
 	memset(&sock, 0, sizeof(pollfd));
 	sock.events = POLL_IN;
@@ -533,7 +533,6 @@ const std::string& Server::getName(void) const
 	return (_name);
 }
 
-//<<<<<<<<<<<<<<<PASS>>>>>>>>>>>>//
 /*--------------------------------------*/
 /* return server password					*/
 /*--------------------------------------*/
@@ -557,37 +556,3 @@ bool	Server::getShouldExit(void)
 {
 	return (shouldExit);
 }
-
-// update pollfd() vector
-// 	add new client fds
-//		pushback new client fds
-//	remove disconnected client fds
-// 		erase client fd
-
-// Server loop logic
-// monitor socketfd and connected clients fd with poll()
-// 	if socket fd has .revents & POLLIN a new client wants to connect
-// 		accept() waiting clients
-//			check for password
-//			create client object
-//			set to nonblocking fctnl()
-//			add to pollfd (_sockets)
-//	if client fd has .revents & POLLIN
-// 		receive incoming messages recv()
-// 			more complex steps with accumulating partial reads into a buffer
-// 				read into client specific buffer
-//				each call to recv() appends to the buffer
-//				check if buffer contains one or more complete messages defined by \r\n
-// 					create substring up to end of message
-//					pass to parser
-//					remove from buffer / remining bytes in buffer kept for next time (like get_next_line)
-//			parse commands (strings)
-//				tokenise and store (container/array of strings)
-//			handle commands
-//				check permissions of client
-//				carry out commands
-// 				update server/client/channel state
-// 				send replies
-//	if client fd has .revents & (POLLHUB | POLLERR | POLLNVAL); means client called close() or exit, error occured on the socket(), invalid fd
-// 		clean up client object
-// 		remove from pollfd

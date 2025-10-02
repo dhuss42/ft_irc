@@ -57,7 +57,7 @@ instead of _message.params[].empty() -> check for params size < x
 */
 void MessageHandler::handleCap(void)
 {
-	std::cout << "[DEBUG] CAP: " << std::endl;
+	// std::cout << "[DEBUG] CAP: " << std::endl;
 
 	if (_message.params[1] == "LS")
 		_client.sendMsg(_server.getName(), "CAP * LS :multi-prefix sasl message-tags");
@@ -88,7 +88,7 @@ JOIN <channel>[,<channel>] [<key>[,<key>]]
 ------------------------------------------------------------------------------*/
 void MessageHandler::handleJoin(void)
 {
-	std::cout << "[DEBUG] JOIN: " << std::endl;
+	// std::cout << "[DEBUG] JOIN: " << std::endl;
 
 	if (_message.params.size() < 2)
 	{
@@ -146,7 +146,7 @@ otherwise disconnect
 ------------------------------------------------------------------------------*/
 void MessageHandler::handlePass(void)
 {
-	std::cout << "[DEBUG] PASS: " << std::endl;
+	// std::cout << "[DEBUG] PASS: " << std::endl;
 	if (_message.params.size() < 2)
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
@@ -189,7 +189,7 @@ Sends error when
 ------------------------------------------------------------------------------*/
 void MessageHandler::handleNick(void)
 {
-	std::cout << "[DEBUG] NICK: " << std::endl;
+	// std::cout << "[DEBUG] NICK: " << std::endl;
 
 	if (_message.params.size() < 2 || _message.params[1].empty())
 	{
@@ -221,7 +221,7 @@ void MessageHandler::handleNick(void)
 
 	if (_client.getNickSet())//send something to client so he knows the new nickname?
 	{
-		std::cout << "[DEBUG] NICK change nickname " << newNick << std::endl;
+		// std::cout << "[DEBUG] NICK change nickname " << newNick << std::endl;
 		std::string oldNick = _client.getNick();
 		std::string prefix = oldNick + "!" + _client.getUsername() + "@" + _client.getHostname() + " NICK " + newNick + " :";
 		_client.updateNick(oldNick, newNick);
@@ -230,7 +230,7 @@ void MessageHandler::handleNick(void)
 		_client.sendMsg(prefix, "");
 	}
 
-	std::cout << "[DEBUG] NICK sets nickname: " << newNick << std::endl;
+	// std::cout << "[DEBUG] NICK sets nickname: " << newNick << std::endl;
 
 	_client.setNick(newNick);
 	_client.setNickSet(true);
@@ -249,9 +249,9 @@ USER <username> <hostname> <servername> :<realname>
 ------------------------------------------------------------------------------*/
 void MessageHandler::handleUser()
 {
-	std::cout << "[DEBUG] USER: " << std::endl;
-	std::cout << "[DEBUG] size params: " << _message.params.size() << std::endl;
-	std::cout << "[DEBUG] first param: " << _message.params[1] << std::endl;
+	// std::cout << "[DEBUG] USER: " << std::endl;
+	// std::cout << "[DEBUG] size params: " << _message.params.size() << std::endl;
+	// std::cout << "[DEBUG] first param: " << _message.params[1] << std::endl;
 
 	if (_message.params.size() < 2 || _message.params[1].empty())
 	{
@@ -303,7 +303,7 @@ Handles mode changes in channel and also /mode nick +i at registration phase
 ------------------------------------------------------------------------------*/
 void MessageHandler::handleMode()
 {
-	std::cout << "[DEBUG] MODE: " << std::endl;
+	// std::cout << "[DEBUG] MODE: " << std::endl;
 	if (_message.params.size() < 2)
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
@@ -347,7 +347,7 @@ Handles WHO command to list channel members with their details.
 ------------------------------------------------------------------------------*/
 void MessageHandler::handleWho()
 {
-	std::cout << "[DEBUG] WHO: " << std::endl;
+	// std::cout << "[DEBUG] WHO: " << std::endl;
 
 	if (_message.params.size() < 2)
 	{
@@ -402,7 +402,7 @@ Servers must reply to it with a PONG message with the same <token> value.
 ------------------------------------------------------------------------------*/
 void MessageHandler::handlePing()
 {
-	std::cout << "[DEBUG] PING: " << std::endl;
+	// std::cout << "[DEBUG] PING: " << std::endl;
 
 	if (_message.params.size() < 2 || _message.params[1].empty())
 	{
@@ -419,7 +419,7 @@ void MessageHandler::handlePing()
 ------------------------------------------------------------------------------*/
 void MessageHandler::handlePrivmsg()
 {
-	std::cout << "[DEBUG] PRIVMSG: " << std::endl;
+	// std::cout << "[DEBUG] PRIVMSG: " << std::endl;
 
 	if (_message.params.size() < 3)
 	{

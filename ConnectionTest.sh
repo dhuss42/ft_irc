@@ -4,7 +4,7 @@ set -euo pipefail
 HOST="127.0.0.1"
 PORT="6667"
 PASS="123"
-COUNT=50
+COUNT=1000
 BASE_NICK="testnick"
 BASE_CHANNEL="#test"
 KEEP_OPEN=60             # how long each client stays connected
@@ -33,17 +33,17 @@ for i in $(seq 1 "$COUNT"); do
     normal)
         (
           printf 'CAP LS\r\n'
-          sleep 1
+        #   sleep 1
           printf 'PASS %s\r\n' "$PASS"
-          sleep 1
+        #   sleep 1
           printf 'NICK %s\r\n' "$NICK"
-          sleep 1
+        #   sleep 1
           printf 'USER %s x 0 0\r\n' "$USERNAME"
-          sleep 1
+        #   sleep 1
           printf 'CAP END\r\n'
-          sleep 1
+        #   sleep 1
           printf 'JOIN %s\r\n' "$CHANNEL"
-          sleep 1
+        #   sleep 1
           start=$(date +%s)
           while [ $(( $(date +%s) - start )) -lt $KEEP_OPEN ]; do
               printf 'PRIVMSG %s :Hello from %s\r\n' "$CHANNEL" "$NICK"

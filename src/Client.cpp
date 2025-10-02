@@ -3,20 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maustel <maustel@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/25 14:42:13 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/30 19:32:05 by maustel          ###   ########.fr       */
+/*   Updated: 2025/10/02 14:25:57 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 
 //================================> Constructor and Destructor <================================//
-
-// it might make sense to pass pollfd, this would save me from having two unorderedmaps with clients
-// I could just have the clients nick and a pointer to the client
-// instead of having to containers I could also extract the value I need
 
 /*----------------------*/
 /* Constructor			*/
@@ -36,7 +32,6 @@ Client::~Client()
 	std::cout << CYAN << "[" << _nick << "]: disconnected" WHITE << std::endl;
 }
 
-
 //============== Channel Data ==============//
 
 Channel* Client::getJoinedChannel(const std::string& name)
@@ -49,8 +44,8 @@ Channel* Client::getJoinedChannel(const std::string& name)
 
 bool	Client::isJoinedChannel(const std::string& name)
 {
-	for (auto it = _joinedChannels.begin(); it != _joinedChannels.end(); ++it)
-		std::cout << YELLOW << "[DEBUG] " << _nick << " is part of: " << it->first << WHITE << std::endl;
+	// for (auto it = _joinedChannels.begin(); it != _joinedChannels.end(); ++it)
+	// 	std::cout << YELLOW << "[DEBUG] " << _nick << " is part of: " << it->first << WHITE << std::endl;
 	if (_joinedChannels.find(name) != _joinedChannels.end())
 		return (true);
 	return (false);
@@ -63,7 +58,7 @@ void	Client::addToJoinedChannels(Channel* channel)
 {
 	if (_joinedChannels.find(channel->getName()) == _joinedChannels.end())
 	{
-		std::cout << YELLOW << "[DEBUG] " << _nick << " is joining: " << channel->getName() << WHITE << std::endl;
+		// std::cout << YELLOW << "[DEBUG] " << _nick << " is joining: " << channel->getName() << WHITE << std::endl;
 		_joinedChannels[channel->getName()] = channel;
 	}
 }
@@ -85,10 +80,17 @@ void	Client::removeFromJoinedChannels(const std::string& name)
 void	Client::removeFromAllJoinedChannels()
 {
 	for (auto it = _joinedChannels.begin(); it != _joinedChannels.end(); ++it)
+	{
 		it->second->removeUser(this);
+		if (it->second->getNbrUsers() == 0)
+			_server->removeChannel(it->second);
+	}
 	_joinedChannels.clear();
 }
 
+/*----------------------------------------------------------------------------------*/
+/* update Nick in Client container and channel container							*/
+/*----------------------------------------------------------------------------------*/
 void	Client::updateNick(const std::string& oldNick, const std::string& newNick)
 {
 	std::map<std::string, Client*> channelUsers;
@@ -101,14 +103,16 @@ void	Client::updateNick(const std::string& oldNick, const std::string& newNick)
 			Client* clientPtr = iter->second;
 			channelUsers.erase(_nick);
 			channelUsers[toLower(newNick)] = clientPtr;
-			std::cout << YELLOW "[DEBUG] newNick of client " WHITE << clientPtr->getNick() << std::endl; 
+			// std::cout << YELLOW "[DEBUG] newNick of client " WHITE << clientPtr->getNick() << std::endl;
 			it->second->updateNickOnChannel(oldNick, newNick);
 		}
-		std::cout << MAGENTA "[DEBUG] printing all users in Channel: " << it->first << "\n\t" << it->second->getJoinedUsers() << WHITE << std::endl;
+		// std::cout << MAGENTA "[DEBUG] printing all users in Channel: " << it->first << "\n\t" << it->second->getJoinedUsers() << WHITE << std::endl;
 	}
 }
 
-
+/*----------------------------------------------------------------------------------*/
+/* return unordered map with all channels client is part of							*/
+/*----------------------------------------------------------------------------------*/
 std::unordered_map<std::string, Channel*> Client::getJoinedChannels(void)
 {
 	return (_joinedChannels);
@@ -140,14 +144,14 @@ int	Client::receiveMsg()
 	}
 	else if (received == 0)
 	{
-		std::cout << CYAN << "[" << _nick << "] closed their connection" << std::endl; // needs cleanup -> maybe change to setRegisfailed?
+		setDisconnect(true);
+		// std::cout << CYAN << "[" << _nick << "] closed their connection" << std::endl; // needs cleanup -> maybe change to setRegisfailed?
 		return (-1);
 	}
 	else
 	{
 		std::string fullBuffer = _remainder + std::string(tmp, received);
 		_remainder = "";
-
 		std::size_t pos;
 		while ((pos = fullBuffer.find("\r\n")) != std::string::npos)
 		{
@@ -157,7 +161,7 @@ int	Client::receiveMsg()
 		}
 		_remainder = fullBuffer;
 	}
-	std::cout << GREEN << "[" << _nick << "]" << " received: " << _buffer << WHITE << std::endl;
+	// std::cout << GREEN << "[" << _nick << "]" << " received: " << _buffer << WHITE << std::endl;
 	_buffer.clear();
 	return (0);
 }
@@ -170,7 +174,7 @@ int	Client::receiveMsg()
 /*------------------------------------------------------------------*/
 void	Client::sendRaw(std::string msg)
 {
-	std::cout << GREEN "[DEBUG] socket: " << _socket << "\nnick: " WHITE << _nick << std::endl;
+	// std::cout << GREEN "[DEBUG] socket: " << _socket << "\nnick: " WHITE << _nick << std::endl;
 
 	ssize_t sent = send(_socket, msg.c_str(), msg.size(), 0);
 	if (sent <= 0)
@@ -178,8 +182,8 @@ void	Client::sendRaw(std::string msg)
 		std::cout << RED "did not send msg" << WHITE << std::endl;
 		std::cout << "Ernno: " << errno << std::endl;
 	}
-	else
-		std::cout << "bytes sent: " << sent << std::endl;
+	// else
+		// std::cout << "bytes sent: " << sent << std::endl;
 }
 
 /*------------------------------------------------------------------*/
@@ -191,7 +195,7 @@ void	Client::sendRaw(std::string msg)
 void	Client::sendMsg(std::string name, std::string reply)
 {
 	reply = ":" + name + " " + reply + "\r\n";
-	std::cout << YELLOW "[DEBUG] reply - " WHITE << reply << std::endl;
+	// std::cout << YELLOW "[DEBUG] reply - " WHITE << reply << std::endl;
 	if (send(_socket, reply.c_str(), reply.size(), 0) <= 0) // uncertain about the zero at the moment
 	{
 		throw (Errors(ErrorCode::E_SND)); // uncertain about wether it bubbles up correctly to the next catch
@@ -338,37 +342,3 @@ void	Client::setUsernameSet(bool state)
 {
 	_usernameSet = state;
 }
-
-// Constructor
-// if a client makes a connection create Client object
-// instantiate attributes
-// 	socket fd
-//	pointer to server
-//
-//  read buffer for the client
-//  write buffer
-//
-//  a netwide unique identifier
-//	nickname
-//	username
-//	hostname
-//	modes
-//	joined channels
-//	registration state
-//
-
-// optional considerations
-// 		away message
-//		last activity timestamp
-//
-
-// Destructor
-// 	close socket?
-//	notify server to remove from pollfd and client list
-
-// Buffer handling Methods
-// append received data into read buffer
-
-// check for complete lines in read buffer
-
-// Clear Buffer when necessary
