@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:41 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/22 12:46:06 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/02 12:19:23 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,21 +103,27 @@ void	Errors::handleErrors(const std::exception& e, Server* server)
 				fatal(BOLDCYAN "\tPassword may only consist of printable characters and cannot be empty or more than 15 characters" RESET, server);
 				break ;
 			case ErrorCode::E_SCKFD:
-			case ErrorCode::E_FCNTL:
-			case ErrorCode::E_BND:
-			case ErrorCode::E_LSTN:
-			case ErrorCode::E_PLL:
-			case ErrorCode::E_SCKEMPTY:
-			if (server)
-			{
-				std::cerr << BOLDCYAN "\tFatal: shutting Server down..." RESET << std::endl;
-				server->setShouldExit();
+				fatal("", server);
 				break ;
-			}
-			// non fatal errors
+			case ErrorCode::E_FCNTL:
+				fatal("", server);
+				break ;
+			case ErrorCode::E_BND:
+				fatal("", server);
+				break ;
+			case ErrorCode::E_LSTN:
+				fatal("", server);
+				break ;
+			case ErrorCode::E_PLL:
+				fatal("", server);
+				break ;
+			case ErrorCode::E_SCKEMPTY:
+				fatal("", server);
+				break ;
 			case ErrorCode::E_RCV:
 			case ErrorCode::E_SND:
 			case ErrorCode::E_ACCPT:
+			// non fatal errors
 
 			default:
 				std::cerr << BOLDCYAN "\tDefault error" RESET << std::endl;

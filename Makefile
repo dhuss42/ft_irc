@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/10/02 11:55:06 by dhuss             #+#    #+#              #
+#    Updated: 2025/10/02 11:55:14 by dhuss            ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 CC = c++
 
 SRC_DIR = ./src
@@ -24,7 +36,7 @@ SRCS = $(addprefix $(SRC_DIR)/, $(CPPFILES))
 OBJS = $(addprefix $(OBJ_DIR)/, $(CPPFILES:.cpp=.o))
 
 INCLUDE = -I./include
-FLAGS = -Wall -Wextra -g -std=c++17 $(INCLUDE)	#-Werror
+FLAGS = -Wall -Wextra -Werror -g -std=c++17 $(INCLUDE)
 NAME = ircserv
 
 $(NAME) : $(OBJS)

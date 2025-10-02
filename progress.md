@@ -6,7 +6,7 @@
 [] git rid of vs.code file
 
 ### Makefile
-[] include -Werror
+[x] include -Werror
 
 ### lowerCase names
 [] could be that more bugs occur where names have not been changed to lowercase resulting in segfaults
@@ -52,6 +52,8 @@
 	11:19 -!- Nickname is already in use, choose another one
 	11:19 -!- Irssi: Connection lost to 127.0.0.1
 	11:19 -!- Irssi: Not connected to server
+[] possible to connect to server without providing password -> ""
+	-> is not connected but also not disconnected from server
 
 ### parssing
 [x] when password is empty string the client is able to connect with providing no password and also with "", but is never disconnected -> remains in limbo
@@ -64,15 +66,18 @@
 ### part / kick / quit
 [] what happens when last Operator leaves channel but there are other clients still in the channel
 	-> make one an operator?
-[] when operator kicks himself and rejoins the 11:18 -!- Irssi: #dhuss: Total of 1 nicks [0 ops, 0 halfops, 0 voices, 1 normal] is not updated correctly
+[x] when operator kicks himself and rejoins the 11:18 -!- Irssi: #dhuss: Total of 1 nicks [0 ops, 0 halfops, 0 voices, 1 normal] is not updated correctly
 	-> here there were two users and no operators in channel
 	-> should be 2 normal
 
 ### quit
 [x] clients send quit to all channels when closing the window
+[] when client quits and is last client in channel is it possible to join that channel and not be creator?
+	-> quit does not delete channel object if last member
+	-> maybe quit should remove user from channels and then also just check if the channel is now empty
 
 ### join
-[] during first join
+[x] during first join
 	-> 12:37 -!- : No such channel
 [] 11:25 -!- available commands: JOIN, MODE, KICK, PART, QUIT, PRIVMSG/NOTICE
 	-> in server "menu"
@@ -83,6 +88,8 @@
 		-> only checked: kick, topic
 	-> should also check with valgrind here
 [] also check what other channels do in that case
+
+### ctrl + z
 
 ## ====== Day 1 == 25.06 ======
 - started reading subject (30min)

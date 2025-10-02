@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maustel <maustel@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/19 14:00:35 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/01 16:06:40 by maustel          ###   ########.fr       */
+/*   Updated: 2025/10/02 12:29:07 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,16 +211,11 @@ bool	Channel::addUser(Client* client, const std::string& password)
 		auto it = _users.find(client->getNick());
 		if (it == _users.end())
 		{
-			// std::cout << "[DEBUG] Client added ! " << client->getNick() << " to " << this->getName() << std::endl;
 			_users[toLower(client->getNick())] = client;
 			client->addToJoinedChannels(this);
 			if (_invOnly)
 				removeInvUsers(client);
-			client->sendMsg("irc_custom", "available commands: JOIN, MODE, KICK, PART, QUIT, PRIVMSG/NOTICE"); // not correct format and more needs to be sent maybe outside the method
 		}
-		// else
-		// 	std::cout << "[DEBUG] Client is already part of the Channel!" << std::endl;
-		// std::cout << "[DEBUG] " << getJoinedUsers() << std::endl;
 	}
 	return (true);
 }

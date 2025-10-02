@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/29 15:32:56 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/02 12:44:39 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -419,8 +419,8 @@ void	Server::removeChannel(Channel* channel)
 {
 	if (channel && isChannel(channel->getName()))
 	{
-		delete channel;
 		_channelList.erase(channel->getName());
+		delete channel;
 	}
 }
 
