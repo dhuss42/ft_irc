@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/25 14:42:13 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/02 14:25:57 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/02 17:10:47 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 /*----------------------*/
 Client::Client(int fd, Server* server) : _server(server), _socket(fd)
 {
+	std::cout << GREEN << "[" << _nick << "]: connected" WHITE << std::endl;
 }
 
 /*----------------------*/
