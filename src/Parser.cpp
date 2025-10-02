@@ -49,6 +49,8 @@ void parseHandler(std::string rawMessage, Client &client, Server &server)
 		handler.handleQuit();
 	else if (message.command == "KICK")
 		handler.handleKick();
+	else if (message.command == "TOPIC")
+		handler.handleKick();
 
 	else
 		client.sendError(server.getName(), IrcErrorCode::ERR_UNKNOWNCOMMAND, "Unknown command: " + message.command);

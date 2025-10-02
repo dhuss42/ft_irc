@@ -2,6 +2,9 @@
 
 ## To dos
 
+### git
+[] git rid of vs.code file
+
 ### Makefile
 [] include -Werror
 
@@ -526,3 +529,6 @@ For leak check at School start Dockerfile in directory
 [x] check error responses for kick with multiple users
 [x] check part error responses
 - finished invite
+
+## ====== Day 30 == 02.10 ====== ()
+- worked on topic
