@@ -55,6 +55,9 @@ after ':'  Get everything after the colon in the original message
 ------------------------------------------------------------*/
 void Message::splitMessage(std::string rawMessage)
 {
+	// std::cout << YELLOW << "[DEBUG] rawMessage: " << rawMessage << WHITE << std::endl;
+	if (rawMessage.empty())
+		return ;
 	std::stringstream ss(rawMessage);
 	std::string arg;
 
