@@ -47,6 +47,11 @@
 [] what do we do when a Client connects and only sends part of the Authentication?
 	-> PASS but not NICK and USER
 	-> disconnect after timeout?
+[] when trying to connect to the server with a nick that is already in use connection is rejected
+	11:19 -!- Capabilities acknowledged: multi-prefix
+	11:19 -!- Nickname is already in use, choose another one
+	11:19 -!- Irssi: Connection lost to 127.0.0.1
+	11:19 -!- Irssi: Not connected to server
 
 ### parssing
 [x] when password is empty string the client is able to connect with providing no password and also with "", but is never disconnected -> remains in limbo
@@ -69,6 +74,15 @@
 ### join
 [] during first join
 	-> 12:37 -!- : No such channel
+[] 11:25 -!- available commands: JOIN, MODE, KICK, PART, QUIT, PRIVMSG/NOTICE
+	-> in server "menu"
+
+### all commands that take reason or custom user input
+- test with really long message
+	-> irssi seems to have a limit and characters that are sent
+		-> only checked: kick, topic
+	-> should also check with valgrind here
+[] also check what other channels do in that case
 
 ## ====== Day 1 == 25.06 ======
 - started reading subject (30min)
@@ -530,5 +544,5 @@ For leak check at School start Dockerfile in directory
 [x] check part error responses
 - finished invite
 
-## ====== Day 30 == 02.10 ====== ()
-- worked on topic
+## ====== Day 30 == 02.10 ====== (2h)
+- finished topic

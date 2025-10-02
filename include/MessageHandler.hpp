@@ -57,6 +57,8 @@ class MessageHandler
 	void handleTopic(void);
 	void handleNotice(void);
 
+	void clearTopic(void);
+
 	//MODE Utils
 
 	bool validateModeParameters(void);

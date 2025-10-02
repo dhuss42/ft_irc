@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   MessageHandlerDavid.cpp                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/02 11:49:11 by dhuss             #+#    #+#             */
+/*   Updated: 2025/10/02 11:49:23 by dhuss            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "MessageHandler.hpp"
 
@@ -158,58 +169,63 @@ void	MessageHandler::handleInvite(void)
 	}
 }
 
-
-void MessageHandler::handleTopic(void)
+/*----------------------------------------------------------------------*/
+/* Topic																*/
+/*	- check if there are enough parameters								*/
+/*	- check if second parameter is "-delete"							*/
+/*		- assign channelName and topic accordingly						*/
+/*	- check if channel exists											*/
+/*	- check if changer is on channel									*/
+/*	- check if changer is operator when only operator can change		*/
+/*	- if only two args													*/
+/*	- 	if topic is empty send topic not set							*/
+/*	- 	else send topic													*/
+/*	- if second parameter is "-delete" clear topic						*/
+/*	- else change channel topic to topic								*/
+/*	- send topic update message to everyone on channel					*/
+/*----------------------------------------------------------------------*/
+void	MessageHandler::handleTopic(void)
 {
-	// <channel> <topic>
-	std::cout << MAGENTA "[DEBUG] TOPIC: " << WHITE << std::endl;
-
-	for (auto it = _message.params.begin(); it != _message.params.end(); ++it)
-		std::cout << YELLOW "[DEBUG] params: " << *it << WHITE << std::endl;
-
 	if (_message.params.size() < 2)
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS, "Not enough parameters");
 		return ;
 	}
 
-	Channel* channel = _server.getChannel(_message.params[1]);
-	if (!channel)
-		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL, _message.params[1]);
-	else if (channel->getTopicOp() && !channel->isOperator(&_client))
-		_client.sendError(_server.getName(), IrcErrorCode::ERR_CHANOPRIVSNEEDED, _message.params[1] + " :You're not channel operator");
-	else if (!_client.isJoinedChannel(_message.params[1])) // probably change message params to 1
-		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOTONCHANNEL, _message.params[1] + " :You're not on that channel");
+	std::string	channelName = _message.params[1];
+	std::string	topic = _message.params[2];
+	if (_message.params[1] == "-delete")
+	{
+		channelName = _message.params[2];
+		topic = _message.params[3];
+	}
 	else
 	{
-		std::string topic = _message.params[2];
-		if (_message.params.size() < 3)
+		Channel* channel = _server.getChannel(channelName);
+		if (!channel)
+			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL, channelName);
+		else if (!_client.isJoinedChannel(channelName))
+			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOTONCHANNEL, channelName + " :You're not on that channel");
+		else if (channel->getTopicOp() && !channel->isOperator(&_client))
+			_client.sendError(_server.getName(), IrcErrorCode::ERR_CHANOPRIVSNEEDED, channelName + " :You're not channel operator");
+		else
 		{
-			if (channel->getTopic().empty())
-				_client.sendResponse(_server.getName(), IrcResponseCode::RPL_NOTOPIC, _client.getNick() + " " + channel->getName()); // :No topic is set
+			if (_message.params.size() < 3)
+			{
+				if (channel->getTopic().empty())
+					_client.sendResponse(_server.getName(), IrcResponseCode::RPL_NOTOPIC, _client.getNick() + " " + channelName);
+				else
+					_client.sendResponse(_server.getName(), IrcResponseCode::RPL_TOPIC, _client.getNick() + " " + channelName);
+			}
 			else
-				_client.sendResponse(_server.getName(), IrcResponseCode::RPL_TOPIC, _client.getNick() + " " + channel->getName()); // :<topic>
+			{
+				if (_message.params[1] == "-delete")
+					channel->setTopic("");
+				else
+					channel->setTopic(topic);
+				channel->broadcastUpdated(topic, &_client, "TOPIC " + _message.params[1]);
+				_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "TOPIC " + _message.params[1] + " " + topic);
+			}
 		}
-		else if (topic.empty())
-			channel->setTopic(topic); // not sure
-		
-		channel->broadcastUpdated(topic, &_client, "TOPIC " + _message.params[1]); // not sure
-		_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "TOPIC " + _client.getNick() + " " + _message.params[1]); // send to topic changer
 	}
-
-		// if <topic> is not given as param
-
-		// RPL_TOPIC --> specifies current channel topic
-		// 		should also send RPL_TOPICWHOTIME SHOULD
-		// RPL_NOTOPIC --> lack of channel topic
-		// if <topic> is empty
-			// channel topic is cleared
-
-	// if topic is changed or cleared
-	// 	every client in channel also author will receive A Topic command
-	// 		new topic as argument
-	// 		empty argument if topic was cleared
-	// 		if its the same users are notified too
-
-	// clients joining the channel in future will receive RPL_TOPIC or lack thereof
 }
