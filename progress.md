@@ -96,9 +96,14 @@
 	-> should also check with valgrind here
 [] also check what other servers do in that case
 
+### mode
+- mode -o
+	-> @ does not disappear after removing op privledeges
+
 ### ctrl + z
 - poll error with valgrind
 - no poll error without valgrind
+- ctrl + z with client and then flood channel with other client we get Error in verify nickname
 
 ## ====== Day 1 == 25.06 ======
 - started reading subject (30min)

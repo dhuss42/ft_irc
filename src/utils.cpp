@@ -48,6 +48,7 @@ bool	verifyNickName(const std::string& name)
 				continue;
 			}
 			std::cout << "[DEBUG] Error in verify nickname: " << c << std::endl;
+			std::cout << "[DEBUG] Error in verify nickname - name: " << name << std::endl;
 			return false;
 	}
 }
