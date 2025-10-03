@@ -19,7 +19,7 @@
 /*----------------------*/
 Client::Client(int fd, Server* server) : _server(server), _socket(fd)
 {
-	std::cout << GREEN << "[" << _nick << "]: connected" WHITE << std::endl;
+	std::cout << GREEN << "new connection" WHITE << std::endl;
 }
 
 /*----------------------*/
@@ -45,8 +45,6 @@ Channel* Client::getJoinedChannel(const std::string& name)
 
 bool	Client::isJoinedChannel(const std::string& name)
 {
-	// for (auto it = _joinedChannels.begin(); it != _joinedChannels.end(); ++it)
-	// 	std::cout << YELLOW << "[DEBUG] " << _nick << " is part of: " << it->first << WHITE << std::endl;
 	if (_joinedChannels.find(name) != _joinedChannels.end())
 		return (true);
 	return (false);
@@ -58,16 +56,12 @@ bool	Client::isJoinedChannel(const std::string& name)
 void	Client::addToJoinedChannels(Channel* channel)
 {
 	if (_joinedChannels.find(channel->getName()) == _joinedChannels.end())
-	{
-		// std::cout << YELLOW << "[DEBUG] " << _nick << " is joining: " << channel->getName() << WHITE << std::endl;
 		_joinedChannels[channel->getName()] = channel;
-	}
 }
 
-// RESULTED IN SEGFAULTS BECAUSE I CODED WHEN I SHOULD HAVE STOPPED ALREADY
-// /*----------------------------------------------------------------------------------*/
-// /* remove the Channel from the container storing all the Channels user is part of	*/
-// /*----------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------*/
+/* remove the Channel from the container storing all the Channels user is part of	*/
+/*----------------------------------------------------------------------------------*/
 void	Client::removeFromJoinedChannels(const std::string& name)
 {
 	if (_joinedChannels.find(name) != _joinedChannels.end())
@@ -104,10 +98,8 @@ void	Client::updateNick(const std::string& oldNick, const std::string& newNick)
 			Client* clientPtr = iter->second;
 			channelUsers.erase(_nick);
 			channelUsers[toLower(newNick)] = clientPtr;
-			// std::cout << YELLOW "[DEBUG] newNick of client " WHITE << clientPtr->getNick() << std::endl;
 			it->second->updateNickOnChannel(oldNick, newNick);
 		}
-		// std::cout << MAGENTA "[DEBUG] printing all users in Channel: " << it->first << "\n\t" << it->second->getJoinedUsers() << WHITE << std::endl;
 	}
 }
 
@@ -140,20 +132,24 @@ int	Client::receiveMsg()
 
 	if (received == -1)
 	{
-		std::cerr << RED "Error: recv" << WHITE << std::endl;
+		std::cerr << RED "Error: recv" << WHITE << std::endl; // what is here?
 		return (-1);
 	}
 	else if (received == 0)
 	{
 		setDisconnect(true);
-		// std::cout << CYAN << "[" << _nick << "] closed their connection" << std::endl; // needs cleanup -> maybe change to setRegisfailed?
 		return (-1);
 	}
 	else
 	{
-		std::string fullBuffer = _remainder + std::string(tmp, received);
+		// std::cout << "[" << _nick << "] _remainder: " << _remainder << " "; 
+		std::string rec = std::string(tmp, received);
+		std::string fullBuffer = _remainder + rec;
 		_remainder = "";
 		std::size_t pos;
+		std::cout << "[" << _nick << "] received: " << rec; 
+		if (fullBuffer.back() != '\n')
+			std::cout << " ";
 		while ((pos = fullBuffer.find("\r\n")) != std::string::npos)
 		{
 			_buffer = fullBuffer.substr(0, pos);
@@ -162,45 +158,30 @@ int	Client::receiveMsg()
 		}
 		_remainder = fullBuffer;
 	}
-	// std::cout << GREEN << "[" << _nick << "]" << " received: " << _buffer << WHITE << std::endl;
 	_buffer.clear();
 	return (0);
 }
 
 /*------------------------------------------------------------------*/
-/* sends replies to client											*/
-/*	- replies are patched together for the correct format for irssi */
-/*		- every msg sent must end in \r\n							*/
-/*		- :server 001 nickname :Welcome to IRC Server				*/
+/* sends Raw replies to client										*/
 /*------------------------------------------------------------------*/
-void	Client::sendRaw(std::string msg)
+void	Client::sendRaw(std::string msg) // what about this
 {
-	// std::cout << GREEN "[DEBUG] socket: " << _socket << "\nnick: " WHITE << _nick << std::endl;
-
 	ssize_t sent = send(_socket, msg.c_str(), msg.size(), 0);
 	if (sent <= 0)
-	{
-		std::cout << RED "did not send msg" << WHITE << std::endl;
-		std::cout << "Ernno: " << errno << std::endl;
-	}
-	// else
-		// std::cout << "bytes sent: " << sent << std::endl;
+		throw (Errors(ErrorCode::E_SND));	
 }
 
 /*------------------------------------------------------------------*/
 /* sends replies to client											*/
 /*	- replies are patched together for the correct format for irssi */
 /*		- every msg sent must end in \r\n							*/
-/*		- :server 001 nickname :Welcome to IRC Server				*/
 /*------------------------------------------------------------------*/
 void	Client::sendMsg(std::string name, std::string reply)
 {
 	reply = ":" + name + " " + reply + "\r\n";
-	// std::cout << YELLOW "[DEBUG] reply - " WHITE << reply << std::endl;
-	if (send(_socket, reply.c_str(), reply.size(), 0) <= 0) // uncertain about the zero at the moment
-	{
-		throw (Errors(ErrorCode::E_SND)); // uncertain about wether it bubbles up correctly to the next catch
-	}
+	if (send(_socket, reply.c_str(), reply.size(), 0) <= 0)
+		throw (Errors(ErrorCode::E_SND));
 }
 
 //============== getters and setters ==============//
