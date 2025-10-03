@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/25 14:42:44 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/03 11:02:00 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/03 11:05:57 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ class Channel
 		void	removeInvUsers(Client* client);
 
 		// ======= send Messages =======//
-		void	broadcastUpdated(const std::string& content, Client* sender, const std::string& command);
+		void	broadcast(const std::string& content, Client* sender, const std::string& command);
 
 		// ======= verify Clients =======//
 		bool	isOperator(const Client* client) const;

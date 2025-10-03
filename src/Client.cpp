@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/25 14:42:13 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/03 10:57:02 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/03 11:15:50 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,9 +156,42 @@ int	Client::receiveMsg()
 }
 
 /*------------------------------------------------------------------*/
+/* sends error replies to client									*/
+/*	- replies are patched together for the correct format for irssi */
+/*		- every msg sent must end in \r\n							*/
+/*		- :server 462 nickname :You may not reregister				*/
+/*																	*/
+/* think about using getIrcErrorResponse, but probably not useful	*/
+/*------------------------------------------------------------------*/
+void	Client::sendError(std::string name, IrcErrorCode code, std::string reply)
+{
+	reply = ":" + name + " " + getIrcErrorCodeString(code) + " " + getNick() + " " + reply + "\r\n";
+	if (send(_socket, reply.c_str(), reply.size(), 0) <= 0)
+	{
+		throw (Errors(ErrorCode::E_SND));
+	}
+}
+
+/*------------------------------------------------------------------*/
+/* sends replies to client											*/
+/*	- replies are patched together for the correct format for irssi */
+/*		- every msg sent must end in \r\n							*/
+/*		- :server 001 nickname :Welcome to IRC Server				*/
+/*																	*/
+/*------------------------------------------------------------------*/
+void	Client::sendResponse(std::string name, IrcResponseCode code, std::string reply)
+{
+	reply = ":" + name + " " + getIrcResponseCodeString(code) + " " + getNick() + " " + reply + "\r\n";
+	if (send(_socket, reply.c_str(), reply.size(), 0) <= 0)
+	{
+		throw (Errors(ErrorCode::E_SND));
+	}
+}
+
+/*------------------------------------------------------------------*/
 /* sends Raw replies to client										*/
 /*------------------------------------------------------------------*/
-void	Client::sendRaw(std::string msg) // what about this
+void	Client::sendRaw(std::string msg)
 {
 	ssize_t sent = send(_socket, msg.c_str(), msg.size(), 0);
 	if (sent <= 0)
@@ -175,13 +208,6 @@ void	Client::sendMsg(std::string name, std::string reply)
 	reply = ":" + name + " " + reply + "\r\n";
 	if (send(_socket, reply.c_str(), reply.size(), 0) <= 0)
 		throw (Errors(ErrorCode::E_SND));
-}
-
-//============== getters and setters ==============//
-
-int	Client::getSocket(void) // [DEBUGGING]
-{
-	return (_socket);
 }
 
 /*--------------------------------------*/
@@ -217,7 +243,7 @@ void	Client::setNick(const std::string& str)
 }
 
 /*--------------------------------------*/
-/* set _regisFailed to value			*/
+/* set _disconnect to value				*/
 /*--------------------------------------*/
 void	Client::setDisconnect(bool value)
 {
@@ -257,7 +283,7 @@ std::string Client::getNick(void) const
 }
 
 /*--------------------------------------*/
-/* returns _regisFailed					*/
+/* returns _disconnect					*/
 /*--------------------------------------*/
 bool	Client::getDisconnect(void)
 {
@@ -272,47 +298,49 @@ Server* Client::getServer(void)
 	return (_server);
 }
 
-
-
-//------------can be deleted once authentication is updated------------//
-int	Client::authentication()
-{
-	while(!(_nickSet && _usernameSet && _registered))
-	{
-		if (receiveMsg() == -1)
-			return (-1);
-	}
-
-	sendResponse(_server->getName(), IrcResponseCode::RPL_WELCOME, "WelcomeMessage");
-	return (1);
-}
-
-//------------can be deleted once authentication is updated------------//
+/*--------------------------------------*/
+/* returns _registered					*/
+/*--------------------------------------*/
 bool	Client::getRegistered(void)
 {
 	return (_registered);
 }
-//------------can be deleted once authentication is updated------------//
+
+/*--------------------------------------*/
+/* sets _registered						*/
+/*--------------------------------------*/
 void	Client::setRegistered(bool state)
 {
 	_registered = state;
 }
-//------------can be deleted once authentication is updated------------//
+
+/*--------------------------------------*/
+/* gets _nickSet						*/
+/*--------------------------------------*/
 bool	Client::getNickSet(void)
 {
 	return (_nickSet);
 }
-//------------can be deleted once authentication is updated------------//
+
+/*--------------------------------------*/
+/* sets _nickSet						*/
+/*--------------------------------------*/
 void	Client::setNickSet(bool state)
 {
 	_nickSet = state;
 }
-//------------can be deleted once authentication is updated------------//
+
+/*--------------------------------------*/
+/* gets _UsernameSet					*/
+/*--------------------------------------*/
 bool	Client::getUsernameSet(void)
 {
 	return (_usernameSet);
 }
-//------------can be deleted once authentication is updated------------//
+
+/*--------------------------------------*/
+/* sets _UsernameSet					*/
+/*--------------------------------------*/
 void	Client::setUsernameSet(bool state)
 {
 	_usernameSet = state;

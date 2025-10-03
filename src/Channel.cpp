@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/19 14:00:35 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/03 11:01:58 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/03 11:06:06 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,11 @@ Channel::~Channel()
 /*------------------------------------------------------*/
 /* Sends message to all users in channel except sender	*/
 /*------------------------------------------------------*/
-void	Channel::broadcastUpdated(const std::string& content, Client* sender, const std::string& command)
+void	Channel::broadcast(const std::string& content, Client* sender, const std::string& command)
 {
 	if (sender)
 	{
 		std::string msg = ":" + sender->getNick() + "!" + sender->getUsername() + "@" + sender->getHostname() + " " + command + " :" + content + "\r\n";
-		// std::cout << YELLOW "[Debug] broadcastUpdated " << msg << WHITE << std::endl;
 		for (auto it = _users.begin(); it != _users.end(); ++it)
 		{
 			if (it->second != sender)
@@ -158,7 +157,9 @@ bool	Channel::addUser(Client* client, const std::string& password)
 	return (true);
 }
 
-
+/*--------------------------------------------------*/
+/* updates nick in channel container				*/
+/*--------------------------------------------------*/
 void	Channel::updateNickOnChannel(const std::string& oldNick, const std::string& newNick)
 {
 	auto it = _users.find(oldNick);
