@@ -73,7 +73,6 @@ enum class IrcErrorCode
 };
 
 const char* getIrcErrorCodeString(IrcErrorCode code);
-const std::string getIrcErrorReply(IrcErrorCode code);
 
 #endif
 

@@ -3,7 +3,7 @@
 ## To dos
 
 ### git
-[] git rid of vs.code file
+[x] git rid of vs.code file
 
 ### Makefile
 [x] include -Werror
@@ -12,18 +12,19 @@
 [] could be that more bugs occur where names have not been changed to lowercase resulting in segfaults
 
 ### Server
-- what should be displayed during server execution?
+[x] what should be displayed during server execution?
 	- connections
 	- received messages
 	- disconnects?
-[] test userLimit on Server
-	[] think about implementing a cap for users to Join since the server is not allowed to shutdown
+[x] test userLimit on Server
 [] when server is stopped with ctrl + c should every client receive quit?
 	-> maybe an error message so irssi doesn't freeze in it's state?
 
-### Channels
-[] How Many Channels can 1 user join?
-	- consider enforcing a limit for Channels
+### Channel
+[] check legit channel names
+
+### Nick
+[] check legit nick names
 
 ### Leaks
 [] check for leaks again

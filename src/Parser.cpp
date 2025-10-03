@@ -12,16 +12,14 @@
 
 #include "Client.hpp"
 
-
-//client pointer wird mitgeschickt, damit ich auf client und server methods zugreifen kann
 /*------------------------------------------------------------------------------
-
+Parse input into command and parameter
+and call corresponding handler functions
 ------------------------------------------------------------------------------*/
 void parseHandler(std::string rawMessage, Client &client, Server &server)
 {
 	Message message;
 
-	// std::cout << YELLOW << "DEBUG [PARSER]: " << RESET << std::endl;
 	message.splitMessage(rawMessage);
 	MessageHandler handler(client, message, server);
 
@@ -42,7 +40,7 @@ void parseHandler(std::string rawMessage, Client &client, Server &server)
 	else if (message.command == "PING")
 		handler.handlePing();
 	else if (message.command == "PRIVMSG")
-		handler.handlePrivmsg();	//still needs change to handler.
+		handler.handlePrivmsg();
 	else if (message.command == "PART")
 		handler.handlePart();
 	else if (message.command == "QUIT")
@@ -53,10 +51,6 @@ void parseHandler(std::string rawMessage, Client &client, Server &server)
 		handler.handleTopic();
 	else if (message.command == "INVITE")
 		handler.handleInvite();
-
 	else
 		client.sendError(server.getName(), IrcErrorCode::ERR_UNKNOWNCOMMAND, "Unknown command: " + message.command);
-		// std::cout << RED << "We dont handle this command: " << message.command << "!" << RESET << std::endl;
-		//send this message to client
-
 }
