@@ -31,10 +31,6 @@ MessageHandler::~MessageHandler()
 }
 
 /*
-instead of _message.params[].empty() -> check for params size < x
-*/
-
-/*
 	Builds a CAP ACK response message by combining the requested capabilities
 
  	constructs the server's response to a client's capability request by:
@@ -57,8 +53,6 @@ instead of _message.params[].empty() -> check for params size < x
 */
 void MessageHandler::handleCap(void)
 {
-	// std::cout << "[DEBUG] CAP: " << std::endl;
-
 	if (_message.params[1] == "LS")
 		_client.sendMsg(_server.getName(), "CAP * LS :multi-prefix sasl message-tags");
 	else if (_message.params[1] == "REQ")
@@ -88,8 +82,6 @@ JOIN <channel>[,<channel>] [<key>[,<key>]]
 ------------------------------------------------------------------------------*/
 void MessageHandler::handleJoin(void)
 {
-	// std::cout << "[DEBUG] JOIN: " << std::endl;
-
 	if (_message.params.size() < 2)
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
@@ -146,7 +138,6 @@ otherwise disconnect
 ------------------------------------------------------------------------------*/
 void MessageHandler::handlePass(void)
 {
-	// std::cout << "[DEBUG] PASS: " << std::endl;
 	if (_message.params.size() < 2)
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
@@ -223,10 +214,8 @@ void MessageHandler::handleNick(void)
 			_client.setDisconnect(true);
 		return;
 	}
-
-	if (_client.getNickSet())//send something to client so he knows the new nickname?
+	if (_client.getNickSet())
 	{
-		// std::cout << "[DEBUG] NICK change nickname " << newNick << std::endl;
 		std::string oldNick = _client.getNick();
 		std::string prefix = oldNick + "!" + _client.getUsername() + "@" + _client.getHostname() + " NICK " + newNick + " :";
 		_client.updateNick(oldNick, newNick);
@@ -234,30 +223,21 @@ void MessageHandler::handleNick(void)
 		broadcastNicknameInChannels(newNick);
 		_client.sendMsg(prefix, "");
 	}
-
-	// std::cout << "[DEBUG] NICK sets nickname: " << newNick << std::endl;
-
 	_client.setNick(newNick);
 	_client.setNickSet(true);
-
 }
 
-/*
-	- USER <username> <hostname> <servername> :<realname>
-		-> server: sends welcome message when all flags are set
-	ERR_NEEDMOREPARAMS
-	ERR_ALREADYREGISTRED: If the client tries to send another USER message after registration
-		-> "You may not reregister"
-*/
 /*------------------------------------------------------------------------------
 USER <username> <hostname> <servername> :<realname>
+	Validates that at least a username is provided
+	Checks if username is already registered
+	Sets username from first parameter
+	Sets hostname from second parameter if available, otherwise uses username
+	Sets realname from fifth parameter if available, otherwise uses username
+	Completes registration if all requirements are met
 ------------------------------------------------------------------------------*/
 void MessageHandler::handleUser()
 {
-	// std::cout << "[DEBUG] USER: " << std::endl;
-	// std::cout << "[DEBUG] size params: " << _message.params.size() << std::endl;
-	// std::cout << "[DEBUG] first param: " << _message.params[1] << std::endl;
-
 	if (_message.params.size() < 2 || _message.params[1].empty())
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
@@ -272,7 +252,6 @@ void MessageHandler::handleUser()
 		_client.setDisconnect(true);
 		return;
 	}
-
 	_client.setUsername(_message.params[1]);
 
 	if (_message.params.size() > 2)
@@ -308,7 +287,6 @@ Handles mode changes in channel and also /mode nick +i at registration phase
 ------------------------------------------------------------------------------*/
 void MessageHandler::handleMode()
 {
-	// std::cout << "[DEBUG] MODE: " << std::endl;
 	if (_message.params.size() < 2)
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
@@ -352,8 +330,6 @@ Handles WHO command to list channel members with their details.
 ------------------------------------------------------------------------------*/
 void MessageHandler::handleWho()
 {
-	// std::cout << "[DEBUG] WHO: " << std::endl;
-
 	if (_message.params.size() < 2)
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
@@ -407,8 +383,6 @@ Servers must reply to it with a PONG message with the same <token> value.
 ------------------------------------------------------------------------------*/
 void MessageHandler::handlePing()
 {
-	// std::cout << "[DEBUG] PING: " << std::endl;
-
 	if (_message.params.size() < 2 || _message.params[1].empty())
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
@@ -420,12 +394,22 @@ void MessageHandler::handlePing()
 }
 
 /*------------------------------------------------------------------------------
+PRIVMSG <target> :<message>
+This command handles private messaging in IRC, allowing clients to send messages
+to either individual users or channels. The implementation follows the standard
+IRC message format chi.cs.uchicago.edu, where:
 
+<target>: The recipient (either a nickname or channel name)
+<message>: The message content (must be preceded by a colon)
+The function processes messages through a logical flow:
+
+Validates message format
+Determines message type (private or channel)
+Routes message appropriately
+Handles errors for invalid targets
 ------------------------------------------------------------------------------*/
 void MessageHandler::handlePrivmsg()
 {
-	// std::cout << "[DEBUG] PRIVMSG: " << std::endl;
-
 	if (_message.params.size() < 3)
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
@@ -464,3 +448,220 @@ void MessageHandler::handlePrivmsg()
 	}
 }
 
+/*----------------------------------------------------------------------*/
+/* Quit																	*/
+/*	- check if client send reason										*/
+/*	- loop over channels that client is part of							*/
+/* 	- for every channel extract recipients excluding quitter			*/
+/*	- send quit message to recipients									*/
+/*	- set Disconnect bool for client									*/
+/*----------------------------------------------------------------------*/
+void	MessageHandler::handleQuit(void)
+{
+	std::string	reason;
+	if (_message.params.size() == 2)
+		reason = _message.params[1];
+
+	std::unordered_set<Client*> recipients;
+	std::unordered_map<std::string, Channel*> joinedChannels = _client.getJoinedChannels();
+	for (auto it = joinedChannels.begin(); it != joinedChannels.end(); ++it)
+	{
+		std::map<std::string, Client*> users = it->second->getUsers();
+		for (auto iter = users.begin(); iter != users.end(); ++iter)
+		{
+			if (iter->second != &_client)
+				recipients.insert(iter->second);
+		}
+	}
+	for (auto iterate = recipients.begin(); iterate != recipients.end(); ++iterate)
+		(*iterate)->sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "QUIT :" + reason);
+	_client.setDisconnect(true);
+}
+
+/*----------------------------------------------------------------------*/
+/* Part																	*/
+/*	- if there are enough parameters									*/
+/*	- check if client sent reason										*/
+/*	- split channel parameters separated by ","							*/
+/* 	- loop over channels to part from									*/
+/*	- send part message to clients in channel							*/
+/*	- update all Containers												*/
+/*	- if channel is now empty delete channel object						*/
+/*----------------------------------------------------------------------*/
+void MessageHandler::handlePart(void)
+{
+	if (_message.params.size() < 2)
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS, "Not enough parameters");
+		return ;
+	}
+	std::string reason;
+	if (_message.params.size() > 2)
+		reason = _message.params[2];
+
+	std::regex del(",");
+	std::sregex_token_iterator it(_message.params[1].begin(), _message.params[1].end(), del, -1);
+	std::sregex_token_iterator end;
+
+	while (it != end)
+	{
+		std::string channelName = *it;
+		Channel* channel = _server.getChannel(channelName);
+		if (!channel)
+			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL, channelName);
+		else if (!_client.isJoinedChannel(channelName))
+			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOTONCHANNEL, channelName + " :You're not on that channel"); // this is not sending correct format
+		else
+		{
+			_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "PART " + channelName + " " + reason);
+			_client.removeFromJoinedChannels(channelName);
+			channel->broadcastUpdated(reason, &_client, "PART " + channelName);
+			channel->removeUser(&_client);
+			if (channel->getNbrUsers() == 0)
+				_server.removeChannel(channel);
+		}
+		++it;
+	}
+}
+
+/*----------------------------------------------------------------------*/
+/* Kick																	*/
+/*	- check if there are enough parameters								*/
+/*	- check if client send reason										*/
+/*	- check if channel exists											*/
+/*	- check if kicker is on channel										*/
+/*	- check if kicker is operator										*/
+/*	- check if to be kicked is on channel								*/
+/* 	- loop over channels to part from									*/
+/*	- send kick message to clients in channel							*/
+/*	- update all Containers												*/
+/*	- if channel is now empty delete channel object						*/
+/*----------------------------------------------------------------------*/
+void	MessageHandler::handleKick(void)
+{
+	if (_message.params.size() < 3)
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS, "Not enough parameters");
+		return ;
+	}
+	Client* kicked = _server.getClient(_message.params[2]);
+	Channel* channel = _server.getChannel(_message.params[1]);
+	if (!channel)
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL, _message.params[1]);
+	else if (!_client.isJoinedChannel(_message.params[1]))
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOTONCHANNEL, _message.params[1] + " :You're not on that channel");
+	else if (!channel->isOperator(&_client))
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_CHANOPRIVSNEEDED, _message.params[1] + " :You're not channel operator");
+	else if (!kicked || !channel->isUser(kicked))
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_USERNOTINCHANNEL, _message.params[2] + " " + _message.params[1] + " :They aren't on that channel");
+	else
+	{
+		std::string reason;
+		if (_message.params.size() == 4)
+			reason = _message.params[3];
+		channel->broadcastUpdated(reason, &_client, "KICK " + _message.params[1] + " " + kicked->getNick());
+		_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "KICK " + _message.params[1] + " " + kicked->getNick() + " :" + reason);
+		channel->removeUser(kicked);
+		kicked->removeFromJoinedChannels(_message.params[1]);
+		if (channel->getNbrUsers() == 0)
+			_server.removeChannel(channel);
+	}
+}
+
+/*----------------------------------------------------------------------*/
+/* Invite																*/
+/*	- check if there are enough parameters								*/
+/*	- check if channel exists											*/
+/*	- check if inviter is on channel									*/
+/*	- check if inviter is operator										*/
+/*	- check if invited is on channel									*/
+/*	- send invite message to invited 									*/
+/*	- send response to inviter											*/
+/*	- add invited to invite List										*/
+/*----------------------------------------------------------------------*/
+void	MessageHandler::handleInvite(void)
+{
+	if (_message.params.size() < 3)
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS, "Not enough parameters");
+		return ;
+	}
+
+	Client* invited = _server.getClient(_message.params[1]);
+	Channel* channel = _server.getChannel(_message.params[2]);
+	if (!channel)
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL, _message.params[2]);
+	else if (!_client.isJoinedChannel(_message.params[2]))
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NOTONCHANNEL, _message.params[2] + " :You're not on that channel");
+	else if (channel->getInvOnly() && !channel->isOperator(&_client))
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_CHANOPRIVSNEEDED, _message.params[2] + " :You're not channel operator");
+	else if (!invited || channel->isUser(invited))
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_USERONCHANNEL, _message.params[1] + " " + _message.params[2] + " :is already on channel");
+	else
+	{
+		_client.sendResponse(_server.getName(), IrcResponseCode::RPL_INVITING, invited->getNick() + " " + channel->getName());
+		invited->sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "INVITE " + invited->getNick() + " " + _message.params[2]);
+		channel->addInvUsers(invited);
+	}
+}
+
+/*----------------------------------------------------------------------*/
+/* Topic																*/
+/*	- check if there are enough parameters								*/
+/*	- check if second parameter is "-delete"							*/
+/*		- assign channelName and topic accordingly						*/
+/*	- check if channel exists											*/
+/*	- check if changer is on channel									*/
+/*	- check if changer is operator when only operator can change		*/
+/*	- if only two args													*/
+/*	- 	if topic is empty send topic not set							*/
+/*	- 	else send topic													*/
+/*	- if second parameter is "-delete" clear topic						*/
+/*	- else change channel topic to topic								*/
+/*	- send topic update message to everyone on channel					*/
+/*----------------------------------------------------------------------*/
+void	MessageHandler::handleTopic(void)
+{
+	if (_message.params.size() < 2)
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS, "Not enough parameters");
+		return ;
+	}
+
+	std::string	channelName = _message.params[1];
+	std::string	topic = _message.params[2];
+	if (_message.params[1] == "-delete")
+	{
+		channelName = _message.params[2];
+		topic = _message.params[3];
+	}
+	else
+	{
+		Channel* channel = _server.getChannel(channelName);
+		if (!channel)
+			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOSUCHCHANNEL, channelName);
+		else if (!_client.isJoinedChannel(channelName))
+			_client.sendError(_server.getName(), IrcErrorCode::ERR_NOTONCHANNEL, channelName + " :You're not on that channel");
+		else if (channel->getTopicOp() && !channel->isOperator(&_client))
+			_client.sendError(_server.getName(), IrcErrorCode::ERR_CHANOPRIVSNEEDED, channelName + " :You're not channel operator");
+		else
+		{
+			if (_message.params.size() < 3)
+			{
+				if (channel->getTopic().empty())
+					_client.sendResponse(_server.getName(), IrcResponseCode::RPL_NOTOPIC, _client.getNick() + " " + channelName);
+				else
+					_client.sendResponse(_server.getName(), IrcResponseCode::RPL_TOPIC, _client.getNick() + " " + channelName);
+			}
+			else
+			{
+				if (_message.params[1] == "-delete")
+					channel->setTopic("");
+				else
+					channel->setTopic(topic);
+				channel->broadcastUpdated(topic, &_client, "TOPIC " + _message.params[1]);
+				_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "TOPIC " + _message.params[1] + " " + topic);
+			}
+		}
+	}
+}

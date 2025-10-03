@@ -322,8 +322,8 @@ todo:
     [x] Mode main function more clean
     [x] mode functions with commands
     [x] mode tests with error messages from david
-    - join main function more clean and with more than one command
-    - join functions with commands
+    [x] join main function more clean and with more than one command
+    [x] join functions with commands
     [x] rename ParseHandler -> Parser
 
     [x] /join inv only channel -> after error message trotzdem irssi window
@@ -337,10 +337,10 @@ todo:
     [?] It is possible to send multiple PASS commands before registering but only the last one sent is used for
         verification and it may not be changed once the client has been registered. -> how would that work in irssi??
     - we maybe need a flag like isAuthenticated() ?
-    - we also need a flag if pass got called -> if /connect localhost 6667 <no-pass> : pass does not get called, should disconnect
-    - try connect with wrong password and try again with right password
+    [x] we also need a flag if pass got called -> if /connect localhost 6667 <no-pass> : pass does not get called, should disconnect
+    [x] try connect with wrong password and try again with right password
         -> does not work. Nothing arrives at server
-    - if already registered: ERR_ALREADYREGISTERED
+    [x] if already registered: ERR_ALREADYREGISTERED
 
 - NICK
     [x] give the client a nickname or change the previous one.
@@ -348,8 +348,8 @@ todo:
     [x] if in use: ERR_NICKNAMEINUSE
     [x] if verify nickname fails -> ERR_ERRONEUSNICKNAME
     [x] if no nickname parameter is given : in docu it should send error but irssi handels it and gives you your nick
-    - I need here flag _client.getNickset() to check if i have to disconnect
-    - need function to inform irssi about nick change
+    [x] I need here flag _client.getNickset() to check if i have to disconnect
+    [x] need function to inform irssi about nick change
 
 ## ====== Day 16 == 28.09.2025 ======
 - USER
