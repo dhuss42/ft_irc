@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/03 11:27:45 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/03 11:42:42 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -364,6 +364,8 @@ void	Server::setupSignalHandler()
 static bool	verifyChannelName(const std::string& name)
 {
 	if (name.empty() || name.size() >= 50)
+		return (false);
+	if (name[0] != '#')
 		return (false);
 	if (name[0] == '#' || name[0] == '&' || name[0] == '+' || name[0] == '!')
 	{
