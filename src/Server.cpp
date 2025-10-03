@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/02 15:15:51 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/03 10:06:29 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,6 @@ Server::~Server()
 
 //================ initialise Data ================//
 
-// additional considerations to make regarding to safe password policy (could be toggled on and off inside config file)
-	// min length, special chars, not allowed chars, uppecase/lowercase, digit required?
-// also max length of the password?
-// also empty string = no password or error?
 /*----------------------------------------------------------------------*/
 /* parse both args														*/
 /*	- verify that portnbr is only digits								*/
@@ -290,7 +286,7 @@ void	Server::disconnectClient(std::vector<pollfd>::iterator &it)
 void	Server::serverLoop()
 {
 	int ret = 0;
-	
+
 	std::cout << MAGENTA "===============================" WHITE << std::endl;
 	std::cout << MAGENTA "\tStarting ircserv..." WHITE << std::endl;
 	std::cout << MAGENTA "===============================" WHITE << std::endl;
@@ -391,7 +387,7 @@ Channel*	Server::createChannel(std::string& name, Client *client)
 {
 	std::string lcName = toLower(name);
 	if (isChannel(lcName))
-		return (getChannel(lcName)); 
+		return (getChannel(lcName));
 	else if (!verifyChannelName(lcName))
 		return (nullptr);
 	else
