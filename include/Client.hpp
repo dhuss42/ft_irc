@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maustel <maustel@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/25 14:42:38 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/27 13:01:02 by maustel          ###   ########.fr       */
+/*   Updated: 2025/10/03 11:10:51 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@
 #include "ft_irc.hpp"
 #include "IrcErrors.hpp"
 #include "IrcResponses.hpp"
-#include "Server.hpp"	//put class includes in the end of file(?)
+#include "Server.hpp"
 #include "Channel.hpp"
-#include "Message.hpp"	//put class includes in the end of file(?)
+#include "Message.hpp"
 #include "MessageHandler.hpp"
 
 class Server;
@@ -38,9 +38,7 @@ class Client
 
 		std::string _buffer;
 		std::string	_remainder;
-		//  write buffer ?
 
-		// registration state
 		bool	_registered = false;
 		bool	_nickSet = false;
 		bool	_usernameSet = false;
@@ -68,19 +66,14 @@ class Client
 	void	sendMsg(std::string name, std::string reply);
 	void	sendRaw(std::string msg);
 	void	sendError(std::string name, IrcErrorCode code, std::string reply);
-	int		authentication(); // can be deleted once authentication is updated
 	int		receiveMsg();
 
-	//------------can be deleted once authentication is updated------------//
 	void	setRegistered(bool state);
 	void	setNickSet(bool state);
 	void	setUsernameSet(bool state);
 	bool	getRegistered(void);
 	bool	getNickSet(void);
 	bool	getUsernameSet(void);
-	//---------------------------------------------------------------------//
-
-	int		getSocket(void); // [DEBUGGING]
 
 	void	setRealname(const std::string& str);
 	void	setHostname(const std::string& str);
@@ -96,18 +89,6 @@ class Client
 	bool	getDisconnect(void);
 
 	Server* getServer(void);
-
-	//handler functions
-	// not sure if bool or void
-	// bool handleCap(Message message);
-	// bool handleJoin(Message message);
-	// bool handlePass(Message message);
-	// bool handleNick(Message message);
-	// bool handleMode(Message message);
-	// bool handleWhois(Message message);
-	// bool handlePing(Message message);
-	bool handleUser(Message message);
-	bool handlePrivmsg(Message message);
 };
 
 void	parseHandler(std::string rawMessage, Client &client, Server &server);

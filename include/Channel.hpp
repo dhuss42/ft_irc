@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/25 14:42:44 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/02 14:20:54 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/03 11:05:57 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,6 @@ class Channel
 		std::string _password;
 		std::size_t _userLimit;
 
-		std::string _creator; // uncertain if needed
-
 		std::map <std::string, Client*> _users;
 		std::unordered_map <std::string, Client*> _invitedUsers;
 		std::unordered_map <std::string, Client*> _operators;
@@ -58,8 +56,7 @@ class Channel
 		void	removeInvUsers(Client* client);
 
 		// ======= send Messages =======//
-		void	broadcast(const std::string& msg, Client* sender);
-		void	broadcastUpdated(const std::string& content, Client* sender, const std::string& command);
+		void	broadcast(const std::string& content, Client* sender, const std::string& command);
 
 		// ======= verify Clients =======//
 		bool	isOperator(const Client* client) const;

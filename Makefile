@@ -6,7 +6,7 @@
 #    By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/02 11:55:06 by dhuss             #+#    #+#              #
-#    Updated: 2025/10/02 11:55:14 by dhuss            ###   ########.fr        #
+#    Updated: 2025/10/03 11:16:11 by dhuss            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,12 +24,9 @@ CPPFILES = \
 	Message.cpp \
 	Parser.cpp \
 	utils.cpp \
-	ClientMilena.cpp \
 	IrcCodeGetters.cpp \
 	MessageHandler.cpp \
-	MessageHandlerDavid.cpp \
 	ModeUtils.cpp \
-	JoinUtils.cpp \
 	HandlerUtils.cpp
 
 SRCS = $(addprefix $(SRC_DIR)/, $(CPPFILES))
