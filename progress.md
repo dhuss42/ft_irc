@@ -12,7 +12,7 @@
 [] could be that more bugs occur where names have not been changed to lowercase resulting in segfaults
 
 ### Server
-- what should be displayed during server execution?
+[x] what should be displayed during server execution?
 	- connections
 	- received messages
 	- disconnects?
