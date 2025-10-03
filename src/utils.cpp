@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/25 14:41:49 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/03 11:32:49 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/03 12:21:30 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,6 @@ bool	verifyNickName(const std::string& name)
 				if (std::isalnum(static_cast<unsigned char>(c))) {
 					continue;
 				}
-				std::cout << "[DEBUG] Error in verify nickname: " << c << std::endl;
-				std::cout << "[DEBUG] Error in verify nickname - name: " << name << std::endl;
 				return false;
 		}
 	}
