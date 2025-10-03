@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:30 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/03 11:25:15 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/03 11:30:03 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,5 @@ class Server
 		void	setShouldExit(void);
 		bool	getShouldExit(void);
 	};
-
 
 #endif
