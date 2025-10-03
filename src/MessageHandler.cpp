@@ -115,7 +115,7 @@ void MessageHandler::handleJoin(void)
 			if (!channel)
 			{
 				_client.sendError(_server.getName(),
-						IrcErrorCode::ERR_NOSUCHCHANNEL, channelName + " :No such channel");
+						IrcErrorCode::ERR_NOSUCHCHANNEL, channelName + " :Invalid channel name");
 				continue;
 			}
 		}
@@ -156,7 +156,6 @@ void MessageHandler::handlePass(void)
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_ALREADYREGISTERED,
 						"Already registered");
-		_client.setDisconnect(true);
 		return ;
 	}
 	if (_message.params[1].empty() || _message.params[1] != _server.getPassword())
@@ -192,7 +191,7 @@ void MessageHandler::handleNick(void)
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_ERRONEUSNICKNAME,
 						"No nickname given");
 		if (!_client.getNickSet())
-			_client.setDisconnect(true); //only at first call
+			_client.setDisconnect(true);
 		return;
 	}
 	std::string newNick = _message.params[1];
@@ -238,18 +237,29 @@ USER <username> <hostname> <servername> :<realname>
 ------------------------------------------------------------------------------*/
 void MessageHandler::handleUser()
 {
+	if (!_client.getRegistered())
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_PASSWDMISMATCH,
+			"No password! Refused!");
+		_client.setDisconnect(true);
+		return ;
+	}
+	if (!_client.getNickSet())
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_NONICKNAMEGIVEN,
+			"Do NICK before USER");
+		return ;
+	}
 	if (_message.params.size() < 2 || _message.params[1].empty())
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_NEEDMOREPARAMS,
 						"Not enough parameters");
-		_client.setDisconnect(true);
 		return;
 	}
 	if (_client.getUsernameSet())
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_ALREADYREGISTERED,
-						"AlreadyRegistered");
-		_client.setDisconnect(true);
+						"Already Registered");
 		return;
 	}
 	_client.setUsername(_message.params[1]);

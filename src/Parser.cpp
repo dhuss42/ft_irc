@@ -18,8 +18,10 @@ and call corresponding handler functions
 ------------------------------------------------------------------------------*/
 void parseHandler(std::string rawMessage, Client &client, Server &server)
 {
-	Message message;
+	if (rawMessage.empty() || rawMessage.find("\n") == 0)
+		return ;
 
+	Message message;
 	message.splitMessage(rawMessage);
 	MessageHandler handler(client, message, server);
 
