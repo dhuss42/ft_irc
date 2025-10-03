@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/03 11:42:42 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/03 12:35:53 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -286,9 +286,12 @@ void	Server::serverLoop()
 {
 	int ret = 0;
 
-	std::cout << MAGENTA "===============================" WHITE << std::endl;
-	std::cout << MAGENTA "\tStarting ircserv..." WHITE << std::endl;
-	std::cout << MAGENTA "===============================" WHITE << std::endl;
+	if (!shouldExit)
+	{
+		std::cout << MAGENTA "===============================" WHITE << std::endl;
+		std::cout << MAGENTA "\tStarting ircserv..." WHITE << std::endl;
+		std::cout << MAGENTA "===============================" WHITE << std::endl;
+	}
 	while (!shouldExit)
 	{
 		try {
@@ -364,8 +367,6 @@ void	Server::setupSignalHandler()
 static bool	verifyChannelName(const std::string& name)
 {
 	if (name.empty() || name.size() >= 50)
-		return (false);
-	if (name[0] != '#')
 		return (false);
 	if (name[0] == '#' || name[0] == '&' || name[0] == '+' || name[0] == '!')
 	{

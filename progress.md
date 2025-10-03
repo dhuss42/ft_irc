@@ -2,98 +2,15 @@
 
 ## To dos
 
-### git
-[x] git rid of vs.code file
-
-### Makefile
-[x] include -Werror
-
-### lowerCase names
-[] could be that more bugs occur where names have not been changed to lowercase resulting in segfaults
-
-### Server
-[x] what should be displayed during server execution?
-	- connections
-	- received messages
-	- disconnects?
-[x] test userLimit on Server
-
-### Channel
-[] check legit channel names
-
-### Nick
-[] check legit nick names
-
 ### Leaks
 [] check for leaks again
-	[x] free all channels when server stops
-	[x] also Make methods for cleaning up clients and closing sockets and callthem in destructor instead of doing it all in destructor
 
 ### Eval Linux
 [] test on Linux
 
-### clean up
-	[] look for functions that are not used
-	[x] add 42 header everywhere
-	[x] method descriptions
-	[] non-member methods like in utils.cpp look up ruling in 42
-	[x] consier what to display during server run (not a lot since std::cout hinders performance)
-
-### send
-[] test strange printf input with nc -> segfaulted
-
-### error
-[] milenas error messages
-
-### Authentication
-[] what do we do when a Client connects and only sends part of the Authentication?
-	-> PASS but not NICK and USER
-	-> disconnect after timeout?
-[] possible to connect to server without providing password -> ""
-	-> is not connected but also not disconnected from server
-
-### parssing
-[x] when password is empty string the client is able to connect with providing no password and also with "", but is never disconnected -> remains in limbo
-	-> empty, "", '', "'
-[x] think about further problematic things password
-	- max length for password
-[x] currently when passing "" as portnbr server is stuck in Error message
-[x] ./ircserv "891723871293719" "a" -> Error: stoi: out of range
-
-### part / kick / quit
-[x] what happens when last Operator leaves channel but there are other clients still in the channel
-	-> do nothing
-[x] when operator kicks himself and rejoins the 11:18 -!- Irssi: #dhuss: Total of 1 nicks [0 ops, 0 halfops, 0 voices, 1 normal] is not updated correctly
-	-> here there were two users and no operators in channel
-	-> should be 2 normal
-
-### quit
-[x] clients send quit to all channels when closing the window
-[x] when client quits and is last client in channel is it possible to join that channel and not be creator?
-	-> quit does not delete channel object if last member
-	-> maybe quit should remove user from channels and then also just check if the channel is now empty
-
-### join
-[x] during first join
-	-> 12:37 -!- : No such channel
-[x] 11:25 -!- available commands: JOIN, MODE, KICK, PART, QUIT, PRIVMSG/NOTICE
-	-> in server "menu"
-
-### all commands that take reason or custom user input
-- test with really long message
-	-> irssi seems to have a limit and characters that are sent
-		-> only checked: kick, topic
-	-> should also check with valgrind here
-[] also check what other servers do in that case
-
-### mode
-- mode -o
-	-> @ does not disappear after removing op privledeges
-
-### ctrl + z
-- poll error with valgrind
-- no poll error without valgrind
-- ctrl + z with client and then flood channel with other client we get Error in verify nickname
+[] delete files
+[] push vogsphere
+[] check vogsphere
 
 ## ====== Day 1 == 25.06 ======
 - started reading subject (30min)
