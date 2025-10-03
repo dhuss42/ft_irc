@@ -3,7 +3,7 @@
 ## To dos
 
 ### git
-[] git rid of vs.code file
+[x] git rid of vs.code file
 
 ### Makefile
 [x] include -Werror
@@ -16,14 +16,13 @@
 	- connections
 	- received messages
 	- disconnects?
-[] test userLimit on Server
-	[] think about implementing a cap for users to Join since the server is not allowed to shutdown
-[] when server is stopped with ctrl + c should every client receive quit?
-	-> maybe an error message so irssi doesn't freeze in it's state?
+[x] test userLimit on Server
 
-### Channels
-[] How Many Channels can 1 user join?
-	- consider enforcing a limit for Channels
+### Channel
+[] check legit channel names
+
+### Nick
+[] check legit nick names
 
 ### Leaks
 [] check for leaks again
@@ -35,15 +34,13 @@
 
 ### clean up
 	[] look for functions that are not used
-	[] add 42 header everywhere
-	[] method descriptions
+	[x] add 42 header everywhere
+	[x] method descriptions
 	[] non-member methods like in utils.cpp look up ruling in 42
-	[] consier what to display during server run (not a lot since std::cout hinders performance)
+	[x] consier what to display during server run (not a lot since std::cout hinders performance)
 
 ### send
 [] test strange printf input with nc -> segfaulted
-[] maybe implement clientSendBuffer because if segfault
-	- try to replicate segfault first
 
 ### error
 [] milenas error messages
@@ -52,11 +49,6 @@
 [] what do we do when a Client connects and only sends part of the Authentication?
 	-> PASS but not NICK and USER
 	-> disconnect after timeout?
-[] when trying to connect to the server with a nick that is already in use connection is rejected
-	11:19 -!- Capabilities acknowledged: multi-prefix
-	11:19 -!- Nickname is already in use, choose another one
-	11:19 -!- Irssi: Connection lost to 127.0.0.1
-	11:19 -!- Irssi: Not connected to server
 [] possible to connect to server without providing password -> ""
 	-> is not connected but also not disconnected from server
 

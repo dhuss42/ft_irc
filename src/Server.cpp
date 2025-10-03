@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/03 11:17:39 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/03 11:27:45 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -358,8 +358,9 @@ void	Server::setupSignalHandler()
 
 //================ channel management ================//
 
-//==================JOIN==================//
-
+/*------------------------------------------------------------------*/
+/* Checks if channel name is legit									*/
+/*------------------------------------------------------------------*/
 static bool	verifyChannelName(const std::string& name)
 {
 	if (name.empty() || name.size() >= 50)
@@ -457,15 +458,14 @@ std::vector<std::string> Server::getChannelVector(void)
 bool	Server::isChannel(const std::string& name) const
 {
 	std::string lcName = toLower(name);
-	// std::cout << YELLOW "[DEBUG] lowercase Name of Channel: " << lcName << WHITE << std::endl;
 	return (_channelList.find(lcName) != _channelList.end());
 }
 
 //================ Client management ================//
 
-// problem here is that I am searching for newNick
-// should be searching for oldNick
-// addToClientList
+/*------------------------------------------------------------------*/
+/* update Nick in Server container storing clients					*/
+/*------------------------------------------------------------------*/
 void	Server::updateNickOnServer(const std::string& oldNick, const std::string& newNick)
 {
 	auto it = _clientList.find(oldNick);
@@ -478,6 +478,9 @@ void	Server::updateNickOnServer(const std::string& oldNick, const std::string& n
 	}
 }
 
+/*------------------------------------------------------------------*/
+/* add client to server container storing clients					*/
+/*------------------------------------------------------------------*/
 void	Server::addToClientList(Client* client)
 {
 	if (client)

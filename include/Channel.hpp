@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/25 14:42:44 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/03 11:05:57 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/03 11:30:34 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,5 @@ class Channel
 		std::string	getActiveChannelModes(void) const;
 		std::string	getActiveChannelParameters(void) const;
 	};
-
 
 #endif
