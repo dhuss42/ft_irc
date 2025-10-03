@@ -12,7 +12,7 @@
 [] could be that more bugs occur where names have not been changed to lowercase resulting in segfaults
 
 ### Server
-- what should be displayed during server execution?
+[x] what should be displayed during server execution?
 	- connections
 	- received messages
 	- disconnects?
@@ -34,13 +34,11 @@
 [] test on Linux
 
 ### clean up
-	[x] make some sort of order in files
-	[x] look for functions that are not used
-	[x] add 42 header everywhere
-	[x] method descriptions
+	[] look for functions that are not used
+	[] add 42 header everywhere
+	[] method descriptions
 	[] non-member methods like in utils.cpp look up ruling in 42
 	[] consier what to display during server run (not a lot since std::cout hinders performance)
-	[x] delete Architecture branch
 
 ### send
 [] test strange printf input with nc -> segfaulted
