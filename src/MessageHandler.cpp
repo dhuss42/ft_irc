@@ -115,7 +115,7 @@ void MessageHandler::handleJoin(void)
 			if (!channel)
 			{
 				_client.sendError(_server.getName(),
-						IrcErrorCode::ERR_NOSUCHCHANNEL, channelName);
+						IrcErrorCode::ERR_NOSUCHCHANNEL, channelName + " :No such channel");
 				continue;
 			}
 		}
