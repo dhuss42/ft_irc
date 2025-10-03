@@ -187,7 +187,7 @@ bool MessageHandler::processOperatorMode(Channel* channel, size_t i, bool setMod
 			this->_modeRet1 += "-";
 		channel->removeOperator(_server.getClient(_message.params[i]));
 		this->_modeRet1 += "o";
-		this->_modeRet2 += _message.params[i];
+		this->_modeRet2 +=  " " + _message.params[i];
 		return true;
 	}
 	return false;
@@ -274,8 +274,8 @@ void MessageHandler::processModes(Channel* channel)
 				processChannelModes(channel, mode[j], setMode, (i + 1), setModeHasChanged);
 				setModeHasChanged = false;
 			}
-			if (((mode[j] == 'l' || mode[j] == 'o') && setMode == true
-				&& (i + 1) < _message.params.size()) || mode[j] == 'k')
+			if (((mode[j] == 'l' && setMode == true)
+				&& (i + 1) < _message.params.size()) || mode[j] == 'k'  || mode[j] == 'o')
 					i++;
 			j++;
 		}
