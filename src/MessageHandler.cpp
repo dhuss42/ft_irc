@@ -189,8 +189,13 @@ Sends error when
 ------------------------------------------------------------------------------*/
 void MessageHandler::handleNick(void)
 {
-	// std::cout << "[DEBUG] NICK: " << std::endl;
-
+	if (!_client.getRegistered())
+	{
+		_client.sendError(_server.getName(), IrcErrorCode::ERR_PASSWDMISMATCH,
+			"No password! Refused!");
+		_client.setDisconnect(true);
+		return ;
+	}
 	if (_message.params.size() < 2 || _message.params[1].empty())
 	{
 		_client.sendError(_server.getName(), IrcErrorCode::ERR_ERRONEUSNICKNAME,
