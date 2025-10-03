@@ -33,7 +33,6 @@ class MessageHandler
 		std::string _modeRet1;
 		std::string _modeRet2;
 
-	//using reference instead of pointer because I am sure they already exist
 	public:
 
 	//Constructor
@@ -41,19 +40,19 @@ class MessageHandler
 	//Destructor
 	~MessageHandler();
 
-	void handleCap(void);	//done
-	void handleJoin(void);	//done
-	void handlePass(void);	//re-check
-	void handleNick(void);	//re-check
-	void handleUser(void);	//re-check
-	void handleMode(void);	//done
-	void handleWho(void);	//done
-	void handlePing(void);	//done
-	void handlePrivmsg(void);	//done
-	void handlePart(void);	//will do david
-	void handleQuit(void);	//will do david
-	void handleKick(void);	//david
-	void handleInvite(void); //david
+	void handleCap(void);
+	void handleJoin(void);
+	void handlePass(void);
+	void handleNick(void);
+	void handleUser(void);
+	void handleMode(void);
+	void handleWho(void);
+	void handlePing(void);
+	void handlePrivmsg(void);
+	void handlePart(void);
+	void handleQuit(void);
+	void handleKick(void);
+	void handleInvite(void);
 	void handleTopic(void);
 	void handleNotice(void);
 

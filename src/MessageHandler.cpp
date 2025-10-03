@@ -436,7 +436,7 @@ void MessageHandler::handlePrivmsg()
 		Channel* channel = _server.getChannel(target);
 		if (channel && channel->getJoinedUsers().find(_client.getNick()) != std::string::npos)
 		{
-			channel->broadcastUpdated(message, &_client, "PRIVMSG " + channel->getName());
+			channel->broadcast(message, &_client, "PRIVMSG " + channel->getName());
 		}
 		else
 			_client.sendError(_server.getName(), IrcErrorCode::ERR_CANNOTSENDTOCHAN,
@@ -515,7 +515,7 @@ void MessageHandler::handlePart(void)
 		{
 			_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "PART " + channelName + " " + reason);
 			_client.removeFromJoinedChannels(channelName);
-			channel->broadcastUpdated(reason, &_client, "PART " + channelName);
+			channel->broadcast(reason, &_client, "PART " + channelName);
 			channel->removeUser(&_client);
 			if (channel->getNbrUsers() == 0)
 				_server.removeChannel(channel);
@@ -559,7 +559,7 @@ void	MessageHandler::handleKick(void)
 		std::string reason;
 		if (_message.params.size() == 4)
 			reason = _message.params[3];
-		channel->broadcastUpdated(reason, &_client, "KICK " + _message.params[1] + " " + kicked->getNick());
+		channel->broadcast(reason, &_client, "KICK " + _message.params[1] + " " + kicked->getNick());
 		_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "KICK " + _message.params[1] + " " + kicked->getNick() + " :" + reason);
 		channel->removeUser(kicked);
 		kicked->removeFromJoinedChannels(_message.params[1]);
@@ -659,7 +659,7 @@ void	MessageHandler::handleTopic(void)
 					channel->setTopic("");
 				else
 					channel->setTopic(topic);
-				channel->broadcastUpdated(topic, &_client, "TOPIC " + _message.params[1]);
+				channel->broadcast(topic, &_client, "TOPIC " + _message.params[1]);
 				_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), "TOPIC " + _message.params[1] + " " + topic);
 			}
 		}

@@ -13,13 +13,13 @@
 #include "Message.hpp"
 
 /*------------------------------------------------------------------------------
-
+Constructor
 ------------------------------------------------------------------------------*/
 Message::Message(): command(), params()
 {}
 
 /*------------------------------------------------------------------------------
-
+Destructor
 ------------------------------------------------------------------------------*/
 Message::~Message()
 {
@@ -28,7 +28,7 @@ Message::~Message()
 }
 
 /*------------------------------------------------------------------------------
-
+Copy constructor
 ------------------------------------------------------------------------------*/
 Message::Message(const Message &other)
 
@@ -37,7 +37,7 @@ Message::Message(const Message &other)
 }
 
 /*------------------------------------------------------------------------------
-
+operator overload
 ------------------------------------------------------------------------------*/
 Message& Message::operator=(const Message& other)
 {
@@ -55,7 +55,6 @@ after ':'  Get everything after the colon in the original message
 ------------------------------------------------------------*/
 void Message::splitMessage(std::string rawMessage)
 {
-	// std::cout << YELLOW << "[DEBUG] rawMessage: " << rawMessage << WHITE << std::endl;
 	if (rawMessage.empty())
 		return ;
 	std::stringstream ss(rawMessage);
@@ -65,14 +64,11 @@ void Message::splitMessage(std::string rawMessage)
 	{
 		if (arg[0] == ' ')
 		{
-			//white spaces are actually already handled by irssi
 			std::cout << RED << "Error whitespace in parameter!" << RESET << std::endl;
 			return ;
 		}
 		if (arg[0] == ':')
 		{
-			// Get everything after the colon in the original message
-			// npos means not found
 			size_t colonPos = rawMessage.find(':');
 			if (colonPos != std::string::npos)
 			{

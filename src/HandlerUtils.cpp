@@ -17,7 +17,7 @@ void MessageHandler::broadcastNicknameInChannels(std::string &newNick)
 	std::unordered_map<std::string, Channel*> joinedChannels = _client.getJoinedChannels();
 	for (auto it = joinedChannels.begin(); it != joinedChannels.end(); ++it)
 	{
-		it->second->broadcastUpdated("", &_client, " NICK " + newNick);
+		it->second->broadcast("", &_client, " NICK " + newNick);
 	}
 }
 
@@ -32,7 +32,7 @@ void MessageHandler::sendJoinTopicUserlistMsg(Channel *channel)
 	std::string joinMsg = _client.getNick() + " [~" +
 						_client.getUsername() + "@" +
 						_client.getHostname() + "] has joined " + channel->getName() + "\n";
-	channel->broadcastUpdated(joinMsg, &_client, "JOIN " + channel->getName());
+	channel->broadcast(joinMsg, &_client, "JOIN " + channel->getName());
 	std::string prefix = _client.getNick() + "!" + _client.getUsername() + "@"
 						+ _client.getHostname() + " JOIN " + channel->getName() + " :";
 	_client.sendMsg(prefix, joinMsg);

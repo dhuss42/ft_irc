@@ -41,7 +41,7 @@ void MessageHandler::sendChangedModes(std::string returnMsg, Channel *channel)
 {
 	std::string modeMsg = channel->getName() + " " + returnMsg;
 	_client.sendMsg(_client.getNick() + "!" + _client.getUsername() + "@" + _client.getHostname(), + "Mode " + modeMsg);
-	channel->broadcastUpdated(returnMsg, &_client, "MODE " + channel->getName());
+	channel->broadcast(returnMsg, &_client, "MODE " + channel->getName());
 }
 
 /*------------------------------------------------------------------------------

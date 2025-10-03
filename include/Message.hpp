@@ -23,7 +23,7 @@ class Message
 {
 	public:
 		std::string					command;
-		std::vector<std::string>	params;	//should be private(?)
+		std::vector<std::string>	params;
 
 		Message();
 		~Message();
@@ -32,6 +32,5 @@ class Message
 
 		void splitMessage(std::string rawMessage);
 };
-
 
 #endif
