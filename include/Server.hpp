@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:30 by dhuss             #+#    #+#             */
-/*   Updated: 2025/09/29 15:32:23 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/03 11:25:15 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,6 @@
 #include "Client.hpp"
 #include "Channel.hpp"
 #include "Errors.hpp"
-
-// subject talks about optional config file
-//	currently I am assuming the server object reads the file and
-//	assigns the values inside the attributes of the server object
-//	makes program more flexible and allows for changes without modifying the code
 
 class Client;
 class Channel;
