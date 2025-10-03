@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/02 15:15:51 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/03 10:06:29 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,6 @@ Server::~Server()
 
 //================ initialise Data ================//
 
-// additional considerations to make regarding to safe password policy (could be toggled on and off inside config file)
-	// min length, special chars, not allowed chars, uppecase/lowercase, digit required?
-// also max length of the password?
-// also empty string = no password or error?
 /*----------------------------------------------------------------------*/
 /* parse both args														*/
 /*	- verify that portnbr is only digits								*/
@@ -167,14 +163,13 @@ void	Server::newClient()
 {
 	pollfd newConnection = createPollfd();
 
-	newConnection.fd = accept(_sockets[0].fd, NULL, NULL); // not sure here with NULL NULL
+	newConnection.fd = accept(_sockets[0].fd, NULL, NULL);
 	if (newConnection.fd == -1)
 		throw (Errors(ErrorCode::E_ACCPT));
 	else
 	{
 		Client* client = new Client(newConnection.fd, this);
 		_clientfd[newConnection.fd] = client;
-		// _clientList[toLower(client->getNick())] = client;
 		_sockets.push_back(newConnection);
 	}
 }
@@ -202,7 +197,6 @@ void	Server::handlePollRevents()
 			{
 				if (_clientfd[it->fd]->receiveMsg() != -1)
 				{
-					// _clientfd[it->fd]->sendMsg(_name, "[Server] Message received"); // needs to be updated
 					if (_clientfd[it->fd]->getDisconnect())
 						disconnectClient(it);
 					else
@@ -293,6 +287,9 @@ void	Server::serverLoop()
 {
 	int ret = 0;
 
+	std::cout << MAGENTA "===============================" WHITE << std::endl;
+	std::cout << MAGENTA "\tStarting ircserv..." WHITE << std::endl;
+	std::cout << MAGENTA "===============================" WHITE << std::endl;
 	while (!shouldExit)
 	{
 		try {
@@ -358,7 +355,6 @@ void	Server::setupSignalHandler()
 	sigaction(SIGINT, &sa, nullptr);
 	sigaction(SIGTERM, &sa, nullptr);
 	sigaction(SIGQUIT, &sa, nullptr);
-	// add more signals here with sigaction
 }
 
 //================ channel management ================//
@@ -387,11 +383,11 @@ static bool	verifyChannelName(const std::string& name)
 /*	- adds channel to map of known channels							*/
 /*	- sets User who created channel as operator						*/
 /*------------------------------------------------------------------*/
-Channel*	Server::createChannel(std::string& name, Client *client) // can be altered to return values for sending replies or adding users afterwards
+Channel*	Server::createChannel(std::string& name, Client *client)
 {
 	std::string lcName = toLower(name);
 	if (isChannel(lcName))
-		return (getChannel(lcName)); // more of a patch at the moment
+		return (getChannel(lcName));
 	else if (!verifyChannelName(lcName))
 		return (nullptr);
 	else
@@ -489,7 +485,6 @@ void	Server::addToClientList(Client* client)
 		_clientList[toLower(client->getNick())] = client;
 }
 
-//<<<<<<<<<<<<<<<NICK>>>>>>>>>>>>//
 /*------------------------------------------------------------------*/
 /* Checks if the passed nick already exists on the server			*/
 /*	- case insensitive (Dan, dan)									*/
@@ -500,7 +495,6 @@ bool	Server::isClient(const std::string& name) const
 	return (_clientList.find(lcName) != _clientList.end());
 }
 
-//<<<<<<<<<<<<<<<NICK>>>>>>>>>>>>//
 /*------------------------------------------------------------------*/
 /* Checks if the passed nick already exists on the server			*/
 /*	- case insensitive (Dan, dan)									*/
@@ -534,7 +528,7 @@ const std::string& Server::getName(void) const
 }
 
 /*--------------------------------------*/
-/* return server password					*/
+/* return server password				*/
 /*--------------------------------------*/
 const std::string& Server::getPassword() const
 {
