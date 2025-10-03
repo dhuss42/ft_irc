@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/19 14:00:35 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/02 14:22:00 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/03 11:01:58 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,25 +46,6 @@ void	Channel::broadcastUpdated(const std::string& content, Client* sender, const
 		{
 			if (it->second != sender)
 				it->second->sendRaw(msg);
-		}
-	}
-}
-
-/*------------------------------------------------------*/
-/* Sends message to all users in channel except sender	*/
-/*------------------------------------------------------*/
-void	Channel::broadcast(const std::string& msg, Client* sender)
-{
-	if (sender)
-	{
-		for (auto it = _users.begin(); it != _users.end(); it++)
-		{
-			if (it->second != sender)
-			{
-				std::string prefix;
-				prefix += sender->getNick() + "!" + sender->getUsername() + "@" + sender->getHostname() + " PRIVMSG " + getName() + " :";
-				it->second->sendMsg(prefix, msg);
-			}
 		}
 	}
 }

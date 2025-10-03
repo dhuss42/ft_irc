@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/25 14:42:13 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/02 17:10:47 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/03 10:57:02 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,28 +128,21 @@ std::unordered_map<std::string, Channel*> Client::getJoinedChannels(void)
 int	Client::receiveMsg()
 {
 	char	tmp[512] = {0};
-	int		received = recv(_socket, tmp, sizeof(tmp), 0);
 
-	if (received == -1)
-	{
-		std::cerr << RED "Error: recv" << WHITE << std::endl; // what is here?
+	int		received = recv(_socket, tmp, sizeof(tmp), 0);
+	if (received <= 0)
 		return (-1);
-	}
-	else if (received == 0)
-	{
-		setDisconnect(true);
-		return (-1);
-	}
 	else
 	{
-		// std::cout << "[" << _nick << "] _remainder: " << _remainder << " "; 
 		std::string rec = std::string(tmp, received);
 		std::string fullBuffer = _remainder + rec;
 		_remainder = "";
 		std::size_t pos;
-		std::cout << "[" << _nick << "] received: " << rec; 
-		if (fullBuffer.back() != '\n')
-			std::cout << " ";
+
+		// std::cout << "[" << _nick << "] received: " << rec;
+		// if (fullBuffer.back() != '\n')
+		// 	std::cout << " ";
+
 		while ((pos = fullBuffer.find("\r\n")) != std::string::npos)
 		{
 			_buffer = fullBuffer.substr(0, pos);
@@ -169,7 +162,7 @@ void	Client::sendRaw(std::string msg) // what about this
 {
 	ssize_t sent = send(_socket, msg.c_str(), msg.size(), 0);
 	if (sent <= 0)
-		throw (Errors(ErrorCode::E_SND));	
+		throw (Errors(ErrorCode::E_SND));
 }
 
 /*------------------------------------------------------------------*/

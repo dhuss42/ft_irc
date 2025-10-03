@@ -6,7 +6,7 @@
 /*   By: dhuss <dhuss@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:12:46 by dhuss             #+#    #+#             */
-/*   Updated: 2025/10/03 10:06:29 by dhuss            ###   ########.fr       */
+/*   Updated: 2025/10/03 10:31:29 by dhuss            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ Server::Server(std::string portNbr, std::string password)
 	_addr.sin_family = AF_INET;
 	_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	parseArgs(portNbr, password);
-	// could set this directly in parsing if the portNbr is only needed there
 	initServer();
 }
 
